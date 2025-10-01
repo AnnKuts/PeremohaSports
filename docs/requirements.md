@@ -1,10 +1,10 @@
 # Requirements
 Here you can find functional and data requirements of the system, business rules, description of entities, attributes, relationships.
 ## Table of Contents
-- [Functional Requirements](#functional-requirements)
-- [Data Requirements](#data-requirements)
-- [Business Rules](#business-rules)
-- [Entities, Attributes and Relationships](#entities-attributes-and-relationships)
+- [Functional Requirements](#-functional-requirements)
+- [Data Requirements](#-data-requirements)
+- [Business Rules](#-business-rules)
+- [Entities, Attributes and Relationships](#-entities-attributes-and-relationships)
 
 ## ⚙️ Functional Requirements
 The system requires backend to manage network of gyms. Key needs include:
