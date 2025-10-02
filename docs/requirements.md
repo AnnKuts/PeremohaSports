@@ -24,8 +24,35 @@ The system must store the following categories of data:
 - financial data: start and end dates, price of memberships. Records of user subscriptions and history of all payments
 
 ## 📋 Business Rules
-This section defines the rules and constraints that govern the system:
-...
+**Client ↔ Membership.**
+A client can have zero or many memberships (for different types of classes and/or at different times).Each membership belongs to exactly one client and exactly one type of class (ClassType).Memberships store their history by start_date–end_date periods and can coexist if they are different types of classes.
+
+**Class Type ↔ Membership.**
+A single class type (ClassType: yoga/sports/pool/etc.) can have zero or many memberships across different clients.Each membership belongs to one and only one type of class.
+
+**Payment ↔ Membership/Client.**
+A client can make zero or many payments.Each payment is made by one and only one client for one specific membership.
+
+**Trainer ↔ Qualification (by class type).**
+A trainer can have one or more qualifications for different class types.Each qualification record associates exactly one trainer with exactly one class type.
+
+**Room ↔ Allowed Class Types (RoomClassType).**
+One room can support multiple class types, and one class type can be available in multiple rooms.Each specific class (session) can only be assigned to a (room, class_type) pair allowed by the RoomClassType.
+
+**Class (ClassSession).**
+Each session is taught by exactly one trainer.A session is conducted in one room and for one class type—via a reference to the (class_type_id, room_id) pair from the RoomClassType. The session's room and activity type must match the allowed association (otherwise, the activity cannot be created).A session has a capacity limit.
+
+**Attendance.**
+A client can have zero or more attendance marks.Each mark records the presence of a specific client at a specific session (composite key (session_id, client_id)).The number of confirmed attendances for a session must not exceed ClassSession.capacity.
+
+**Trainer ↔ Gym — placement.**
+A trainer can be assigned to one or more gyms; a gym has one or more trainers (M:N via fTrainerPlacement).A trainer can only teach classes in the gym they are registered with.
+
+**Gym ↔ Room.**
+A gym has one or more rooms; each room belongs to exactly one gym.
+
+**Contacts.**
+The client and the trainer each have one ContactData record, and each contact record is associated with one owner.
 
 ## 🧩 Entities, Attributes and Relationships
 This section describes the main entities of the system, their attributes, and the relationships between them.
