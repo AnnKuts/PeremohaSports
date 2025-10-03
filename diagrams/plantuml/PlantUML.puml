@@ -37,10 +37,42 @@ status
 method
 }
 
+object Trainer {
+PK trainer_id
+FK contact_data_id
+first_name
+last_name
+specialty
+}
+
+object TrainerPlacement {
+PK,FK trainer_id
+PK,FK gym_id
+}
+
+object Gym {
+PK gym_id
+address
+gym_capacity
+}
+
+object Qualification {
+PK,FK trainer_id
+PK,FK class_type_id
+}
+
 Membership "1" *-- "1" Payment : covers
 
 Client "1" -- "1..*" Payment : makes
 
 Client "1" *-- "1" ContactData : has
+
+Trainer "1" *-- "1" ContactData : has
+
+Trainer "1" o-- "1..*" Qualification : has
+
+Trainer "1" o-- "1..*" TrainerPlacement : placed_in
+
+Gym "1" o-- "1..*" TrainerPlacement : hosts
 
 @enduml
