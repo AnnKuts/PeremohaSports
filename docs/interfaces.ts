@@ -88,3 +88,37 @@ interface TrainerPlacement {
     gym_id: number;          // FK -> Gym
 }
 
+interface ClassSession {
+  session_id: number;
+  capacity: number;
+  date: Date;
+  duration: number;        
+  trainer_id: number;      // FK -> Trainer
+  class_type_id: number;   // FK -> ClassType
+  room_id: number;         // FK -> Room
+}
+
+interface Attendance {
+  session_id: number;      // FK -> ClassSession
+  client_id: number;       // FK -> Client
+  status: string;
+}
+
+interface ClassType {
+  class_type_id: number;
+  name: string;
+  description: string;
+  level: string;
+}
+
+interface Room {
+  room_id: number;
+  capacity: number;
+  gym_id: number;          // FK -> Gym
+}
+
+interface RoomClassType {
+  room_id: number;         // FK -> Room
+  class_type_id: number;   // FK -> ClassType
+  name: string;
+}
