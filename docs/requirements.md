@@ -79,15 +79,15 @@ This section describes the main entities of the system, their attributes, and th
 ClassType (one <---> one or many) Membership  
 Membership (one <---> one and only one) Payment  
 Client (one and only one <---> one or many) Payment  
-ClassSession (one <---> many) Attendance  
-Client (one <---> many) Attendance  
+ClassSession (one <---> zero or many) Attendance  
+Client (one <---> zero or many) Attendance  
 Trainer (one <---> many) ClassSession  
 RoomClassType (one <---> many) ClassSession  
 Trainer (one <---> one or many) Qualification  
 ClassType (one <---> one or many) Qualification  
 Trainer (one <---> one or many) TrainerPlacement  
 Gym (one <---> one or many) TrainerPlacement  
-Gym (one <---> many) Room  
+Gym (one <---> one or many) Room  
 Room (one <---> one or many) RoomClassType  
 ClassType (one <---> one or many) RoomClassType  
 ContactData (one <---> one) Client  
