@@ -23,6 +23,12 @@ enum gender_name {
     female = "female",
 }
 
+enum specialty_name {
+    workout = "workout",
+    yoga = "yoga",
+    swim_pool = "swimming pool",
+}
+
 interface ContactData {
   contact_data_id: number;
   phone: string;
@@ -57,3 +63,28 @@ interface Payment {
   client_id: number;       // FK -> Client
   membership_id: number;   // FK -> Membership
 }
+
+interface Qualification {
+    trainer_id: number;      // FK -> Trainer
+    class_type_id: number;   // FK -> ClassType
+}
+
+interface Gym {
+    gym_id: number;
+    address: string;
+    gym_capacity: number;
+}
+
+interface Trainer {
+    trainer_id: number;
+    first_name: string;
+    last_name: string;
+    specialty: specialty_name;
+    contact_data_id: number; // FK -> ContactData
+}
+
+interface TrainerPlacement {
+    trainer_id: number;      // FK -> Trainer
+    gym_id: number;          // FK -> Gym
+}
+
