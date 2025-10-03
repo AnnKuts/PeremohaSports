@@ -1,0 +1,46 @@
+@startuml
+
+title Peremoha Gym
+
+object Client {
+PK client_id
+FK contact_data_id
+first_name
+last_name
+gender
+}
+
+object ContactData {
+PK contact_data_id
+phone
+email
+}
+
+object Membership {
+PK membership_id
+FK client_id
+FK class_type_id
+start_date
+end_date
+price
+status
+is_disposable
+}
+
+object Payment {
+PK payment_id
+FK client_id
+FK membership_id
+timestamp
+amount
+status
+method
+}
+
+Membership "1" *-- "1" Payment : covers
+
+Client "1" -- "1..*" Payment : makes
+
+Client "1" *-- "1" ContactData : has
+
+@enduml
