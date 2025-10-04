@@ -106,7 +106,7 @@ Trainer "1" *-- "1" ContactData : has
 Trainer "1" o-- "1..*" Qualification : has
 ClassType "1" o-- "1..*" Qualification : in
 
-Trainer "1" o-- "1..*" TrainerPlacement : placed_in
+TrainerPlacement "1" o-- "1..*" Trainer : placed_in
 
 Gym "1" o-- "1..*" TrainerPlacement : hosts
 
