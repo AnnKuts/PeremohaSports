@@ -31,7 +31,7 @@ A client can have zero or many memberships (for different types of classes and/o
 A single class type (ClassType: yoga/sports/pool/etc.) can have zero or many memberships across different clients.Each membership belongs to one and only one type of class.
 
 **Payment ↔ Membership/Client.**
-A client can make zero or many payments.Each payment is made by one and only one client for one specific membership.
+A client can make one or many payments.Each payment is made by one and only one client for one specific membership.
 
 **Trainer ↔ Qualification (by class type).**
 A trainer can have one or more qualifications for different class types.Each qualification record associates exactly one trainer with exactly one class type.
