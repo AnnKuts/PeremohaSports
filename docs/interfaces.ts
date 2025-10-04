@@ -19,14 +19,14 @@ enum membership_status {
 }
 
 enum gender_name {
-    male = "male",
-    female = "female",
+  male = "male",
+  female = "female",
 }
 
 enum specialty_name {
-    workout = "workout",
-    yoga = "yoga",
-    swim_pool = "swimming pool",
+  workout = "workout",
+  yoga = "yoga",
+  swim_pool = "swimming pool",
 }
 
 interface ContactData {
@@ -65,34 +65,34 @@ interface Payment {
 }
 
 interface Qualification {
-    trainer_id: number;      // FK -> Trainer
-    class_type_id: number;   // FK -> ClassType
+  trainer_id: number;      // FK -> Trainer
+  class_type_id: number;   // FK -> ClassType
 }
 
 interface Gym {
-    gym_id: number;
-    address: string;
-    gym_capacity: number;
+  gym_id: number;
+  address: string;
+  gym_capacity: number;
 }
 
 interface Trainer {
-    trainer_id: number;
-    first_name: string;
-    last_name: string;
-    specialty: specialty_name;
-    contact_data_id: number; // FK -> ContactData
+  trainer_id: number;
+  first_name: string;
+  last_name: string;
+  specialty: specialty_name;
+  contact_data_id: number; // FK -> ContactData
 }
 
 interface TrainerPlacement {
-    trainer_id: number;      // FK -> Trainer
-    gym_id: number;          // FK -> Gym
+  trainer_id: number;      // FK -> Trainer
+  gym_id: number;          // FK -> Gym
 }
 
 interface ClassSession {
   session_id: number;
   capacity: number;
   date: Date;
-  duration: number;        
+  duration: number;
   trainer_id: number;      // FK -> Trainer
   class_type_id: number;   // FK -> ClassType
   room_id: number;         // FK -> Room
