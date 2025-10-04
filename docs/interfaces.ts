@@ -24,9 +24,9 @@ enum gender_name {
 }
 
 enum specialty_name {
-  workout = "workout",
-  yoga = "yoga",
-  swim_pool = "swimming pool",
+    workout = "workout",
+    yoga = "yoga",
+    swim_pool = "swimming pool",
 }
 
 interface ContactData {
