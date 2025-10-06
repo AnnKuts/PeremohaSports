@@ -10,8 +10,8 @@ $$;
 DO
 $$
   BEGIN
-    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'specialty_name') THEN
-      CREATE TYPE specialty_name AS ENUM ('workout', 'yoga', 'swimming pool');
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'class_name') THEN
+      CREATE TYPE class_name AS ENUM ('workout', 'yoga', 'swimming pool');
     END IF;
   END
 $$;
@@ -46,7 +46,7 @@ CREATE TABLE IF NOT EXISTS trainer
   trainer_id serial PRIMARY KEY,
   first_name varchar(32) NOT NULL,
   last_name varchar(32) NOT NULL,
-  specialty specialty_name NOT NULL,
+  specialty class_name NOT NULL,
   contact_data_id integer NOT NULL references contact_data (contact_data_id)
 );
 
@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS room
 CREATE TABLE IF NOT EXISTS class_type
 (
   class_type_id serial PRIMARY KEY,
-  name varchar(32) NOT NULL UNIQUE,
+  name class_name NOT NULL,
   description TEXT,
   level level_name NOT NULL
 );
@@ -76,7 +76,6 @@ CREATE TABLE IF NOT EXISTS room_class_type
 (
   room_id integer NOT NULL references room (room_id),
   class_type_id integer NOT NULL references class_type (class_type_id),
-  name varchar(64),
   PRIMARY KEY (room_id, class_type_id)
 );
 
@@ -86,7 +85,7 @@ CREATE TABLE IF NOT EXISTS class_session
   trainer_id integer NOT NULL references trainer (trainer_id),
   room_id integer NOT NULL,
   class_type_id integer NOT NULL,
-  duration interval NOT NULL CHECK (duration > interval '0'),
+  duration interval NOT NULL CHECK (duration > interval '0') CHECK (duration >= interval '30 minutes' AND duration <= interval '2 hours'),
   capacity integer NOT NULL CHECK (capacity > 0),
   --capacity should be less than or equal to room capacity
   date date NOT NULL,

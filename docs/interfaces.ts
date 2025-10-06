@@ -29,6 +29,12 @@ enum specialty_name {
   swim_pool = "swimming pool",
 }
 
+enum level_name {
+  beginner = "beginner",
+  intermediate = "intermediate",
+  advanced = "advanced"
+}
+
 interface ContactData {
   contact_data_id: string;
   phone: string;
@@ -108,7 +114,7 @@ interface ClassType {
   class_type_id: string;
   name: string;
   description: string;
-  level: string;
+  level: level_name;
 }
 
 interface Room {
