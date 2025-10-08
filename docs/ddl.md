@@ -1,7 +1,7 @@
 # DDL
-This document provides a comprehensive overview of the PostgreSQL database schema, including entity definitions,attributes, relationships, keys, and constraints. SQL definitions and test data are organized into separate scripts for clarity and modularity.
+This document provides an overview of the PostgreSQL database schema, including entity definitions,attributes, relationships, keys, and constraints. SQL definitions and test data are organized into separate scripts for clarity and modularity.
 
-## Structure
+## ⚙️ Structure
 
 - [`ddl.sql`](/sql/ddl.sql) - contains SQL statements for creating tables, defining relationships, and setting up constraints.
 - [`insert_data.sql`](/sql/test_data.sql) - contains a set of sample records used to verify the correctness and consistency of the database schema.
