@@ -1,4 +1,35 @@
--- main entities should be here
+INSERT INTO contact_data (phone, email)
+VALUES
+  ('380501112233', 'ivan.petrenko@example.com'),
+  ('380671234567', 'olena.ivanova@example.com'),
+  ('380931112244', 'oleh.koval@example.com'),
+  ('380631231231', 'maria.bondar@example.com'),
+  ('380991111222', 'serhiy.melnyk@example.com'),
+  ('380681234567', 'anna.shevchenko@example.com');
+
+INSERT INTO client (first_name, last_name, gender, contact_data_id)
+VALUES
+  ('Іван', 'Петренко', 'male', 1),
+  ('Олена', 'Іванова', 'female', 2),
+  ('Олег', 'Коваль', 'male', 3),
+  ('Марія', 'Бондар', 'female', 4);
+
+INSERT INTO trainer (first_name, last_name, specialty, contact_data_id)
+VALUES
+  ('Сергій', 'Мельник', 'workout', 5),
+  ('Анна', 'Шевченко', 'swimming pool', 6);
+
+INSERT INTO gym (address, gym_capacity)
+VALUES
+  ('м. Київ, вул. Спортивна, 10', 200),
+  ('м. Львів, просп. Свободи, 25', 150);
+
+INSERT INTO room (capacity, gym_id)
+VALUES
+  (80, 1),
+  (90, 1),
+  (50, 2),
+  (70, 2);
 
 INSERT INTO class_type (name, description, level)
 VALUES ('workout', 'Силові тренування for gym rats only', 'intermediate'),
