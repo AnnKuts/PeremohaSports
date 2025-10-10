@@ -106,3 +106,34 @@ CREATE TABLE IF NOT EXISTS trainer_placement
   gym_id integer NOT NULL references gym (gym_id),
   PRIMARY KEY (trainer_id, gym_id)
 );
+
+CREATE TABLE IF NOT EXISTS membership
+(
+  membership_id serial PRIMARY KEY,
+  start_date date NOT NULL,
+  end_date date NOT NULL,
+  price numeric(10,2) NOT NULL CHECK (price >= 0),
+  status membership_status NOT NULL DEFAULT 'active',
+  is_dispisable boolean NOT NULL DEFAULT false,
+  client_id integer NOT NULL references client (client_id),
+  class_type_id integer NOT NULL references class_type (class_type_id)
+);
+
+CREATE TABLE IF NOT EXISTS payment
+(
+  payment_id serial PRIMARY KEY,
+  timestamp timestamptz NOT NULL DEFAULT now(),
+  amount numeric(10,2) NOT NULL CHECK (amount >= 0),
+  status payment_status NOT NULL DEFAULT 'pending',
+  method payment_method NOT NULL,
+  client_id integer NOT NULL references client (client_id),
+  membership_id integer references membership (membership_id)
+);
+
+CREATE TABLE IF NOT EXISTS attendance
+(
+  session_id integer NOT NULL references class_session (session_id),
+  client_id integer NOT NULL references client (client_id),
+  status attendance_status NOT NULL DEFAULT 'booked',
+  primary key (session_id, client_id)
+);
