@@ -158,7 +158,7 @@ CREATE TABLE IF NOT EXISTS membership
 CREATE TABLE IF NOT EXISTS payment
 (
   payment_id serial PRIMARY KEY,
-  timestamp timestamptz NOT NULL DEFAULT now(),
+  created_at timestamptz NOT NULL DEFAULT now(),
   amount numeric(10,2) NOT NULL CHECK (amount >= 0),
   status payment_status NOT NULL DEFAULT 'pending',
   method payment_method NOT NULL,
@@ -171,5 +171,5 @@ CREATE TABLE IF NOT EXISTS attendance
   session_id integer NOT NULL references class_session (session_id),
   client_id integer NOT NULL references client (client_id),
   status attendance_status NOT NULL DEFAULT 'booked',
-  primary key (session_id, client_id)
+  PRIMARY KEY (session_id, client_id)
 );

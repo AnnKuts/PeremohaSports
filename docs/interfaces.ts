@@ -35,6 +35,13 @@ enum level_name {
   advanced = "advanced"
 }
 
+enum attendance_status {
+  booked = 'booked',
+  attended = 'attended',
+  missed = 'missed',
+  cancelled = 'cancelled',
+}
+
 interface ContactData {
   contact_data_id: string;
   phone: string;
@@ -107,7 +114,7 @@ interface ClassSession {
 interface Attendance {
   session_id: string;      // FK -> ClassSession
   client_id: string;       // FK -> Client
-  status: string;
+  status: attendance_status;
 }
 
 interface ClassType {

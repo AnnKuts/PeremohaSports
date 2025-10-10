@@ -25,7 +25,26 @@ This section provides a detailed overview of all entities defined in the databas
 
 ### Client
 ### Payment
+| Field         | Key | Data Type        | Constraints |
+|---------------|-----|------------------|-------------|
+| payment_id    | PK  | serial           | PRIMARY KEY |
+| created_at    | -   | timestampz       | NOT NULL DEFAULT now()  |
+| amount        | -   | numeric(10,2)    |  NOT NULL CHECK (amount >= 0)  |
+| status        | -   | payment_status(enum) | NOT NULL DEFAULT 'pending'   |
+| method        | -   | payment_method(enum)      | NOT NULL  |
+| client_id     | FK  | integer          |  NOT NULL references client (client_id) |
+| membership_id | FK | integer          | references membership (membership_id)   |
 ### Membership
+| Field         | Key | Data Type        | Constraints |
+|---------------|-----|------------------|-------------|
+| membership_id | PK  | serial           | PRIMARY KEY |
+| start_date    | -   | date             | NOT NULL  |
+| end_date      | -   | date             | NOT NULL |
+| price         | -   | numeric(10,2)    | NOT NULL, CHECK (price >= 0)   |
+| status        | -   | membership_status (enum) | NOT NULL, DEFAULT 'active' |
+| is_dispisable | -   | boolean          | NOT NULL, DEFAULT false |
+| client_id     | FK  | integer          | NOT NULL, REFERENCES client (client_id) |
+| class_type_id | FK  | integer          | NOT NULL, REFERENCES class_type (class_type_id) |
 ### ClassType
 | Field         | Key | Data Type        | Constraints |
 |---------------|-----|------------------|-------------|
@@ -46,6 +65,11 @@ This section provides a detailed overview of all entities defined in the databas
 ### Gym
 ### Room
 ### Attendance
+| Field         | Key | Data Type        | Constraints |
+|---------------|-----|------------------|-------------|
+| session_id    | PK, FK | integer       | NOT NULL, REFERENCES class_session (session_id) |
+| client_id     | PK, FK | integer       | NOT NULL, REFERENCES client (client_id)  |
+| status        | -      | attendance_status (enum) | NOT NULL, DEFAULT 'booked'   |
 ### Qualification
 | Field         | Key    | Data Type       | Constraints |
 |---------------|--------|-----------------|-----------|
