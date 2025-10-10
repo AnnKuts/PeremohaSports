@@ -56,3 +56,22 @@ VALUES (1, 1),
 INSERT INTO trainer_placement (trainer_id, gym_id)
 VALUES (1, 1),
   (2, 2);
+
+INSERT INTO membership (start_date, end_date, price, status, is_dispisable, client_id, class_type_id)
+VALUES
+  ('2025-10-10', '2025-11-11', 700.00, 'active', false, 4, 3),
+  ('2025-10-13', '2025-10-14', 100.00, 'active', true, 1, 2),
+  ('2025-09-05', '2025-10-06', 700.00, 'expired', false, 4, 3);
+  
+INSERT INTO payment (amount, status, method, client_id, membership_id)
+VALUES
+  (700, 'completed', 'online', 4, 1),
+  (100, 'pending', 'card', 1, 2),
+  (700, 'failed', 'online', 4, NULL),
+  (700, 'completed', 'online', 4, 3);
+
+INSERT INTO attendance (session_id, client_id, status)
+VALUES
+  (3, 4, 'cancelled'),
+  (4, 1, 'booked');
+  
