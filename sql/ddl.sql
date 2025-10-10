@@ -25,6 +25,42 @@ $$
   END
 $$;
 
+DO 
+$$
+  BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'membership_status') THEN
+      CREATE TYPE membership_status AS ENUM ('active', 'expired', 'frozen', 'cancelled');
+    END IF;
+  END
+$$;
+
+DO 
+$$
+  BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'payment_status') THEN
+      CREATE TYPE payment_status AS ENUM ('pending', 'completed', 'failed', 'refunded');
+    END IF;
+  END
+$$;
+
+DO 
+$$
+  BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'payment_method') THEN
+      CREATE TYPE payment_method AS ENUM ('cash', 'card', 'online');
+    END IF;
+  END
+$$;
+
+DO 
+$$
+  BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'attendance_status') THEN
+      CREATE TYPE attendance_status AS ENUM ('booked', 'attended', 'missed', 'cancelled');
+    END IF;
+  END
+$$;
+
 CREATE TABLE IF NOT EXISTS contact_data
 (
   contact_data_id serial PRIMARY KEY,
