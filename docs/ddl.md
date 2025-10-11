@@ -56,11 +56,11 @@ This section provides a detailed overview of all entities defined in the databas
 | Field                    | Key | Data Type        | Constraints |
 |--------------------------|-----|------------------|------------|
 | session_id               | PK  | serial           | PRIMARY KEY |
-| (class_type_id, room_id) | FK  | class_name(enum) | REFERENCES room_class_type(room_id, class_type_id)   |
-| trainer_id               | FK  | int              | NOT NULL, REFERENCES trainer(trainer_id)   |
 | duration                 | -   | interval         | NOT NULL, CHECK (duration > INTERVAL '0'), CHECK (duration >= INTERVAL '30 minutes' AND duration <= INTERVAL '2 hours')   |
 | capacity                 | -   | int              | NOT NULL, CHECK (capacity > 0)   |
 | date                     | -   | date             | NOT NULL   |
+| (class_type_id, room_id) | FK  | class_name(enum) | REFERENCES room_class_type(room_id, class_type_id)   |
+| trainer_id               | FK  | int              | NOT NULL, REFERENCES trainer(trainer_id)   |
 ### Trainer
 ### Gym
 ### Room

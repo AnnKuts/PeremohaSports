@@ -25,7 +25,7 @@ $$
   END
 $$;
 
-DO 
+DO
 $$
   BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'membership_status') THEN
@@ -34,7 +34,7 @@ $$
   END
 $$;
 
-DO 
+DO
 $$
   BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'payment_status') THEN
@@ -43,7 +43,7 @@ $$
   END
 $$;
 
-DO 
+DO
 $$
   BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'payment_method') THEN
@@ -52,7 +52,7 @@ $$
   END
 $$;
 
-DO 
+DO
 $$
   BEGIN
     IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'attendance_status') THEN
@@ -118,13 +118,13 @@ CREATE TABLE IF NOT EXISTS room_class_type
 CREATE TABLE IF NOT EXISTS class_session
 (
   session_id serial PRIMARY KEY,
-  trainer_id integer NOT NULL references trainer (trainer_id),
   room_id integer NOT NULL,
   class_type_id integer NOT NULL,
   duration interval NOT NULL CHECK (duration > interval '0') CHECK (duration >= interval '30 minutes' AND duration <= interval '2 hours'),
   capacity integer NOT NULL CHECK (capacity > 0),
   --capacity should be less than or equal to room capacity
   date date NOT NULL,
+  trainer_id integer NOT NULL references trainer (trainer_id),
   FOREIGN KEY (room_id, class_type_id)
     REFERENCES room_class_type (room_id, class_type_id)
 );
@@ -148,7 +148,7 @@ CREATE TABLE IF NOT EXISTS membership
   membership_id serial PRIMARY KEY,
   start_date date NOT NULL,
   end_date date NOT NULL,
-  price numeric(10,2) NOT NULL CHECK (price >= 0),
+  price numeric(10, 2) NOT NULL CHECK (price >= 0),
   status membership_status NOT NULL DEFAULT 'active',
   is_dispisable boolean NOT NULL DEFAULT false,
   client_id integer NOT NULL references client (client_id),
@@ -159,7 +159,7 @@ CREATE TABLE IF NOT EXISTS payment
 (
   payment_id serial PRIMARY KEY,
   created_at timestamptz NOT NULL DEFAULT now(),
-  amount numeric(10,2) NOT NULL CHECK (amount >= 0),
+  amount numeric(10, 2) NOT NULL CHECK (amount >= 0),
   status payment_status NOT NULL DEFAULT 'pending',
   method payment_method NOT NULL,
   client_id integer NOT NULL references client (client_id),
