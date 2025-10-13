@@ -12,9 +12,9 @@ VALUES ('Іван', 'Петренко', 'male', 1),
   ('Олег', 'Коваль', 'male', 3),
   ('Марія', 'Бондар', 'female', 4);
 
-INSERT INTO trainer (first_name, last_name, specialty, contact_data_id)
-VALUES ('Сергій', 'Мельник', 'workout', 5),
-  ('Анна', 'Шевченко', 'swimming pool', 6);
+INSERT INTO trainer (first_name, last_name, is_admin, specialty, contact_data_id)
+VALUES ('Сергій', 'Мельник', true, 'workout', 5),
+  ('Анна', 'Шевченко', false, 'swimming pool', 6);
 
 INSERT INTO gym (address, gym_capacity)
 VALUES ('м. Київ, вул. Спортивна, 10', 200),

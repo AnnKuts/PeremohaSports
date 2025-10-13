@@ -88,7 +88,7 @@ This section describes the main entities of the system, their attributes, and th
 is_disposable  
 **Payment:** (PK) payment_id, (FK) client_id, (FK) membership_id, timestamp, amount, status, method  
 **Attendance:** (PK, FK) session_id, (PK, FK) client_id, status  
-**Trainer:** (PK) trainer_id, (FK) contact_data_id, first_name, last_name, specialty  
+**Trainer:** (PK) trainer_id, (FK) contact_data_id, first_name, last_name, is_admin, specialty  
 **Qualification:** (PK, FK) trainer_id, (PK, FK) class_type_id  
 **TrainerPlacement:** (PK, FK) trainer_id, (PK, FK) gym_id  
 **ClassType:** (PK) class_type_id, name, level  
