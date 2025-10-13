@@ -23,7 +23,20 @@ This document provides an overview of the PostgreSQL database schema, including 
 ## 🧩 Entities
 This section provides a detailed overview of all entities defined in the database schema.
 
+### ContactData
+| Field           | Key | Data Type   | Constraints     |
+| --------------- | --- | ----------- | --------------- |
+| contact_data_id | PK  | serial      | PRIMARY KEY     |
+| phone           | -   | varchar(32) | NOT NULL UNIQUE |
+| email           | -   | varchar(32) | NOT NULL UNIQUE |
 ### Client
+| Field           | Key | Data Type   | Constraints                                        |
+| --------------- | --- | ----------- | -------------------------------------------------- |
+| client_id       | PK  | serial      | PRIMARY KEY                                        |
+| first_name      | -   | varchar(32) | NOT NULL                                           |
+| last_name       | -   | varchar(32) | NOT NULL                                           |
+| gender          | -   | gender_name | NOT NULL                                           |
+| contact_data_id | FK  | integer     | NOT NULL references contact_data (contact_data_id) |
 ### Payment
 | Field         | Key | Data Type        | Constraints |
 |---------------|-----|------------------|-------------|
@@ -62,8 +75,25 @@ This section provides a detailed overview of all entities defined in the databas
 | (class_type_id, room_id) | FK  | class_name(enum) | REFERENCES room_class_type(room_id, class_type_id)   |
 | trainer_id               | FK  | int              | NOT NULL, REFERENCES trainer(trainer_id)   |
 ### Trainer
+| Field           | Key | Data Type   | Constraints                                        |
+| --------------- | --- | ----------- | -------------------------------------------------- |
+| trainer_id      | PK  | serial      | PRIMARY KEY                                        |
+| first_name      | -   | varchar(32) | NOT NULL                                           |
+| last_name       | -   | varchar(32) | NOT NULL                                           |
+| specialty       | -   | class_name  | NOT NULL                                           |
+| contact_data_id | FK  | integer     | NOT NULL references contact_data (contact_data_id) |
 ### Gym
+| Field        | Key | Data Type   | Constraints                       |
+| ------------ | --- | ----------- | --------------------------------- |
+| gym_id       | PK  | serial      | PRIMARY KEY                       |
+| address      | -   | varchar(60) | NOT NULL UNIQUE                   |
+| gym_capacity | -   | integer     | NOT NULL CHECK (gym_capacity > 0) |
 ### Room
+| Field    | Key | Data Type | Constraints                      |
+| -------- | --- | --------- | -------------------------------- |
+| room_id  | PK  | serial    | PRIMARY KEY                      |
+| capacity | -   | integer   | NOT NULL CHECK (capacity > 0)    |
+| gym_id   | FK  | integer   | NOT NULL references gym (gym_id) |
 ### Attendance
 | Field         | Key | Data Type        | Constraints |
 |---------------|-----|------------------|-------------|
