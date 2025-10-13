@@ -92,6 +92,7 @@ interface Trainer {
   trainer_id: string;
   first_name: string;
   last_name: string;
+  is_admin: boolean;
   specialty: specialty_name;
   contact_data_id: string; // FK -> ContactData
 }

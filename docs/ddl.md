@@ -80,6 +80,7 @@ This section provides a detailed overview of all entities defined in the databas
 | trainer_id      | PK  | serial      | PRIMARY KEY                                        |
 | first_name      | -   | varchar(32) | NOT NULL                                           |
 | last_name       | -   | varchar(32) | NOT NULL                                           |
+| is_admin        | -   | boolean     | NOT NULL                                           |
 | specialty       | -   | class_name  | NOT NULL                                           |
 | contact_data_id | FK  | integer     | NOT NULL references contact_data (contact_data_id) |
 ### Gym

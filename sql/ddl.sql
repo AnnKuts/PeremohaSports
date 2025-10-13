@@ -82,6 +82,7 @@ CREATE TABLE IF NOT EXISTS trainer
   trainer_id serial PRIMARY KEY,
   first_name varchar(32) NOT NULL,
   last_name varchar(32) NOT NULL,
+  is_admin boolean NOT NULL,
   specialty class_name NOT NULL,
   contact_data_id integer NOT NULL references contact_data (contact_data_id)
 );
