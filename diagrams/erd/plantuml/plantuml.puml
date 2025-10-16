@@ -1,6 +1,6 @@
 @startuml
 
-title Peremoha Gym
+!theme plain
 
 object Client {
 PK client_id

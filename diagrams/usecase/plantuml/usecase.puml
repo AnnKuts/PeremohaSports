@@ -1,0 +1,110 @@
+@startuml
+!theme plain
+left to right direction
+skinparam actorStyle stick
+
+actor "Client" as Client
+actor "Trainer" as Trainer
+actor "Admin" as Admin
+
+usecase UC1 as "Authorize (login) via OTP"
+usecase UC2 as "Manage profile"
+usecase UC3 as "View schedule"
+usecase UC4 as "Book class session"
+usecase UC5 as "Cancel class session booking"
+usecase UC6 as "Buy membership"
+usecase UC7 as "View action history"
+usecase UC8 as "View attendance history"
+usecase UC9 as "View payment history"
+usecase UC10 as "View membership purchase history"
+usecase UC11 as "Make payment"
+usecase UC12 as "Pay in cash"
+usecase UC13 as "Pay by card"
+usecase UC14 as "Pay online"
+usecase UC15 as "Browse memberships"
+usecase UC16 as "Change user data"
+usecase UC17 as "Change contact data"
+
+usecase TR1 as "Create session"
+usecase TR2 as "Mark attendance"
+usecase TR3 as "Assign trainer to session"
+usecase TR4 as "Cancel session"
+
+usecase AD1 as "Manage trainers"
+usecase AD2 as "Manage memberships"
+usecase AD3 as "Manage training session"
+usecase AD4 as "Manage qualifications"
+usecase AD5 as "Manage client accounts"
+usecase AD6 as "Manage class types"
+usecase AD7 as "Manage facilities"
+usecase AD8 as "Assign trainer to the gym"
+usecase AD9 as "Register new trainers"
+usecase AD10 as "Delete trainers"
+usecase AD11 as "Manage trainers qualifications"
+usecase AD12 as "CRUD operations with rooms"
+usecase AD13 as "CRUD operations with gym"
+
+Client --> UC1
+Client --> UC2
+Client --> UC3
+Client --> UC4
+Client --> UC5
+Client --> UC6
+Client --> UC15
+Client --> UC7
+
+UC2 ..> UC1 : «use»
+UC2 <|-- UC16 : «extends»
+UC2 <|-- UC17 : «extends»
+
+UC5 ..> UC4 : «use»
+UC1 ..> UC6 : «use»
+UC7 ..> UC6 : «use»
+UC4 ..> UC6 : «use»
+UC8 ..> UC4 : «use»
+UC6 ..> UC11 : «use»
+UC3 ..> UC1 : «use»
+
+UC11 <|-- UC12 : «extends»
+UC11 <|-- UC13 : «extends»
+UC11 <|-- UC14 : «extends»
+
+UC7 <|-- UC8 : «extends»
+UC7 <|-- UC9 : «extends»
+UC7 <|-- UC10 : «extends»
+
+Trainer --> UC1
+Trainer --> UC2
+Trainer --> UC3
+Trainer --> UC15
+Trainer --> TR1
+Trainer --> TR2
+Trainer --> TR4
+
+Admin --> UC1
+Admin --> UC3
+Admin --> UC2
+Admin --> AD1
+Admin --> AD2
+Admin --> AD3
+Admin --> AD4
+Admin --> AD5
+Admin --> AD6
+Admin --> AD7
+
+AD3 ..> AD6 : «use»
+AD3 <|-- TR1 : «extends»
+AD3 <|-- TR3 : «extends»
+AD3 <|-- TR4 : «extends»
+
+AD1 <|-- AD8 : «extends»
+AD1 <|-- AD9 : «extends»
+AD1 <|-- AD10 : «extends»
+AD1 <|-- AD11 : «extends»
+
+AD11 ..> AD4 : «use»
+
+AD7 <|-- AD12 : «extends»
+AD7 <|-- AD13 : «extends»
+
+@enduml
