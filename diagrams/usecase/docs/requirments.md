@@ -63,11 +63,9 @@
 | № | Requirement | Description |
 |---|--------------|-------------|
 | 1 | **Multilingual and Accessible Design** | Responsive and user-friendly web design with support for Ukrainian, English, and Polish, adaptable for people with visual impairments (compatible with screen readers, uses correct semantics). |
-| 2 | **Email Verification** | User must verify their email during registration. |
-| 3 | **OTP Login Verification** | User must enter One-Time Password (OTP) each time they attempt to log in. |
-| 4 | **Automated Backups** | System must create daily full backups and incremental backups every 6 hours, store them securely for 30 days in AWS S3, and support quick restoration after failure. |
-| 5 | **Error Logging and Monitoring** | Capture all runtime and application errors, store logs with timestamps, user/session IDs, and technical details (error code, module, severity), notify administrators of critical issues, and retain logs for at least 90 days with automatic archiving every 30 days. |
-| 6 | **Request Limiting (Concurrency)** | Restrict concurrent requests to 5 per user. |
-| 7 | **Rate Limiting** | Restrict requests to 100 per minute and block user for 60s for exceeding limit and return Error 429 Too many requests. |
-| 8 | **System Availability** | System must provide 99.9% availability per month. |
-| 9 | **User Interface Performance** | UI must respond to user actions within 3 seconds under load of up to 100 concurrent users. |
+| 2 | **Automated Backups** | System must create daily full backups and incremental backups every 6 hours, store them securely for 30 days in AWS S3, and support quick restoration after failure. |
+| 3 | **Error Logging and Monitoring** | Capture all runtime and application errors, store logs with timestamps, user/session IDs, and technical details (error code, module, severity), notify administrators of critical issues, and retain logs for at least 90 days with automatic archiving every 30 days. |
+| 4 | **Request Limiting (Concurrency)** | Restrict concurrent requests to 5 per user. |
+| 5 | **Rate Limiting** | Restrict requests to 100 per minute and block user for 60s for exceeding limit and return Error 429 Too many requests. |
+| 6 | **System Availability** | System must provide 99.9% availability per month. |
+| 7 | **User Interface Performance** | UI must respond to user actions within 3 seconds under load of up to 100 concurrent users. |
