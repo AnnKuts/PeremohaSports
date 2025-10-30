@@ -1,0 +1,66 @@
+@startuml
+
+!theme plain
+actor Client #transparent
+participant "PeremohaSports" as App
+participant "Payment Service" as Payment
+participant "AWS SES" as SES
+database "DB" as DB
+hide footbox
+
+Client -> App: 1. openMembershipPage()
+activate App
+App --> Client: 2. loadMembershipPlans()
+deactivate App
+
+Client -> App: 3. selectPlan()
+activate App
+
+opt Not logged in
+  alt Has an account
+    Client -> App: 4. sendCredentials() // and login
+    App -> SES: 5. sendOTPRequest()
+    activate SES
+    SES --> Client: 6. Send OTP
+    deactivate SES
+
+  else New user
+    Client -> App: 7. sendCredentials() // for further registr if payment ok
+    note right of App: // localStorage.setItem()
+  end
+end
+
+
+App -> Payment: 8. initiatePayment()
+activate Payment
+Payment --> App: 9. Payment Status
+deactivate Payment
+
+alt Payment Successful
+  opt New user
+    App -> DB: 10. addNewUser()
+    activate DB
+    DB --> App: 11. Receipt
+    deactivate DB
+    SES --> Client: 12. Send OTP
+   end
+
+  App -> DB: 13. addUserMembershipPlan()
+  activate DB
+  DB --> App: 14. Receipt
+  deactivate DB
+  App --> Client: 15. showPaymentSuccessful()
+
+else Payment Error
+  note right of App: // localStorage.clear()
+  App --> Client: 16. showPaymentError()
+  deactivate App
+end
+
+destroy App
+
+loop Every 30 days
+  App --> Client: 17. sendRenewalNotification()
+end
+
+@enduml
