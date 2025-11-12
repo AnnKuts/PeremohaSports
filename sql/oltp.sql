@@ -117,7 +117,7 @@ SELECT cs.session_id, ct."name" AS class_type, ct."level", cs."date"
 FROM class_session cs
 INNER JOIN class_type ct 
 ON cs.class_type_id = ct.class_type_id 
-WHERE LOWER(ct.name) in ('yoga', 'workout');
+WHERE ct.name in ('yoga', 'workout');
 
 -- додати нове тренування (class_session)
 INSERT INTO class_session (trainer_id, room_id, class_type_id, duration, capacity, "date") 
@@ -168,11 +168,11 @@ WHERE session_id = 4 AND client_id = 1;
 -- видалити всі невдалі платежі зі статусом failed для конкретного дня
 SELECT *
 FROM payment
-WHERE status = 'failed' AND DATE(timestamp) = '2025-10-10';
+WHERE status = 'failed' AND DATE(created_at) = '2025-10-10';
 
 DELETE FROM payment 
-WHERE status = 'failed' AND DATE(timestamp) = '2025-10-10';
+WHERE status = 'failed' AND DATE(created_at) = '2025-10-10';
 
 SELECT *
 FROM payment
-WHERE status = 'failed' AND DATE(timestamp) = '2025-10-10';
+WHERE status = 'failed' AND DATE(created_at) = '2025-10-10';
