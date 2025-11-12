@@ -176,3 +176,39 @@ WHERE status = 'failed' AND DATE(created_at) = '2025-10-10';
 SELECT *
 FROM payment
 WHERE status = 'failed' AND DATE(created_at) = '2025-10-10';
+
+-- Count total sessions per trainer
+SELECT t.trainer_id, t.first_name, t.last_name, COUNT(cs.session_id) AS total_sessions
+FROM trainer t
+LEFT JOIN class_session cs ON t.trainer_id = cs.trainer_id
+GROUP BY t.trainer_id;
+
+-- Show clients with frozen and expired memberships
+SELECT c.client_id, c.first_name, c.last_name, m.status, m.start_date, m.end_date
+FROM client c
+JOIN membership m ON c.client_id = m.client_id
+WHERE m.status IN ('frozen', 'expired')
+ORDER BY m.status, c.last_name, c.first_name;
+
+-- Sessions in gyms with capacity over 100
+SELECT cs.session_id, cs.date, g.address AS gym_address, r.capacity AS room_capacity
+FROM class_session cs
+JOIN room r ON cs.room_id = r.room_id
+JOIN gym g ON r.gym_id = g.gym_id
+WHERE g.gym_capacity > 100;
+
+-- Mark all booked attendance for session ID 1 as attended
+INSERT INTO attendance (session_id, client_id, status)
+SELECT 1, client_id, 'attended'
+FROM attendance
+WHERE session_id = 1 AND status = 'booked';
+
+-- Delete future sessions in room ID 1
+DELETE FROM class_session
+WHERE room_id = 1
+  AND date > CURRENT_DATE;
+
+-- Expire memberships that ended before today
+UPDATE membership
+SET status = 'expired'
+WHERE end_date < CURRENT_DATE;
