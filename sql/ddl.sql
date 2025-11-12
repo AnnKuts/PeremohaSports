@@ -159,7 +159,7 @@ CREATE TABLE IF NOT EXISTS membership
 CREATE TABLE IF NOT EXISTS payment
 (
   payment_id serial PRIMARY KEY,
-  created_at timestamptz NOT NULL DEFAULT now(),
+  created_at timestamp NOT NULL DEFAULT now(),
   amount numeric(10, 2) NOT NULL CHECK (amount >= 0),
   status payment_status NOT NULL DEFAULT 'pending',
   method payment_method NOT NULL,

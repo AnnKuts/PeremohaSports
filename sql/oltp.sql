@@ -1,57 +1,103 @@
+--середня тривалість занять
 SELECT AVG(duration) AS average_duration
 FROM class_session;
 
-SELECT client.first_name, client.last_name, contact_data.phone, contact_data.email
-FROM client
-         JOIN contact_data ON client.contact_data_id = contact_data.contact_data_id;
+--список клієнтів з їхніми контактними даними
+SELECT c.first_name,
+  c.last_name,
+  cd.phone,
+  cd.email
+FROM client c
+       JOIN contact_data cd ON c.contact_data_id = cd.contact_data_id;
 
-SELECT trainer.first_name, trainer.last_name, contact_data.phone, contact_data.email
-FROM trainer
-         JOIN contact_data ON trainer.contact_data_id = contact_data.contact_data_id;
+--список тренерів з їхніми контактними даними
+SELECT t.first_name,
+  t.last_name,
+  cd.phone,
+  cd.email
+FROM trainer t
+       JOIN contact_data cd ON t.contact_data_id = cd.contact_data_id;
 
-SELECT first_name, last_name, email
-FROM client
-         JOIN contact_data ON client.contact_data_id = contact_data.contact_data_id
-WHERE gender = 'female';
+--клієнтки жіночої статі
+SELECT c.first_name,
+  c.last_name,
+  cd.email
+FROM client c
+       JOIN contact_data cd ON c.contact_data_id = cd.contact_data_id
+WHERE c.gender = 'female';
 
-SELECT trainer.first_name, trainer.last_name, trainer.specialty
-FROM trainer
-         JOIN qualification ON trainer.trainer_id = qualification.trainer_id
-         JOIN class_type ON qualification.class_type_id = class_type.class_type_id
-WHERE class_type.name = 'swimming pool';
+--тренери, які проводять заняття з басейну
+SELECT t.first_name,
+  t.last_name,
+  t.specialty
+FROM trainer t
+       JOIN qualification q ON t.trainer_id = q.trainer_id
+       JOIN class_type ct ON q.class_type_id = ct.class_type_id
+WHERE ct.name = 'swimming pool';
 
-SELECT session_id, date, duration, capacity
-FROM class_session
-WHERE class_type_id = 1
-  AND capacity > 15;
+--заняття певного типу з місткістю понад 15 осіб
+SELECT cs.session_id,
+  cs.date,
+  cs.duration,
+  cs.capacity
+FROM class_session cs
+WHERE cs.class_type_id = 1
+  AND cs.capacity > 15;
 
-SELECT class_session.date AS session_date,
-       class_type.name    AS class_name,
-       class_session.duration,
-       trainer.first_name AS trainer_first_name,
-       trainer.last_name  AS trainer_last_name,
-       client.first_name  AS client_first_name,
-       client.last_name   AS client_last_name,
-       attendance.status
-FROM class_session
-         JOIN class_type
-              ON class_session.class_type_id = class_type.class_type_id
-         JOIN trainer
-              ON class_session.trainer_id = trainer.trainer_id
-         JOIN attendance
-              ON class_session.session_id = attendance.session_id
-         JOIN client
-              ON attendance.client_id = client.client_id
-WHERE class_session.date = '2025-10-12';
+--відвідуваність занять певного дня
+SELECT cs.date          AS session_date,
+  ct.name          AS class_name,
+  cs.duration,
+  t.first_name     AS trainer_first_name,
+  t.last_name      AS trainer_last_name,
+  c.first_name     AS client_first_name,
+  c.last_name      AS client_last_name,
+  a.status
+FROM class_session cs
+       JOIN class_type ct ON cs.class_type_id = ct.class_type_id
+       JOIN trainer t     ON cs.trainer_id = t.trainer_id
+       JOIN attendance a  ON cs.session_id = a.session_id
+       JOIN client c      ON a.client_id = c.client_id
+WHERE cs.date = '2025-10-12';
 
+--додати нового клієнта Романюка Артема з його контактними даними
 INSERT INTO contact_data (phone, email)
-VALUES ('380684654260', 'romaniukartem8@gmail.com');
+VALUES ('380684654860', 'romaniukartem8@gmail.com');
 
 INSERT INTO client (first_name, last_name, gender, contact_data_id)
 SELECT 'Артем',
        'Романюк',
        'male',
        (SELECT contact_data_id FROM contact_data WHERE email = 'romaniukartem8@gmail.com');
+
+--записати Артема Романюка на плавання
+INSERT INTO attendance(session_id, client_id, status)
+VALUES
+  (3, (SELECT client_id FROM client WHERE first_name = 'Артем' AND last_name = 'Романюк'), 'booked');
+
+--змінити контактний номер клієнта Артема
+UPDATE contact_data
+SET phone = '38050356727'
+WHERE email = 'romaniukartem8@gmail.com';
+
+--змінити місткість заняття з ідентифікатором 1 на 25 осіб
+UPDATE class_session
+SET capacity = 25
+WHERE session_id = 1;
+
+--видалити всі платежі для абонементів зі статусом expired
+DELETE FROM payment
+WHERE membership_id IN (
+    SELECT membership_id FROM membership WHERE status = 'expired'
+);
+
+DELETE FROM membership
+WHERE status = 'expired';
+
+--видалити скасовані заняття
+DELETE FROM attendance
+WHERE status = 'cancelled';
+
 
 -- активні абонементи
 SELECT c.first_name, c.last_name, m.start_date, m.end_date
