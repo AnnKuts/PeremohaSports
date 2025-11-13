@@ -44,7 +44,7 @@ FROM class_session cs
 WHERE cs.class_type_id = 1
   AND cs.capacity > 15;
 
---attendance for class sessions on 2025-10-12
+--attendance for class sessions on 12.10.2025
 SELECT cs.date          AS session_date,
        ct.name          AS class_name,
        cs.duration,
@@ -110,10 +110,22 @@ SELECT 'Артем',
        'male',
        (SELECT contact_data_id FROM contact_data WHERE email = 'romaniukartem8@gmail.com');
 
+SELECT *
+FROM contact_data
+WHERE phone = '380684654860';
+
+SELECT *
+FROM client
+WHERE first_name = 'Артем' AND last_name = 'Романюк';
+
 --book class session with id 3 for Artem
 INSERT INTO attendance(session_id, client_id, status)
 VALUES
     (3, (SELECT client_id FROM client WHERE first_name = 'Артем' AND last_name = 'Романюк'), 'booked');
+
+SELECT *
+FROM attendance
+WHERE session_id = 3;
 
 --add a new class session
 INSERT INTO class_session (trainer_id, room_id, class_type_id, duration, capacity, "date")
@@ -133,20 +145,32 @@ SELECT *
 FROM attendance
 WHERE session_id = 5;
 
---mark all booked attendance for session ID 1 as attended
+--mark all booked attendance for session id 1 as attended
 INSERT INTO attendance (session_id, client_id, status)
 SELECT 1, client_id, 'attended'
 FROM attendance
 WHERE session_id = 1 AND status = 'booked';
+
+SELECT *
+FROM attendance
+WHERE session_id = 1;
 
 --change Artem's number
 UPDATE contact_data
 SET phone = '38050356727'
 WHERE email = 'romaniukartem8@gmail.com';
 
+SELECT *
+FROM contact_data
+WHERE email = 'romaniukartem8@gmail.com';
+
 --change capacity of class session with id 1 to 25
 UPDATE class_session
 SET capacity = 25
+WHERE session_id = 1;
+
+SELECT *
+FROM class_session
 WHERE session_id = 1;
 
 --change the date of a specific class session
@@ -156,7 +180,7 @@ WHERE session_id = 5;
 
 SELECT *
 FROM class_session cs
-WHERE cs.session_id =5;
+WHERE cs.session_id = 5;
 
 --change email of a specific client
 UPDATE contact_data
@@ -172,17 +196,49 @@ UPDATE membership
 SET status = 'expired'
 WHERE end_date < CURRENT_DATE;
 
+SELECT *
+FROM membership
+WHERE end_date < CURRENT_DATE;
+
 --delete expired memberships and their payments
+SELECT *
+FROM payment
+WHERE membership_id IN (
+    SELECT membership_id FROM membership WHERE status = 'expired'
+);
+
 DELETE FROM payment
 WHERE membership_id IN (
     SELECT membership_id FROM membership WHERE status = 'expired'
 );
 
+SELECT *
+FROM payment
+WHERE membership_id IN (
+    SELECT membership_id FROM membership WHERE status = 'expired'
+);
+
+SELECT *
+FROM membership
+WHERE status = 'expired';
+
 DELETE FROM membership
 WHERE status = 'expired';
 
+SELECT *
+FROM membership
+WHERE status = 'expired';
+
 --delete all cancelled attendance records
+SELECT *
+FROM attendance
+WHERE status = 'cancelled';
+
 DELETE FROM attendance
+WHERE status = 'cancelled';
+
+SELECT *
+FROM attendance
 WHERE status = 'cancelled';
 
 --delete a specific attendance record
@@ -195,7 +251,7 @@ WHERE session_id = 4 AND client_id = 1;
 SELECT * FROM attendance
 WHERE session_id = 4 AND client_id = 1;
 
---delete failed payments made on 2025-10-10
+--delete failed payments made on 10.10.2025
 SELECT *
 FROM payment
 WHERE status = 'failed' AND DATE(created_at) = '2025-10-10';
@@ -207,7 +263,18 @@ SELECT *
 FROM payment
 WHERE status = 'failed' AND DATE(created_at) = '2025-10-10';
 
---delete future sessions in room ID 1
+--delete future sessions in room id 1
+SELECT *
+FROM class_session
+WHERE room_id = 1
+  AND date > CURRENT_DATE;
+
 DELETE FROM class_session
 WHERE room_id = 1
   AND date > CURRENT_DATE;
+
+SELECT *
+FROM class_session
+WHERE room_id = 1
+  AND date > CURRENT_DATE;
+
