@@ -7,18 +7,18 @@ This document provides an overview of the PostgreSQL database schema, including 
 - [`insert_data.sql`](/sql/test_data.sql) - contains a set of sample records used to verify the correctness and consistency of the database schema.
 
 ## Table of Entities
-- [Client](#-client)
-- [Payment](#-payment)
-- [Membership](#-membership)
-- [ClassType](#-classtype)
-- [ClassSession](#-classession)
-- [Trainer](#-trainer)
-- [Gym](#-gym)
-- [Room](#-room)
-- [Attendance](#-attendance)
-- [Qualification](#-qualification)
-- [TrainerPlacement](#-trainerplacement)
-- [RoomClassType](#-roomclasstype)
+- [Client](#client)
+- [Payment](#payment)
+- [Membership](#membership)
+- [ClassType](#classtype)
+- [ClassSession](#classession)
+- [Trainer](#trainer)
+- [Gym](#gym)
+- [Room](#room)
+- [Attendance](#attendance)
+- [Qualification](#qualification)
+- [TrainerPlacement](#trainerplacement)
+- [RoomClassType](#roomclasstype)
 
 ## 🧩 Entities
 This section provides a detailed overview of all entities defined in the database schema.
