@@ -1,20 +1,36 @@
 # OLTP
-This section describes the OLTP (Online Transaction Processing) aspects of the database schema, focusing on the entities and their relationships that facilitate day-to-day operations. 
-
-
+This section describes the OLTP (Online Transaction Processing) aspects of the database schema, focusing on the entities and their relationships that facilitate day-to-day operations.
 
 ## ⚙️ Structure
 - [`ddl.sql`](/sql/ddl.sql) - contains SQL statements for setting up constraints.
-- [`insert_data.sql`](/sql/test_data.sql) - contains a set of sample records used to verify the correctness and consistency of the database schema.
-- [`oltp_queries.sql`](/sql/oltp_queries.sql) - contains SQL queries for common OLTP operations.
-- [Final Table Overview](#final-table-overview)
-- [Conclusion](#conclusion)
+- [`insert_data.sql`](/sql/test_data.sql) - contains a set of sample records.
+- [`oltp_queries.sql`](/sql/oltp_queries.sql) - contains SQL queries for OLTP operations.
+- [`ddl.md`](docs/ddl.md) - lists each table with its columns and keys, explains important constraints and assumptions.
+- [`requirements.md`](docs/ddl.md) - outlines all functional and data requirements, business rules, entities, attributes, and relationships between them.
   
-## Table of Queries
+## 🔍 Table of Queries
 - [SELECT](#select)
 - [INSERT](#insert)
 - [UPDATE](#update)
 - [DELETE](#delete)
+
+## 🧩 [Tables Overview](-tables-overview)
+- [client](#client)
+- [Payment](#payment)
+- [membership](#membership)
+- [class_type](#class_type)
+- [class_session](#class_session)
+- [trainer](#trainer)
+- [gym](#gym)
+- [room](#room)
+- [attendance](#attendance)
+- [qualification](#qualification)
+- [trainer_placement](#trainer_placement)
+- [room_class_type](#room_class_type)
+
+---
+## 🔍 Table of Queries
+Here are the quaries we created with screenshots of SELECT outputs from DataGrip what was changed.
 
 ### SELECT
 
@@ -403,4 +419,302 @@ WHERE room_id = 1
 ```
 <img width="1326" height="59" alt="delete future sessions in room id 1 before delete" src="https://github.com/user-attachments/assets/d8c459ab-043e-4268-9b02-93b7cd51d5f7" />
 
+---
 
+## 🧩 Tables Overview
+Here are the table snapshots taken before running `oltp.sql` and then after running `oltp.sql` with a note describing exactly what changed.
+
+- [client](#client)
+- [Payment](#payment)
+- [membership](#membership)
+- [class_type](#class_type)
+- [class_session](#class_session)
+- [trainer](#trainer)
+- [gym](#gym)
+- [room](#room)
+- [attendance](#attendance)
+- [qualification](#qualification)
+- [trainer_placement](#trainer_placement)
+- [room_class_type](#room_class_type)
+
+### contact_data
+
+Before:
+| id | phone        | email                         |
+|----:|--------------|-------------------------------|
+| 1  | 380501112233 | ivan.petrenko@example.com     |
+| 2  | 380671234567 | olena.ivanova@example.com     |
+| 3  | 380931112244 | oleh.koval@example.com        |
+| 4  | 380631231231 | maria.bondar@example.com      |
+| 5  | 380991111222 | serhiy.melnyk@example.com     |
+| 6  | 380681234567 | anna.shevchenko@example.com   |
+
+After:
+| id | phone        | email                         |
+|----:|--------------|-------------------------------|
+| 1  | 380501112233 | ivan.petrenko@example.com     |
+| 2  | 380671234567 | olena.ivanova@example.com     |
+| 3  | 380931112244 | oleh.koval@example.com        |
+| 4  | 380631231231 | mariia.bondarenko@example.com |
+| 5  | 380991111222 | serhiy.melnyk@example.com     |
+| 6  | 380681234567 | anna.shevchenko@example.com   |
+| 7  | 38050356727  | romaniukartem8@gmail.com      |
+
+Changes:
+- Added a new contact for Artem (phone/email) — new row id = 7.
+- Updated contact id=4 email from maria.bondar@example.com to mariia.bondarenko@example.com.
+
+---
+
+### client
+
+Before:
+| id | first_name | last_name  | gender | contact_data_id |
+|----:|------------|------------|--------|-----------------|
+| 1  | Іван       | Петренко   | male   | 1               |
+| 2  | Олена      | Іванова    | female | 2               |
+| 3  | Олег       | Коваль     | male   | 3               |
+| 4  | Марія      | Бондар     | female | 4               |
+
+After:
+| id | first_name | last_name  | gender | contact_data_id |
+|----:|------------|------------|--------|-----------------|
+| 1  | Іван       | Петренко   | male   | 1               |
+| 2  | Олена      | Іванова    | female | 2               |
+| 3  | Олег       | Коваль     | male   | 3               |
+| 4  | Марія      | Бондар     | female | 4               |
+| 5  | Артем      | Романюк    | male   | 7               |
+
+Changes:
+- Inserted new client "Артем Романюк" linked to the new contact_data row (contact_data_id = 7). New client id = 5.
+
+---
+
+### payment
+
+Before:
+| id | amount | status     | method | client_id | membership_id |
+|----:|-------:|------------|--------|----------:|--------------:|
+| 1  | 700    | completed  | online | 4         | 1             |
+| 2  | 100    | pending    | card   | 1         | 2             |
+| 3  | 700    | failed     | online | 4         | NULL          |
+| 4  | 700    | completed  | online | 4         | 3             |
+
+After:
+| id | amount | status | method | client_id | membership_id |
+|----:|-------:|--------|--------|----------:|--------------:|
+| 3  | 700    | failed | online | 4         | NULL          |
+
+Changes:
+- All payments linked to memberships that were expired were deleted. After oltp.sql only the payment with no membership_id (id = 3) remains.
+- The script removed payments where membership_id matched memberships that had status = 'expired' and were then deleted.
+
+---
+
+### membership
+
+Before:
+| id | start_date  | end_date    | price  | status   | is_dispisable | client_id | class_type_id |
+|----:|-------------|-------------|--------:|----------|---------------:|----------:|---------------:|
+| 1  | 2025-10-10  | 2025-11-11  | 700.00 | active   | false          | 4         | 3              |
+| 2  | 2025-10-13  | 2025-10-14  | 100.00 | active   | true           | 1         | 2              |
+| 3  | 2025-09-05  | 2025-10-06  | 700.00 | expired  | false          | 4         | 3              |
+
+After:
+| id | start_date  | end_date    | price  | status   | is_dispisable | client_id | class_type_id |
+|----:|-------------|-------------|--------:|----------|---------------:|----------:|---------------:|
+
+Changes:
+- All memberships whose end_date < CURRENT_DATE were first updated to status = 'expired' and then deleted.
+
+---
+
+### class_type
+
+Before:
+| id | name          | description                                           | level        |
+|----:|---------------|-------------------------------------------------------|--------------|
+| 1  | workout       | Силові тренування for gym rats only                   | intermediate |
+| 2  | yoga          | Подихайте маткою вперше на наших заняттях з йоги!     | beginner     |
+| 3  | swimming pool | Тренування у басейні для професійних плавців          | advanced     |
+
+After:
+| id | name          | description                                           | level        |
+|----:|---------------|-------------------------------------------------------|--------------|
+| 1  | workout       | Силові тренування for gym rats only                   | intermediate |
+| 2  | yoga          | Подихайте маткою вперше на наших заняттях з йоги!     | beginner     |
+| 3  | swimming pool | Тренування у басейні для професійних плавців          | advanced     |
+
+Changes:
+- No changes
+
+---
+
+### class_session
+
+Before:
+| id | room_id | class_type_id | duration               | capacity | date       | trainer_id |
+|----:|--------:|--------------:|------------------------|---------:|------------|-----------:|
+| 1  | 1       | 1             | 1 hour                 | 20       | 2025-10-10 | 1          |
+| 2  | 4       | 1             | 45 minutes             | 15       | 2025-10-11 | 1          |
+| 3  | 3       | 3             | 1 hour 30 minutes      | 10       | 2025-10-12 | 2          |
+| 4  | 2       | 2             | 1 hour                 | 12       | 2025-10-13 | 2          |
+
+After:
+| id | room_id | class_type_id | duration               | capacity | date       | trainer_id |
+|----:|--------:|--------------:|------------------------|---------:|------------|-----------:|
+| 1  | 1       | 1             | 1 hour                 | 25       | 2025-10-10 | 1          |
+| 2  | 4       | 1             | 45 minutes             | 15       | 2025-10-11 | 1          |
+| 3  | 3       | 3             | 1 hour 30 minutes      | 10       | 2025-10-12 | 2          |
+| 4  | 2       | 2             | 1 hour                 | 12       | 2025-10-13 | 2          |
+| 5  | 3       | 3             | 1 hour                 | 50       | 2025-11-15 | 2          |
+
+Changes:
+- Updated capacity of session id = 1 from 20 to 25.
+- Inserted a new class session (id = 5) with trainer_id = 2, room_id = 3, class_type_id = 3, duration '1 hour', capacity 50. Its date was later changed to 2025-11-15.
+
+---
+
+### trainer
+
+Before:
+| id | first_name | last_name  | is_admin | specialty      | contact_data_id |
+|----:|------------|------------|----------|----------------|-----------------|
+| 1  | Сергій     | Мельник    | true     | workout        | 5               |
+| 2  | Анна       | Шевченко   | false    | swimming pool  | 6               |
+
+After:
+| id | first_name | last_name  | is_admin | specialty      | contact_data_id |
+|----:|------------|------------|----------|----------------|-----------------|
+| 1  | Сергій     | Мельник    | true     | workout        | 5               |
+| 2  | Анна       | Шевченко   | false    | swimming pool  | 6               |
+
+Changes:
+- No changes
+
+---
+  
+### gym
+
+Before:
+| id | address                                | gym_capacity |
+|----:|----------------------------------------|-------------:|
+| 1  | м. Київ, вул. Спортивна, 10           | 200          |
+| 2  | м. Львів, просп. Свободи, 25         | 150          |
+
+After:
+| id | address                                | gym_capacity |
+|----:|----------------------------------------|-------------:|
+| 1  | м. Київ, вул. Спортивна, 10           | 200          |
+| 2  | м. Львів, просп. Свободи, 25         | 150          |
+
+Changes):
+- No changes
+
+---
+  
+### room
+
+Before:
+| id | capacity | gym_id |
+|----:|----------:|-------:|
+| 1  | 80        | 1      |
+| 2  | 90        | 1      |
+| 3  | 50        | 2      |
+| 4  | 70        | 2      |
+
+After:
+| id | capacity | gym_id |
+|----:|----------:|-------:|
+| 1  | 80        | 1      |
+| 2  | 90        | 1      |
+| 3  | 50        | 2      |
+| 4  | 70        | 2      |
+
+Changes:
+- No changes
+
+---
+
+### attendance
+
+Before:
+| id | session_id | client_id | status    |
+|----:|-----------:|----------:|-----------|
+| 1  | 3          | 4         | cancelled |
+| 2  | 4          | 1         | booked    |
+
+After:
+| id | session_id | client_id | status |
+|----:|-----------:|----------:|--------|
+| 3  | 3          | 5         | booked |
+| 4  | 5          | 4         | booked |
+
+Changes:
+- Deleted attendance rows with status = 'cancelled' (so the original row id=1 was removed).
+- Inserted a booking for Artem (client_id = 5) for session_id = 3 (new attendance row id = 3).
+- Inserted a booking for client_id = 4 for the newly created session_id = 5 (new attendance row id = 4).
+- Also inserted attendance rows marking previously booked attendees of session_id = 1 as 'attended' (these were inserted via SELECT ... INSERT), but those are not listed here because they were additive and depend on existing attendance rows — shown rows above are the final visible result after deletions and inserts described in oltp.sql.
+
+---
+
+### qualification
+
+Before:
+| trainer_id | class_type_id |
+|-----------:|--------------:|
+| 1          | 1             |
+| 1          | 2             |
+| 2          | 3             |
+
+After:
+| trainer_id | class_type_id |
+|-----------:|--------------:|
+| 1          | 1             |
+| 1          | 2             |
+| 2          | 3             |
+
+Changes:
+- No changes
+
+---
+
+### trainer_placement
+
+Before:
+| trainer_id | gym_id |
+|-----------:|-------:|
+| 1          | 1      |
+| 2          | 2      |
+
+After:
+| trainer_id | gym_id |
+|-----------:|-------:|
+| 1          | 1      |
+| 2          | 2      |
+
+Changes:
+- No changes
+
+---
+
+### room_class_type
+
+Before:
+| room_id | class_type_id |
+|--------:|--------------:|
+| 1       | 1             |
+| 2       | 2             |
+| 3       | 3             |
+| 4       | 1             |
+
+After:
+| room_id | class_type_id |
+|--------:|--------------:|
+| 1       | 1             |
+| 2       | 2             |
+| 3       | 3             |
+| 4       | 1             |
+
+Changes:
+- No changes 
