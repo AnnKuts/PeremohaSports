@@ -8,7 +8,7 @@ This section describes the OLTP (Online Transaction Processing) aspects of the d
 - [`ddl.md`](docs/ddl.md) - lists each table with its columns and keys, explains important constraints and assumptions.
 - [`requirements.md`](docs/ddl.md) - outlines all functional and data requirements, business rules, entities, attributes, and relationships between them.
   
-## 🔍 [Table of Queries](#-table-of-queries)
+## 🔍 [Table of Queries](#-table-of-queries-1)
 - [SELECT](#select)
 - [INSERT](#insert)
 - [UPDATE](#update)
