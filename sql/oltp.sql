@@ -1,3 +1,18 @@
+--check data before
+SELECT * FROM contact_data;
+SELECT * FROM client;
+SELECT * FROM payment;
+SELECT * FROM membership;
+SELECT * FROM class_type;
+SELECT * FROM class_session;
+SELECT * FROM trainer;
+SELECT * FROM gym;
+SELECT * FROM room;
+SELECT * FROM attendance;
+SELECT * FROM qualification;
+SELECT * FROM trainer_placement;
+SELECT * FROM room_class_type;
+
 --average duration of all class sessions
 SELECT AVG(duration) AS average_duration
 FROM class_session;
@@ -133,8 +148,7 @@ VALUES
   (2, 3, 3, '1 hour', 50, '2025-11-13');
 
 SELECT *
-FROM class_session
-WHERE trainer_id = 2;
+FROM class_session;
 
 --enroll a client in a class session
 INSERT INTO attendance(session_id, client_id, status)
@@ -156,6 +170,10 @@ FROM attendance
 WHERE session_id = 1;
 
 --change Artem's number
+SELECT *
+FROM contact_data
+WHERE email = 'romaniukartem8@gmail.com';
+
 UPDATE contact_data
 SET phone = '38050356727'
 WHERE email = 'romaniukartem8@gmail.com';
@@ -165,6 +183,10 @@ FROM contact_data
 WHERE email = 'romaniukartem8@gmail.com';
 
 --change capacity of class session with id 1 to 25
+SELECT *
+FROM class_session
+WHERE session_id = 1;
+
 UPDATE class_session
 SET capacity = 25
 WHERE session_id = 1;
@@ -174,6 +196,10 @@ FROM class_session
 WHERE session_id = 1;
 
 --change the date of a specific class session
+SELECT *
+FROM class_session cs
+WHERE cs.session_id = 5;
+
 UPDATE class_session
 SET date = '2025-11-15'
 WHERE session_id = 5;
@@ -183,6 +209,10 @@ FROM class_session cs
 WHERE cs.session_id = 5;
 
 --change email of a specific client
+SELECT *
+FROM contact_data cd
+WHERE cd.contact_data_id = 4;
+
 UPDATE contact_data
 SET email = 'mariia.bondarenko@example.com'
 WHERE contact_data_id = 4;
@@ -192,6 +222,10 @@ FROM contact_data cd
 WHERE cd.contact_data_id = 4;
 
 --expire memberships that ended before today
+SELECT *
+FROM membership
+WHERE end_date < CURRENT_DATE;
+
 UPDATE membership
 SET status = 'expired'
 WHERE end_date < CURRENT_DATE;
@@ -277,4 +311,21 @@ SELECT *
 FROM class_session
 WHERE room_id = 1
   AND date > CURRENT_DATE;
+
+--check data after
+SELECT * FROM contact_data;
+SELECT * FROM client;
+SELECT * FROM payment;
+SELECT * FROM membership;
+SELECT * FROM class_type;
+SELECT * FROM class_session;
+SELECT * FROM trainer;
+SELECT * FROM gym;
+SELECT * FROM room;
+SELECT * FROM attendance;
+SELECT * FROM qualification;
+SELECT * FROM trainer_placement;
+SELECT * FROM room_class_type;
+
+
 
