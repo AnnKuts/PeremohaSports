@@ -14,7 +14,7 @@ This section describes the OLTP (Online Transaction Processing) aspects of the d
 - [UPDATE](#update)
 - [DELETE](#delete)
 
-## 🧩 [Tables Overview](#-tables-overview)
+## 🧩 [Tables Overview](#-tables-overview-1)
 - [client](#client)
 - [Payment](#payment)
 - [membership](#membership)
