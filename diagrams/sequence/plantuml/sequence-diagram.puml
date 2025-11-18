@@ -6,6 +6,7 @@ participant "PeremohaSports" as App
 participant "Payment Service" as Payment
 participant "AWS SES" as SES
 database "DB" as DB
+participant "LocalStorage" as LS
 hide footbox
 
 Client -> App: 1. openMembershipPage()
@@ -26,41 +27,37 @@ opt Not logged in
 
   else New user
     Client -> App: 7. sendCredentials() // for further registr if payment ok
-    note right of App: // localStorage.setItem()
+    App -> LS: 8.localStorage.setItem()
   end
 end
 
 
-App -> Payment: 8. initiatePayment()
+App -> Payment: 9. initiatePayment()
 activate Payment
-Payment --> App: 9. Payment Status
+Payment --> App: 10. Payment Status
 deactivate Payment
 
 alt Payment Successful
   opt New user
-    App -> DB: 10. addNewUser()
+    App -> DB: 11. addNewUser()
     activate DB
-    DB --> App: 11. Receipt
+    DB --> App: 12. Receipt
     deactivate DB
-    SES --> Client: 12. Send OTP
+    SES --> Client: 13. Send OTP
    end
 
-  App -> DB: 13. addUserMembershipPlan()
+  App -> DB: 14. addUserMembershipPlan()
   activate DB
-  DB --> App: 14. Receipt
+  DB --> App: 15. Receipt
   deactivate DB
-  App --> Client: 15. showPaymentSuccessful()
+  App --> Client: 16. showPaymentSuccessful()
 
 else Payment Error
-  note right of App: // localStorage.clear()
-  App --> Client: 16. showPaymentError()
+  LS --> App: 17. localStorage.clearItem()
+  App --> Client: 18. showPaymentError()
   deactivate App
 end
 
 destroy App
-
-loop Every 30 days
-  App --> Client: 17. sendRenewalNotification()
-end
 
 @enduml
