@@ -3,10 +3,10 @@ This section describes the OLTP (Online Transaction Processing) aspects of the d
 
 ## ⚙️ Structure
 - [`ddl.sql`](/sql/ddl.sql) - contains SQL statements for setting up constraints.
-- [`insert_data.sql`](/sql/test_data.sql) - contains a set of sample records.
+- [`insert_data.sql`](/sql/insert_data.sql) - contains a set of sample records.
 - [`oltp_queries.sql`](/sql/oltp_queries.sql) - contains SQL queries for OLTP operations.
 - [`ddl.md`](docs/ddl.md) - lists each table with its columns and keys, explains important constraints and assumptions.
-- [`requirements.md`](docs/ddl.md) - outlines all functional and data requirements, business rules, entities, attributes, and relationships between them.
+- [`requirements.md`](docs/requirements.md) - outlines all functional and data requirements, business rules, entities, attributes, and relationships between them.
   
 ## 🔍 [Table of Queries](#-table-of-queries-1)
 - [SELECT](#select)
