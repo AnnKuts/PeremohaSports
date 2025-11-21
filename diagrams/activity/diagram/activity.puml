@@ -1,0 +1,52 @@
+@startuml
+|Admin|
+start
+:Open admin panel;
+:Create schedule;
+:New weekly schedule; <<object>>
+
+|Gym system|
+:Store/update class session in DB;
+:New class session notification; <<objectSignal>>
+
+|Client|
+:New class session notification; <<acceptEvent>>
+:Open a specific gym's page with training schedule;
+:Select a specific class type;
+:Select a specific class session;
+
+|Gym system|
+:Check the status of a membership for the selected class type;
+
+if () then ("active")
+  -> [yes] continue;
+else ("expired", "frozen", "cancelled")
+  :Buy membership offer; <<objectSignal>>
+
+  |Gym system|
+  if () then (Membership purchased)
+    -> [yes] continue;
+  else (Membership was\nnot purchased)
+    stop
+  endif
+endif
+
+:Check the capacity of the selected session;
+
+if () then (Suitable in capacity)
+  :Store attendance in DB;
+  |Trainer|
+  :Notify trainer;
+  :Check attendance of their session;
+
+  |Client|
+  :Notify client;
+  :Check their schedule;
+else (Not suitable in capacity)
+  :Show message "No free places available";
+  stop
+endif
+
+stop
+
+@enduml
