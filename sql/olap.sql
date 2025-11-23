@@ -48,3 +48,30 @@ FROM client c
 LEFT JOIN membership m ON m.client_id = c.client_id
 GROUP BY c.client_id, c.first_name, c.last_name
 HAVING MAX(m.price) > 0;
+
+--how many classes did each trainer conduct
+SELECT t.trainer_id, t.first_name, t.last_name, COUNT(*) AS sessions_count
+FROM class_session cs
+       JOIN trainer t ON cs.trainer_id = t.trainer_id
+GROUP BY t.trainer_id, t.first_name, t.last_name;
+
+--each client's earliest payment
+SELECT client_id, MIN(created_at) AS first_payment_date
+FROM payment
+GROUP BY client_id;
+
+--all clients and their last attendance date
+SELECT c.client_id, c.first_name, c.last_name, MAX(a.session_id) AS last_visited_session
+FROM client c
+       LEFT JOIN attendance a ON c.client_id = a.client_id
+GROUP BY c.client_id, c.first_name, c.last_name
+HAVING MAX(a.session_id) IS NOT NULL;
+
+--cLients who have an active membership
+SELECT c.client_id, c.first_name, c.last_name
+FROM client c
+WHERE c.client_id IN (
+  SELECT m.client_id
+  FROM membership m
+  WHERE m.status = 'active'
+);
