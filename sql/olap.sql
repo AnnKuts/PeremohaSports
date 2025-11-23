@@ -1,51 +1,47 @@
 --shows trainers whose max class capacity is at least 20.
 SELECT t.trainer_id,
-       t.first_name,
-       t.last_name,
-       MAX(cs.capacity) AS max_capacity_taught
+  t.first_name,
+  t.last_name,
+  MAX(cs.capacity) AS max_capacity_taught
 FROM trainer t
-JOIN class_session cs ON cs.trainer_id = t.trainer_id
+       JOIN class_session cs ON cs.trainer_id = t.trainer_id
 GROUP BY t.trainer_id, t.first_name, t.last_name
 HAVING MAX(cs.capacity) >= 20;
 
 --shows clients with completed payments totaling over 200, including total and largest payment.
 SELECT c.client_id,
-       c.first_name,
-       c.last_name,
-       SUM(p.amount) AS total_paid,
-       MAX(p.amount) AS largest_single_payment
+  c.first_name,
+  c.last_name,
+  SUM(p.amount) AS total_paid,
+  MAX(p.amount) AS largest_single_payment
 FROM client c
-JOIN payment p ON p.client_id = c.client_id
+       JOIN payment p ON p.client_id = c.client_id
 WHERE p.status = 'completed'
 GROUP BY c.client_id, c.first_name, c.last_name
 HAVING SUM(p.amount) > 200;
 
 --finds class type with the highest total attendance across all sessions
 SELECT ct.class_type_id,
-       ct.name,
-       COUNT(a.client_id) AS total_attendance
+  ct.name,
+  COUNT(a.client_id) AS total_attendance
 FROM class_type ct
-JOIN class_session cs ON cs.class_type_id = ct.class_type_id
-JOIN attendance a ON a.session_id = cs.session_id
+       JOIN class_session cs ON cs.class_type_id = ct.class_type_id
+       JOIN attendance a ON a.session_id = cs.session_id
 GROUP BY ct.class_type_id, ct.name
-HAVING COUNT(a.client_id) = (
-    SELECT MAX(total_cnt)
-    FROM (
-        SELECT COUNT(a.client_id) AS total_cnt
-        FROM class_type ct
-        JOIN class_session cs ON cs.class_type_id = ct.class_type_id
-        JOIN attendance a ON a.session_id = cs.session_id
-        GROUP BY ct.class_type_id
-    ) t
-);
+HAVING COUNT(a.client_id) = (SELECT MAX(total_cnt)
+                             FROM (SELECT COUNT(a.client_id) AS total_cnt
+                                   FROM class_type ct
+                                          JOIN class_session cs ON cs.class_type_id = ct.class_type_id
+                                          JOIN attendance a ON a.session_id = cs.session_id
+                                   GROUP BY ct.class_type_id) t);
 
 --returns clients showing their highest membership price
 SELECT c.client_id,
-       c.first_name,
-       c.last_name,
-       MAX(m.price) AS max_membership_price
+  c.first_name,
+  c.last_name,
+  MAX(m.price) AS max_membership_price
 FROM client c
-LEFT JOIN membership m ON m.client_id = c.client_id
+       LEFT JOIN membership m ON m.client_id = c.client_id
 GROUP BY c.client_id, c.first_name, c.last_name
 HAVING MAX(m.price) > 0;
 
@@ -67,11 +63,42 @@ FROM client c
 GROUP BY c.client_id, c.first_name, c.last_name
 HAVING MAX(a.session_id) IS NOT NULL;
 
---cLients who have an active membership
+--clients who have an active membership
 SELECT c.client_id, c.first_name, c.last_name
 FROM client c
-WHERE c.client_id IN (
-  SELECT m.client_id
-  FROM membership m
-  WHERE m.status = 'active'
-);
+WHERE c.client_id IN (SELECT m.client_id
+                      FROM membership m
+                      WHERE m.status = 'active');
+
+--total payments made by each client
+SELECT p.client_id,
+  SUM(p.amount) AS total_paid
+FROM payment p
+WHERE p.status = 'completed'
+GROUP BY p.client_id;
+
+--average membership price by class level
+SELECT ct.level,
+  AVG(m.price) AS avg_price
+FROM membership m
+       JOIN class_type ct ON m.class_type_id = ct.class_type_id
+GROUP BY ct.level;
+
+--number of class types supported by each room
+SELECT r.room_id,
+  r.capacity,
+  COUNT(rct.class_type_id) AS supported_class_types
+FROM room r
+       LEFT JOIN room_class_type rct ON r.room_id = rct.room_id
+GROUP BY r.room_id, r.capacity;
+
+--number of attendances per client
+SELECT c.client_id,
+  c.first_name,
+  c.last_name,
+  (SELECT COUNT(*)
+   FROM attendance a
+   WHERE a.client_id = c.client_id) AS attendance_count
+FROM client c;
+
+
