@@ -1,4 +1,4 @@
--- Shows trainers whose max class capacity is at least 20.
+--shows trainers whose max class capacity is at least 20.
 SELECT t.trainer_id,
        t.first_name,
        t.last_name,
@@ -8,7 +8,7 @@ JOIN class_session cs ON cs.trainer_id = t.trainer_id
 GROUP BY t.trainer_id, t.first_name, t.last_name
 HAVING MAX(cs.capacity) >= 20;
 
--- Shows clients with completed payments totaling over 200, including total and largest payment.
+--shows clients with completed payments totaling over 200, including total and largest payment.
 SELECT c.client_id,
        c.first_name,
        c.last_name,
@@ -20,7 +20,7 @@ WHERE p.status = 'completed'
 GROUP BY c.client_id, c.first_name, c.last_name
 HAVING SUM(p.amount) > 200;
 
--- Finds class type with the highest total attendance across all sessions
+--finds class type with the highest total attendance across all sessions
 SELECT ct.class_type_id,
        ct.name,
        COUNT(a.client_id) AS total_attendance
@@ -39,7 +39,7 @@ HAVING COUNT(a.client_id) = (
     ) t
 );
 
--- Returns clients showing their highest membership price
+--returns clients showing their highest membership price
 SELECT c.client_id,
        c.first_name,
        c.last_name,
