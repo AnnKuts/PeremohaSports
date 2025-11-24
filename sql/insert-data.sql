@@ -92,3 +92,9 @@ VALUES
     (3, 4, 'cancelled'),
     (4, 1, 'booked')
 ON CONFLICT DO NOTHING;
+
+INSERT INTO payment (amount, status, method, client_id, membership_id)
+VALUES
+    (500.00, 'completed', 'card', 4, 4),
+    (300.00, 'completed', 'online', 1, 5),
+    (800.00, 'completed', 'online', 4, 6);
