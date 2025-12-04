@@ -29,7 +29,6 @@ model class_session {
   attendance      attendance[]
   room_class_type room_class_type         @relation(fields: [room_id, class_type_id], references: [room_id, class_type_id], onDelete: NoAction, onUpdate: NoAction)
   trainer         trainer                 @relation(fields: [trainer_id], references: [trainer_id], onDelete: NoAction, onUpdate: NoAction)
-  feedback        feedback[]
 }
 
 model class_type {
@@ -52,7 +51,6 @@ model client {
   contact_data    contact_data @relation(fields: [contact_data_id], references: [contact_data_id], onDelete: NoAction, onUpdate: NoAction)
   membership      membership[]
   payment         payment[]
-  feedback        feedback[]
 }
 
 model contact_data {
@@ -145,16 +143,6 @@ model trainer_placement {
   trainer    trainer @relation(fields: [trainer_id], references: [trainer_id], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([trainer_id, gym_id])
-}
-
-model feedback {
-  id        Int      @id @default(autoincrement())
-  rating    Int
-  createdAt DateTime @default(now())
-  client    client   @relation(fields: [clientId], references: [client_id])
-  clientId  Int
-  session   class_session @relation(fields: [sessionId], references: [session_id])
-  sessionId Int
 }
 
 enum attendance_status {
