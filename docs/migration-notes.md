@@ -59,7 +59,7 @@ start_date    DateTime          @db.Date
 end_date      DateTime          @db.Date
 price         Decimal           @db.Decimal(10, 2)
 status        membership_status @default(active)
-is_disposable Boolean           @default(false)
+is_dispisable Boolean           @default(false)
 client_id     Int
 class_type_id Int
 class_type    class_type        @relation(fields: [class_type_id], references: [class_type_id], onDelete: NoAction, onUpdate: NoAction)
@@ -123,6 +123,7 @@ sessionId Int
 ```bash
 npx prisma migrate dev --name drop-feedback-table
 ```
+Before:
 
 ```Prisma
 model feedback {
@@ -135,6 +136,13 @@ session   class_session @relation(fields: [sessionId], references: [session_id])
 sessionId Int
 }
 ```
+
+After:
+
+```bash
+The table was dropped
+```
+
 ### 6. Seed data
 
 [seed.ts](https://github.com/AnnKuts/PeremohaSports/blob/course-work/course-work/prisma/seed.ts)
