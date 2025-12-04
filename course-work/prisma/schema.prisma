@@ -77,7 +77,7 @@ model membership {
   end_date      DateTime          @db.Date
   price         Decimal           @db.Decimal(10, 2)
   status        membership_status @default(active)
-  is_dispisable Boolean           @default(false)
+  is_disposable Boolean           @default(false)
   client_id     Int
   class_type_id Int
   class_type    class_type        @relation(fields: [class_type_id], references: [class_type_id], onDelete: NoAction, onUpdate: NoAction)
