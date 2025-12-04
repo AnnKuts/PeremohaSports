@@ -150,7 +150,6 @@ model trainer_placement {
 model feedback {
   id        Int      @id @default(autoincrement())
   rating    Int
-  comment   String?
   createdAt DateTime @default(now())
   client    client   @relation(fields: [clientId], references: [client_id])
   clientId  Int
