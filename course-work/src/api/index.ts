@@ -1,7 +1,11 @@
 import express from "express";
-import MessageResponse from "../interfaces/message-response";
 
-import gymRoutes from "../routes/gymRoutes"; 
+import type MessageResponse from "../interfaces/message-response.js";
+
+import attendanceRoutes from "../routes/attendanceRoutes.js";
+import classTypesRoutes from "../routes/classTypesRoutes.js";
+import gymRoutes from "../routes/gymRoutes.js";
+import roomRoutes from "../routes/roomRoutes.js";
 
 const router = express.Router();
 
@@ -12,5 +16,8 @@ router.get<object, MessageResponse>("/", (req, res) => {
 });
 
 router.use("/gyms", gymRoutes);
+router.use("/rooms", roomRoutes);
+router.use("/class-types", classTypesRoutes);
+router.use("/attendance", attendanceRoutes);
 
 export default router;

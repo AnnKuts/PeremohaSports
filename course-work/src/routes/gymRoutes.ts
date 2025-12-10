@@ -1,7 +1,8 @@
-import { Router } from 'express';
-import { PrismaClient } from '@prisma/client';
-import { GymController } from '../controllers/gymControllers.js';
-import { GymService } from '../services/gymServices.js';
+import { PrismaClient } from "@prisma/client";
+import { Router } from "express";
+
+import { GymController } from "../controllers/gymControllers.js";
+import { GymService } from "../services/gymServices.js";
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -9,18 +10,18 @@ const gymService = new GymService(prisma);
 const gymController = new GymController(gymService);
 
 // 2.1. POST /gyms - Створити спортзал
-router.post('/', gymController.createGym);
+router.post("/", gymController.createGym);
 
 // 2.2. GET /gyms - Отримати всі спортзали
-router.get('/', gymController.getAllGyms);
+router.get("/", gymController.getAllGyms);
 
 // 2.3. GET /gyms/:id - Отримати спортзал за ID
-router.get('/:id', gymController.getGymById);
+router.get("/:id", gymController.getGymById);
 
 // 2.4. GET /gyms/:id/rooms - Отримати кімнати спортзалу
-router.get('/:id/rooms', gymController.getGymRooms);
+router.get("/:id/rooms", gymController.getGymRooms);
 
 // 2.5. GET /gyms/:id/trainers - Отримати тренерів спортзалу
-router.get('/:id/trainers', gymController.getGymTrainers);
+router.get("/:id/trainers", gymController.getGymTrainers);
 
 export default router;
