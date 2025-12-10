@@ -1,5 +1,5 @@
-import { PrismaClient } from "@prisma/client";
 import { Router } from "express";
+import { PrismaClient } from "@prisma/client";
 
 import { GymController } from "../controllers/gymControllers.js";
 import { GymService } from "../services/gymServices.js";
@@ -23,5 +23,8 @@ router.get("/:id/rooms", gymController.getGymRooms);
 
 // 2.5. GET /gyms/:id/trainers - Отримати тренерів спортзалу
 router.get("/:id/trainers", gymController.getGymTrainers);
+
+// 2.6. DELETE /gyms/:id - Жорстке видалення спортзалу
+router.delete("/:id", gymController.deleteGym);
 
 export default router;

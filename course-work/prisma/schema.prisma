@@ -12,7 +12,7 @@ model attendance {
   client_id     Int
   status        attendance_status @default(booked)
   client        client            @relation(fields: [client_id], references: [client_id], onDelete: NoAction, onUpdate: NoAction)
-  class_session class_session     @relation(fields: [session_id], references: [session_id], onDelete: NoAction, onUpdate: NoAction)
+  class_session class_session     @relation(fields: [session_id], references: [session_id], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([session_id, client_id])
 }
@@ -27,7 +27,7 @@ model class_session {
   date            DateTime                @db.Date
   trainer_id      Int
   attendance      attendance[]
-  room_class_type room_class_type         @relation(fields: [room_id, class_type_id], references: [room_id, class_type_id], onDelete: NoAction, onUpdate: NoAction)
+  room_class_type room_class_type         @relation(fields: [room_id, class_type_id], references: [room_id, class_type_id], onDelete: Cascade, onUpdate: NoAction)
   trainer         trainer                 @relation(fields: [trainer_id], references: [trainer_id], onDelete: NoAction, onUpdate: NoAction)
 }
 
@@ -110,7 +110,7 @@ model room {
   room_id         Int               @id @default(autoincrement())
   capacity        Int
   gym_id          Int
-  gym             gym               @relation(fields: [gym_id], references: [gym_id], onDelete: NoAction, onUpdate: NoAction)
+  gym             gym               @relation(fields: [gym_id], references: [gym_id], onDelete: Cascade, onUpdate: NoAction)
   room_class_type room_class_type[]
 }
 
@@ -119,7 +119,7 @@ model room_class_type {
   class_type_id Int
   class_session class_session[]
   class_type    class_type      @relation(fields: [class_type_id], references: [class_type_id], onDelete: NoAction, onUpdate: NoAction)
-  room          room            @relation(fields: [room_id], references: [room_id], onDelete: NoAction, onUpdate: NoAction)
+  room          room            @relation(fields: [room_id], references: [room_id], onDelete: Cascade, onUpdate: NoAction)
 
   @@id([room_id, class_type_id])
 }
@@ -139,7 +139,7 @@ model trainer {
 model trainer_placement {
   trainer_id Int
   gym_id     Int
-  gym        gym     @relation(fields: [gym_id], references: [gym_id], onDelete: NoAction, onUpdate: NoAction)
+  gym        gym     @relation(fields: [gym_id], references: [gym_id], onDelete: Cascade, onUpdate: NoAction)
   trainer    trainer @relation(fields: [trainer_id], references: [trainer_id], onDelete: NoAction, onUpdate: NoAction)
 
   @@id([trainer_id, gym_id])

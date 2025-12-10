@@ -76,4 +76,48 @@ export class GymController {
       next(error);
     }
   };
+
+  deleteGym = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const gymId = parseInt(req.params.id);
+      
+      if (isNaN(gymId) || gymId <= 0) {
+        return res.status(400).json({ 
+          error: 'Validation Error',
+          message: 'Invalid gym ID - must be a positive number' 
+        });
+      }
+
+      console.log('Controller: Initiating hard delete for gym:', gymId);
+
+      const deleteResult = await this.gymService.deleteGym(gymId);
+
+      res.json({ 
+        success: true,
+        message: 'Gym deleted successfully with cascade deletion',
+        data: {
+          deletedGym: deleteResult.deletedGym,
+          cascadeStatistics: deleteResult.statistics
+        }
+      });
+    } catch (error) {
+      console.error('Controller: Error deleting gym:', error);
+    
+      if (error instanceof Error && error.message === 'Gym not found') {
+        return res.status(404).json({ 
+          error: 'Not Found',
+          message: 'Gym not found' 
+        });
+      }
+
+      if (typeof error === 'object' && error !== null && 'code' in error && (error as any).code === 'P2003') {
+        return res.status(400).json({
+          error: 'Foreign Key Constraint',
+          message: 'Cannot delete gym - it has dependent records that cannot be deleted automatically'
+        });
+      }
+
+      next(error);
+    }
+  };
 }
