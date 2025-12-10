@@ -1,10 +1,6 @@
 import type { PrismaClient } from "@prisma/client";
 
-export type CreateClassTypeData = {
-  name: string;
-  description?: string;
-  level: string;
-};
+import type { CreateClassTypeData } from "../types/index.js";
 
 export class ClassTypeService {
   constructor(private prisma: PrismaClient) {}

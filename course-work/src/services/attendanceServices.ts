@@ -42,8 +42,6 @@ export class AttendanceService {
   }
 
   async deleteAttendance(sessionId: number, clientId: number) {
-    console.log("Service: Starting delete for attendance:", { sessionId, clientId });
-
     const attendance = await this.prisma.attendance.findUnique({
       where: {
         session_id_client_id: {
@@ -57,8 +55,6 @@ export class AttendanceService {
       throw new Error("Attendance record not found");
     }
 
-    console.log(`Deleting attendance record (status: ${attendance.status})`);
-
     const deletedAttendance = await this.prisma.attendance.delete({
       where: {
         session_id_client_id: {
@@ -68,8 +64,6 @@ export class AttendanceService {
       },
     });
 
-    console.log("Service: Attendance deleted successfully");
-
     return {
       success: true,
       deletedAttendance,
@@ -77,8 +71,6 @@ export class AttendanceService {
   }
 
   async createAttendance(sessionId: number, clientId: number) {
-    console.log("Service: Creating attendance record");
-
     const newAttendance = await this.prisma.attendance.create({
       data: {
         session_id: sessionId,
@@ -86,8 +78,6 @@ export class AttendanceService {
         status: "booked",
       },
     });
-
-    console.log(`Created attendance record for session ${sessionId}, client ${clientId}`);
 
     return {
       success: true,
@@ -97,8 +87,6 @@ export class AttendanceService {
 
   // вимога 3 оновлення (статусу відвідування)
   async updateAttendanceStatus(sessionId: number, clientId: number, newStatus: "booked" | "attended" | "missed" | "cancelled") {
-    console.log("Service: Updating attendance status with transaction");
-
     return await this.prisma.$transaction(async (tx) => {
       const currentAttendance = await tx.attendance.findUnique({
         where: {
@@ -135,8 +123,6 @@ export class AttendanceService {
       if (updatedAttendance.count === 0) {
         throw new Error("Status was changed by another user. Please refresh and try again");
       }
-
-      console.log(`Status updated from '${oldStatus}' to '${newStatus}'`);
 
       return {
         success: true,

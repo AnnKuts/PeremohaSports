@@ -1,128 +1,83 @@
-import type { NextFunction, Request, Response } from "express";
+import type { Request, Response } from "express";
 
 import type { GymService } from "../services/gymServices.js";
+
+import { asyncHandler } from "../utils/async-handler.js";
+import { successResponse } from "../utils/responses.js";
+import { parseId, parsePaginationParams } from "../utils/validation.js";
 
 export class GymController {
   constructor(private gymService: GymService) {}
 
-  createGym = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { address } = req.body;
-      if (!address?.trim()) {
-        return res.status(400).json({ error: "Address is required" });
-      }
-
-      const gym = await this.gymService.createGym({ address: address.trim() });
-      res.status(201).json({ success: true, data: gym });
+  createGym = asyncHandler(async (req: Request, res: Response) => {
+    const { address } = req.body;
+    if (!address?.trim()) {
+      return res.status(400).json({ error: "Address is required" });
     }
-    catch (error) {
-      next(error);
-    }
-  };
 
-  getAllGyms = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { include_stats, limit, offset } = req.query;
-      const result = await this.gymService.getAllGyms({
-        includeStats: include_stats !== "false",
-        limit: limit ? Number.parseInt(limit as string) : undefined,
-        offset: offset ? Number.parseInt(offset as string) : undefined,
+    const gym = await this.gymService.createGym({ address: address.trim() });
+    res.status(201).json(successResponse(gym));
+  });
+
+  getAllGyms = asyncHandler(async (req: Request, res: Response) => {
+    const result = await this.gymService.getAllGyms(parsePaginationParams(req.query));
+    res.json(successResponse(result.gyms, { total: result.total }));
+  });
+
+  getGymById = asyncHandler(async (req: Request, res: Response) => {
+    const gymId = parseId(req.params.id, "gym ID");
+
+    const gym = await this.gymService.getGymById(gymId);
+    if (!gym) {
+      return res.status(404).json({ error: "Gym not found" });
+    }
+
+    res.json(successResponse(gym));
+  });
+
+  getGymRooms = asyncHandler(async (req: Request, res: Response) => {
+    const gymId = parseId(req.params.id, "gym ID");
+    const rooms = await this.gymService.getGymRooms(gymId);
+    res.json({ ...successResponse(rooms), gym_id: gymId });
+  });
+
+  getGymTrainers = asyncHandler(async (req: Request, res: Response) => {
+    const gymId = parseId(req.params.id, "gym ID");
+    const trainers = await this.gymService.getGymTrainers(gymId);
+    res.json({ ...successResponse(trainers), gym_id: gymId });
+  });
+
+  deleteGym = asyncHandler(async (req: Request, res: Response) => {
+    const gymId = parseId(req.params.id, "gym ID");
+
+    if (gymId <= 0) {
+      return res.status(400).json({
+        error: "Invalid gym ID",
       });
-
-      res.json({ success: true, data: result.gyms, total: result.total });
     }
-    catch (error) {
-      next(error);
-    }
-  };
 
-  getGymById = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const gymId = Number.parseInt(req.params.id);
-      if (Number.isNaN(gymId)) {
-        return res.status(400).json({ error: "Invalid gym ID" });
-      }
-
-      const gym = await this.gymService.getGymById(gymId);
-      if (!gym) {
-        return res.status(404).json({ error: "Gym not found" });
-      }
-
-      res.json({ success: true, data: gym });
-    }
-    catch (error) {
-      next(error);
-    }
-  };
-
-  getGymRooms = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const gymId = Number.parseInt(req.params.id);
-      const rooms = await this.gymService.getGymRooms(gymId);
-      res.json({ success: true, data: rooms, gym_id: gymId });
-    }
-    catch (error) {
-      next(error);
-    }
-  };
-
-  getGymTrainers = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const gymId = Number.parseInt(req.params.id);
-      const trainers = await this.gymService.getGymTrainers(gymId);
-      res.json({ success: true, data: trainers, gym_id: gymId });
-    }
-    catch (error) {
-      next(error);
-    }
-  };
-
-  deleteGym = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const gymId = Number.parseInt(req.params.id);
-
-      if (Number.isNaN(gymId) || gymId <= 0) {
-        return res.status(400).json({
-          error: "Invalid gym ID",
-        });
-      }
-
-      console.log("Controller: Initiating hard delete for gym:", gymId);
-
       const result = await this.gymService.deleteGym(gymId);
-
-      res.json({
-        success: true,
-        message: "Gym deleted successfully with cascade deletion",
-        data: result,
-      });
+      res.json(successResponse(result, { message: "Gym deleted successfully with cascade deletion" }));
     }
     catch (error) {
       if (error instanceof Error && error.message === "Gym not found") {
         return res.status(404).json({ error: "Gym not found" });
       }
-
-      next(error);
+      throw error;
     }
-  };
+  });
 
-  searchGyms = async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      const { search, limit, offset } = req.query;
+  searchGyms = asyncHandler(async (req: Request, res: Response) => {
+    const { search } = req.query;
 
-      if (!search || typeof search !== "string") {
-        return res.status(400).json({ error: "Search term is required" });
-      }
-
-      const result = await this.gymService.searchGymsByAddress(search, {
-        limit: limit ? Number.parseInt(limit as string) : undefined,
-        offset: offset ? Number.parseInt(offset as string) : undefined,
-      });
-
-      res.json({ success: true, data: result.gyms, total: result.total });
+    if (!search || typeof search !== "string") {
+      return res.status(400).json({ error: "Search term is required" });
     }
-    catch (error) {
-      next(error);
-    }
-  };
+
+    const { limit, offset } = parsePaginationParams(req.query);
+    const result = await this.gymService.searchGymsByAddress(search, { limit, offset });
+
+    res.json(successResponse(result.gyms, { total: result.total }));
+  });
 }

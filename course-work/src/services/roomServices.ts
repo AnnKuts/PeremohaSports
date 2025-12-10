@@ -1,9 +1,6 @@
 import type { PrismaClient } from "@prisma/client";
 
-export type CreateRoomData = {
-  capacity: number;
-  gym_id: number;
-};
+import type { CreateRoomData } from "../types/index.js";
 
 export class RoomService {
   constructor(private prisma: PrismaClient) {}
@@ -101,8 +98,6 @@ export class RoomService {
   }
 
   async deleteRoom(roomId: number) {
-    console.log("Service: Starting hard delete for room ID:", roomId);
-
     const room = await this.prisma.room.findUnique({
       where: { room_id: roomId },
     });
@@ -111,13 +106,9 @@ export class RoomService {
       throw new Error("Room not found");
     }
 
-    console.log(`Deleting room with capacity ${room.capacity}`);
-
     const deletedRoom = await this.prisma.room.delete({
       where: { room_id: roomId },
     });
-
-    console.log("Service: Room deleted successfully with CASCADE");
 
     return {
       success: true,

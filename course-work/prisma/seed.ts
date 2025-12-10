@@ -135,9 +135,11 @@ async function main() {
     ],
   });
 
-  console.log("seed completed");
+  console.warn("seed completed");
 }
 
 main()
   .catch(console.error)
-  .finally(async () => prisma.$disconnect());
+  .finally(async () => {
+    await prisma.$disconnect();
+  });

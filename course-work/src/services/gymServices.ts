@@ -1,8 +1,6 @@
 import type { PrismaClient } from "@prisma/client";
 
-export type CreateGymData = {
-  address: string;
-};
+import type { CreateGymData } from "../types/index.js";
 
 export class GymService {
   constructor(private prisma: PrismaClient) {}
@@ -73,8 +71,6 @@ export class GymService {
   }
 
   async deleteGym(gymId: number) {
-    console.log("Service: Starting hard delete for gym ID:", gymId);
-
     const gym = await this.prisma.gym.findUnique({
       where: { gym_id: gymId },
     });
@@ -83,13 +79,9 @@ export class GymService {
       throw new Error("Gym not found");
     }
 
-    console.log(`Deleting gym: "${gym.address}"`);
-
     const deletedGym = await this.prisma.gym.delete({
       where: { gym_id: gymId },
     });
-
-    console.log("Service: Gym deleted successfully with CASCADE");
 
     return {
       success: true,
