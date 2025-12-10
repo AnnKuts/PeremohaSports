@@ -1,8 +1,7 @@
 import express from "express";
+import MessageResponse from "../interfaces/message-response";
 
-import type MessageResponse from "../interfaces/message-response.js";
-
-import emojis from "./emojis.js";
+import gymRoutes from "../routes/gymRoutes"; 
 
 const router = express.Router();
 
@@ -12,6 +11,6 @@ router.get<object, MessageResponse>("/", (req, res) => {
   });
 });
 
-router.use("/emojis", emojis);
+router.use("/gyms", gymRoutes);
 
 export default router;
