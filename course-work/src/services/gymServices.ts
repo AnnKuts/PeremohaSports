@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from "@prisma/client";
 
 export type CreateGymData = {
   address: string;
@@ -14,7 +14,9 @@ export class GymService {
     });
   }
 
-  async getAllGyms(options: { includeStats?: boolean; limit?: number; offset?: number } = {}) {
+  async getAllGyms(
+    options: { includeStats?: boolean; limit?: number; offset?: number } = {},
+  ) {
     const { includeStats = true, limit, offset } = options;
 
     const [gyms, total] = await Promise.all([
@@ -67,33 +69,31 @@ export class GymService {
       where: { gym_id: gymId },
       include: { trainer: { include: { contact_data: true } } },
     });
-    return trainers.map(tp => tp.trainer);
+    return trainers.map((tp) => tp.trainer);
   }
 
   async deleteGym(gymId: number) {
-    console.log('Service: Starting hard delete for gym ID:', gymId);
-    
+    console.log("Service: Starting hard delete for gym ID:", gymId);
+
     const gym = await this.prisma.gym.findUnique({
-      where: { gym_id: gymId }
+      where: { gym_id: gymId },
     });
 
     if (!gym) {
-      throw new Error('Gym not found');
+      throw new Error("Gym not found");
     }
 
     console.log(`Deleting gym: "${gym.address}"`);
 
     const deletedGym = await this.prisma.gym.delete({
-      where: { gym_id: gymId }
+      where: { gym_id: gymId },
     });
 
-    console.log('Service: Gym deleted successfully with CASCADE');
-    
+    console.log("Service: Gym deleted successfully with CASCADE");
+
     return {
       success: true,
-      deletedGym
+      deletedGym,
     };
   }
-
-
 }

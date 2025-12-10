@@ -30,4 +30,6 @@ router.post("/class-type", roomController.createRoomClassType);
 // 2.12. DELETE /rooms/:id - Жорстке видалення кімнати
 router.delete("/:id", roomController.deleteRoom);
 
+router.put("/:id/capacity", roomController.updateRoomCapacity);
+
 export default router;

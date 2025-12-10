@@ -125,7 +125,7 @@ export class RoomController {
         });
       }
 
-      console.log('🎮 Controller: Initiating hard delete for room:', roomId);
+      console.log('Controller: Initiating hard delete for room:', roomId);
 
       const result = await this.roomService.deleteRoom(roomId);
 
@@ -135,7 +135,7 @@ export class RoomController {
         data: result
       });
     } catch (error) {
-      console.error('❌ Controller: Error deleting room:', error);
+      console.error('Controller: Error deleting room:', error);
       
       if (error instanceof Error && error.message === 'Room not found') {
         return res.status(404).json({ error: 'Room not found' });
@@ -144,4 +144,49 @@ export class RoomController {
       next(error);
     }
   };
+
+  updateRoomCapacity = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      console.log('🔍 req.params:', req.params);
+      console.log('🔍 req.body:', req.body);
+      const roomId = parseInt(req.params.id);
+      const { capacity } = req.body;
+
+      if (isNaN(roomId) || capacity === undefined || capacity === null) {
+        return res.status(400).json({
+          error: 'Valid room ID and capacity are required'
+        });
+      }
+
+      const capacityNum = parseInt(capacity);
+      if (isNaN(capacityNum)) {
+        return res.status(400).json({
+          error: 'Capacity must be a valid number'
+        });
+      }
+
+      console.log('🎮 Controller: Updating room capacity');
+
+      const result = await this.roomService.updateRoomCapacity(roomId, capacityNum);
+
+      res.json({
+        success: true,
+        message: 'Room capacity updated successfully',
+        data: result
+      });
+    } catch (error) {
+      console.error('Controller: Error updating room capacity:', error);
+      
+      if (error instanceof Error) {
+        if (error.message.includes('not found')) {
+          return res.status(404).json({ error: error.message });
+        }
+        if (error.message.includes('must be')) {
+          return res.status(400).json({ error: error.message });
+        }
+      }
+      
+      next(error);
+    }
+  };  
 }

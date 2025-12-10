@@ -100,4 +100,73 @@ export class AttendanceController {
       next(error);
     }
   };
+  
+  createAttendance = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { session_id, client_id } = req.body;
+
+      if (!session_id || !client_id) {
+        return res.status(400).json({
+          error: 'session_id and client_id are required'
+        });
+      }
+
+      console.log('Controller: Creating attendance record');
+
+      const result = await this.attendanceService.createAttendance(
+        parseInt(session_id),
+        parseInt(client_id)
+      );
+
+      res.status(201).json({
+        success: true,
+        message: 'Attendance record created successfully',
+        data: result
+      });
+    } catch (error) {
+      console.error('Controller: Error creating attendance:', error);
+      next(error);
+    }
+  };
+
+  updateAttendanceStatus = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { session_id, client_id, status } = req.body;
+
+      const validStatuses = ['booked', 'attended', 'missed', 'cancelled'];
+      if (!validStatuses.includes(status)) {
+        return res.status(400).json({
+          error: `Invalid status. Must be one of: ${validStatuses.join(', ')}`
+        });
+      }
+
+      const result = await this.attendanceService.updateAttendanceStatus(
+        parseInt(session_id),
+        parseInt(client_id),
+        status
+      );
+
+      res.json({
+        success: true,
+        message: 'Status updated successfully',
+        data: result
+      });
+    } catch (error) {
+      console.error('Controller: Error updating status:', error);
+      
+      if (error instanceof Error) {
+        if (error.message.includes('not found')) {
+          return res.status(404).json({ error: error.message });
+        }
+        if (error.message.includes('Cannot change') || error.message.includes('already')) {
+          return res.status(400).json({ error: error.message });
+        }
+        if (error.message.includes('changed by another user')) {
+          return res.status(409).json({ error: error.message });
+        }
+      }
+      
+      next(error);
+    }
+  };
 }

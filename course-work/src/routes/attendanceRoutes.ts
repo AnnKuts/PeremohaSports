@@ -21,4 +21,11 @@ router.get("/session/:session_id", attendanceController.getAttendancesBySessionI
 // DELETE /attendance/by-id - Жорстке видалення відвідування
 router.delete("/:id", attendanceController.deleteAttendance);
 
+// POST /attendance - Створити нове відвідування)
+router.post("/", attendanceController.createAttendance);
+
+// ТРАНЗАКЦІЇ
+// PUT /attendance/status - Оновити статус відвідування
+router.put("/status", attendanceController.updateAttendanceStatus);
+
 export default router;
