@@ -73,36 +73,25 @@ export class GymService {
   async deleteGym(gymId: number) {
     console.log('Service: Starting hard delete for gym ID:', gymId);
     
-    const gymWithStats = await this.prisma.gym.findUnique({
-      where: { gym_id: gymId },
-      include: {
-        _count: {
-          select: {
-            room: true,
-            trainer_placement: true
-          }
-        }
-      }
+    const gym = await this.prisma.gym.findUnique({
+      where: { gym_id: gymId }
     });
 
-    if (!gymWithStats) {
+    if (!gym) {
       throw new Error('Gym not found');
     }
+
+    console.log(`Deleting gym: "${gym.address}"`);
 
     const deletedGym = await this.prisma.gym.delete({
       where: { gym_id: gymId }
     });
 
     console.log('Service: Gym deleted successfully with CASCADE');
-    console.log(`Deleted gym: "${deletedGym.address}"`);
-
+    
     return {
       success: true,
-      deletedGym,
-      statistics: {
-        rooms: gymWithStats._count.room,
-        trainerPlacements: gymWithStats._count.trainer_placement,
-      }
+      deletedGym
     };
   }
 

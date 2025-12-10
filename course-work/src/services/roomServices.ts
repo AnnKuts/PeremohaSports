@@ -99,4 +99,29 @@ export class RoomService {
       },
     });
   }
+
+  async deleteRoom(roomId: number) {
+    console.log('Service: Starting hard delete for room ID:', roomId);
+    
+    const room = await this.prisma.room.findUnique({
+      where: { room_id: roomId }
+    });
+
+    if (!room) {
+      throw new Error('Room not found');
+    }
+
+    console.log(`Deleting room with capacity ${room.capacity}`);
+
+    const deletedRoom = await this.prisma.room.delete({
+      where: { room_id: roomId }
+    });
+
+    console.log('Service: Room deleted successfully with CASCADE');
+    
+    return {
+      success: true,
+      deletedRoom
+    };
+  }
 }

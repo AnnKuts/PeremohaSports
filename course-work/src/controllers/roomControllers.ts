@@ -114,4 +114,34 @@ export class RoomController {
       next(error);
     }
   };
+
+  deleteRoom = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const roomId = parseInt(req.params.id);
+      
+      if (isNaN(roomId) || roomId <= 0) {
+        return res.status(400).json({ 
+          error: 'Invalid room ID' 
+        });
+      }
+
+      console.log('🎮 Controller: Initiating hard delete for room:', roomId);
+
+      const result = await this.roomService.deleteRoom(roomId);
+
+      res.json({ 
+        success: true,
+        message: 'Room deleted successfully with cascade deletion',
+        data: result
+      });
+    } catch (error) {
+      console.error('❌ Controller: Error deleting room:', error);
+      
+      if (error instanceof Error && error.message === 'Room not found') {
+        return res.status(404).json({ error: 'Room not found' });
+      }
+
+      next(error);
+    }
+  };
 }

@@ -18,4 +18,7 @@ router.get("/by-id", attendanceController.getAttendanceById);
 // GET /attendance/session/:session_id - Отримати всі відвідування для конкретної сесії
 router.get("/session/:session_id", attendanceController.getAttendancesBySessionId);
 
+// DELETE /attendance/by-id - Жорстке видалення відвідування
+router.delete("/:id", attendanceController.deleteAttendance);
+
 export default router;

@@ -21,10 +21,13 @@ router.get("/:id", roomController.getRoomById);
 // 2.9. GET /rooms/:id/sessions - Отримати сесії кімнати
 router.get("/:id/sessions", roomController.getRoomSessions);
 
-// Додатковий роут для типів класів кімнати
+// 2.10. GET /rooms/:id/class-types - Отримати типи занять кімнати
 router.get("/:id/class-types", roomController.getRoomClassTypes);
 
-// POST /rooms/class-type - Створити зв'язок між кімнатою і типом заняття
+// 2.11. POST /rooms/class-type - Додати тип заняття до кімнати
 router.post("/class-type", roomController.createRoomClassType);
+
+// 2.12. DELETE /rooms/:id - Жорстке видалення кімнати
+router.delete("/:id", roomController.deleteRoom);
 
 export default router;
