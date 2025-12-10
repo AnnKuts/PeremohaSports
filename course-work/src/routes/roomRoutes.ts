@@ -15,6 +15,9 @@ router.post("/", roomController.createRoom);
 // 2.7. GET /rooms - Отримати всі кімнати
 router.get("/", roomController.getAllRooms);
 
+// 2.14. Вимога 4: GET /rooms/search - Пошук кімнат з фільтрами (WHERE з кількома умовами)
+router.get("/search", roomController.searchRooms);
+
 // 2.8. GET /rooms/:id - Отримати кімнату за ID
 router.get("/:id", roomController.getRoomById);
 
@@ -30,6 +33,7 @@ router.post("/class-type", roomController.createRoomClassType);
 // 2.12. DELETE /rooms/:id - Жорстке видалення кімнати
 router.delete("/:id", roomController.deleteRoom);
 
+// 2.13. PUT /rooms/:id:capacity - Оновити вмісткість кімнати
 router.put("/:id/capacity", roomController.updateRoomCapacity);
 
 export default router;

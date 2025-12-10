@@ -79,30 +79,49 @@ export class GymController {
 
   deleteGym = async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const gymId = parseInt(req.params.id);
-      
-      if (isNaN(gymId) || gymId <= 0) {
-        return res.status(400).json({ 
-          error: 'Invalid gym ID' 
+      const gymId = Number.parseInt(req.params.id);
+
+      if (Number.isNaN(gymId) || gymId <= 0) {
+        return res.status(400).json({
+          error: "Invalid gym ID",
         });
       }
 
-      console.log('Controller: Initiating hard delete for gym:', gymId);
+      console.log("Controller: Initiating hard delete for gym:", gymId);
 
       const result = await this.gymService.deleteGym(gymId);
 
-      res.json({ 
+      res.json({
         success: true,
-        message: 'Gym deleted successfully with cascade deletion',
-        data: result
+        message: "Gym deleted successfully with cascade deletion",
+        data: result,
       });
-    } catch (error) {
-      console.error('Controller: Error deleting gym:', error);
-    
-      if (error instanceof Error && error.message === 'Gym not found') {
-        return res.status(404).json({ error: 'Gym not found' });
+    }
+    catch (error) {
+      if (error instanceof Error && error.message === "Gym not found") {
+        return res.status(404).json({ error: "Gym not found" });
       }
 
+      next(error);
+    }
+  };
+
+  searchGyms = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { search, limit, offset } = req.query;
+
+      if (!search || typeof search !== "string") {
+        return res.status(400).json({ error: "Search term is required" });
+      }
+
+      const result = await this.gymService.searchGymsByAddress(search, {
+        limit: limit ? Number.parseInt(limit as string) : undefined,
+        offset: offset ? Number.parseInt(offset as string) : undefined,
+      });
+
+      res.json({ success: true, data: result.gyms, total: result.total });
+    }
+    catch (error) {
       next(error);
     }
   };

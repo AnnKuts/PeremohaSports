@@ -101,28 +101,74 @@ export class RoomService {
   }
 
   async deleteRoom(roomId: number) {
-    console.log('Service: Starting hard delete for room ID:', roomId);
-    
+    console.log("Service: Starting hard delete for room ID:", roomId);
+
     const room = await this.prisma.room.findUnique({
-      where: { room_id: roomId }
+      where: { room_id: roomId },
     });
 
     if (!room) {
-      throw new Error('Room not found');
+      throw new Error("Room not found");
     }
 
     console.log(`Deleting room with capacity ${room.capacity}`);
 
     const deletedRoom = await this.prisma.room.delete({
-      where: { room_id: roomId }
+      where: { room_id: roomId },
     });
 
-    console.log('Service: Room deleted successfully with CASCADE');
-    
+    console.log("Service: Room deleted successfully with CASCADE");
+
     return {
       success: true,
-      deletedRoom
+      deletedRoom,
     };
+  }
+
+  // Вимога 4: Фільтрація з кількома умовами (WHERE AND)
+  async searchRooms(filters: {
+    minCapacity?: number;
+    maxCapacity?: number;
+    gymId?: number;
+    limit?: number;
+    offset?: number;
+  } = {}) {
+    const { minCapacity, maxCapacity, gymId, limit, offset } = filters;
+
+    const where: any = {};
+
+    if (minCapacity !== undefined && maxCapacity !== undefined) {
+      where.capacity = {
+        gte: minCapacity,
+        lte: maxCapacity,
+      };
+    }
+    else if (minCapacity !== undefined) {
+      where.capacity = { gte: minCapacity };
+    }
+    else if (maxCapacity !== undefined) {
+      where.capacity = { lte: maxCapacity };
+    }
+
+    if (gymId !== undefined) {
+      where.gym_id = gymId;
+    }
+
+    const [rooms, total] = await Promise.all([
+      this.prisma.room.findMany({
+        where,
+        include: {
+          gym: true,
+          _count: { select: { room_class_type: true } },
+        },
+        orderBy: { capacity: "desc" },
+        take: limit,
+        skip: offset,
+      }),
+      this.prisma.room.count({ where }),
+    ]);
+
+    return { rooms, total };
   }
 
   async updateRoomCapacity(roomId: number, newCapacity: number) {
@@ -161,7 +207,7 @@ export class RoomService {
         });
 
         const hasConflicts = sessions.some(
-          (s) => s._count.attendance > newCapacity,
+          s => s._count.attendance > newCapacity,
         );
 
         if (hasConflicts) {

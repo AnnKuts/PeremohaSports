@@ -1,4 +1,4 @@
-import { PrismaClient } from "@prisma/client";
+import type { PrismaClient } from "@prisma/client";
 
 export type CreateGymData = {
   address: string;
@@ -69,7 +69,7 @@ export class GymService {
       where: { gym_id: gymId },
       include: { trainer: { include: { contact_data: true } } },
     });
-    return trainers.map((tp) => tp.trainer);
+    return trainers.map(tp => tp.trainer);
   }
 
   async deleteGym(gymId: number) {
@@ -95,5 +95,36 @@ export class GymService {
       success: true,
       deletedGym,
     };
+  }
+
+  async searchGymsByAddress(searchTerm: string, options: { limit?: number; offset?: number } = {}) {
+    const { limit, offset } = options;
+
+    const [gyms, total] = await Promise.all([
+      this.prisma.gym.findMany({
+        where: {
+          address: {
+            contains: searchTerm,
+            mode: "insensitive",
+          },
+        },
+        include: {
+          _count: { select: { room: true, trainer_placement: true } },
+        },
+        orderBy: { address: "asc" },
+        take: limit,
+        skip: offset,
+      }),
+      this.prisma.gym.count({
+        where: {
+          address: {
+            contains: searchTerm,
+            mode: "insensitive",
+          },
+        },
+      }),
+    ]);
+
+    return { gyms, total };
   }
 }

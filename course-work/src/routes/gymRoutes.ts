@@ -1,5 +1,5 @@
-import { Router } from "express";
 import { PrismaClient } from "@prisma/client";
+import { Router } from "express";
 
 import { GymController } from "../controllers/gymControllers.js";
 import { GymService } from "../services/gymServices.js";
@@ -14,6 +14,9 @@ router.post("/", gymController.createGym);
 
 // 2.2. GET /gyms - Отримати всі спортзали
 router.get("/", gymController.getAllGyms);
+
+// Вимога 4: GET /gyms/search - Пошук залів за адресою (LIKE)
+router.get("/search", gymController.searchGyms);
 
 // 2.3. GET /gyms/:id - Отримати спортзал за ID
 router.get("/:id", gymController.getGymById);
