@@ -10,13 +10,45 @@ export class GymController {
   constructor(private gymService: GymService) {}
 
   createGym = asyncHandler(async (req: Request, res: Response) => {
-    const { address } = req.body;
+    const { address, rooms, trainerIds } = req.body;
+
     if (!address?.trim()) {
       return res.status(400).json({ error: "Address is required" });
     }
 
-    const gym = await this.gymService.createGym({ address: address.trim() });
-    res.status(201).json(successResponse(gym));
+    if (rooms) {
+      if (!Array.isArray(rooms)) {
+        return res.status(400).json({ error: "Rooms must be an array" });
+      }
+
+      for (let i = 0; i < rooms.length; i++) {
+        const room = rooms[i];
+        if (!room.capacity || typeof room.capacity !== "number") {
+          return res.status(400).json({ error: `Room ${i + 1}: capacity is required and must be a number` });
+        }
+        if (room.classTypeIds && !Array.isArray(room.classTypeIds)) {
+          return res.status(400).json({ error: `Room ${i + 1}: classTypeIds must be an array` });
+        }
+      }
+    }
+
+    if (trainerIds) {
+      if (!Array.isArray(trainerIds)) {
+        return res.status(400).json({ error: "TrainerIds must be an array" });
+      }
+    }
+
+    const result = await this.gymService.createGym({
+      address: address.trim(),
+      rooms,
+      trainerIds,
+    });
+
+    const message = result.creationType === "simple"
+      ? "Simple gym created successfully"
+      : "Complete gym created successfully";
+
+    res.status(201).json(successResponse(result, { message }));
   });
 
   getAllGyms = asyncHandler(async (req: Request, res: Response) => {
@@ -79,5 +111,10 @@ export class GymController {
     const result = await this.gymService.searchGymsByAddress(search, { limit, offset });
 
     res.json(successResponse(result.gyms, { total: result.total }));
+  });
+
+  getGymUtilizationAnalysis = asyncHandler(async (req: Request, res: Response) => {
+    const result = await this.gymService.getGymUtilizationAnalysis();
+    res.json(successResponse(result, { message: "Gym utilization analysis" }));
   });
 }

@@ -18,6 +18,9 @@ router.get("/", gymController.getAllGyms);
 // Вимога 4: GET /gyms/search - Пошук залів за адресою (LIKE)
 router.get("/search", gymController.searchGyms);
 
+// Вимога 5: GET /gyms/analytics/utilization - Аналіз завантаженості спортзалів
+router.get("/analytics/utilization", gymController.getGymUtilizationAnalysis);
+
 // 2.3. GET /gyms/:id - Отримати спортзал за ID
 router.get("/:id", gymController.getGymById);
 
