@@ -19,13 +19,13 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@prisma/adapter-pg": "^7.1.0",
     "@prisma/client": "^6.19.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "helmet": "^8.1.0",
     "morgan": "^1.10.1",
     "pg": "^8.16.3",
-    "prisma": "^6.19.0",
     "zod": "^4.1.12"
   },
   "devDependencies": {
@@ -36,8 +36,10 @@
     "@types/morgan": "^1.9.10",
     "@types/node": "^24.9.2",
     "@types/supertest": "^6.0.3",
+    "dotenv": "^17.2.3",
     "eslint": "^9.38.0",
     "eslint-plugin-format": "^1.0.2",
+    "prisma": "^6.19.0",
     "supertest": "^7.1.4",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
