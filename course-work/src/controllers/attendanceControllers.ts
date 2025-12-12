@@ -35,10 +35,10 @@ export class AttendanceController {
   });
 
   deleteAttendance = asyncHandler(async (req: ValidatedRequest, res: Response) => {
-    const { session_id, client_id } = req.validated?.query || {};
+    const { session_id, client_id } = req.validated?.params || req.params;
 
     try {
-      const result = await this.attendanceService.deleteAttendance(session_id, client_id);
+      const result = await this.attendanceService.deleteAttendance(Number(session_id), Number(client_id));
 
       res.json(successResponse(result, { message: "Attendance record deleted successfully" }));
     }

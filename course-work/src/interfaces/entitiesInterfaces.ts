@@ -1,5 +1,3 @@
-// Интерфейсы для всех репозиториев
-
 export interface IAttendanceRepository {
   findAll(options?: { limit?: number; offset?: number }): Promise<{ attendances: any[], total: number }>;
   findById(sessionId: number, clientId: number): Promise<any>;
@@ -7,6 +5,10 @@ export interface IAttendanceRepository {
   delete(sessionId: number, clientId: number): Promise<any>;
   updateStatus(sessionId: number, clientId: number, newStatus: string): Promise<any>;
   create(sessionId: number, clientId: number, status: string): Promise<any>;
+  getSessionWithRoomAndClassType(sessionId: number): Promise<{ room_id: number, class_type_id: number } | null>;
+  isClassTypeAllowedInRoom(room_id: number, class_type_id: number): Promise<boolean>;
+  /** Проверяет, есть ли у клиента активный membership на class_type */
+  hasActiveMembershipForClassType(clientId: number, classTypeId: number): Promise<boolean>;
 }
 
 export interface IGymRepository {

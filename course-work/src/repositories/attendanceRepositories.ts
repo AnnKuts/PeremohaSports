@@ -4,6 +4,40 @@ import type { IAttendanceRepository } from "../interfaces/entitiesInterfaces";
 export class AttendanceRepository implements IAttendanceRepository {
   constructor(private prisma: PrismaClient) {}
 
+  async hasActiveMembershipForClassType(clientId: number, classTypeId: number): Promise<boolean> {
+    const now = new Date();
+    const membership = await this.prisma.membership.findFirst({
+      where: {
+        client_id: clientId,
+        class_type_id: classTypeId,
+        start_date: { lte: now },
+        end_date: { gte: now },
+        status: "active",
+      },
+    });
+    return !!membership;
+  }
+
+  async getSessionWithRoomAndClassType(sessionId: number): Promise<{ room_id: number, class_type_id: number } | null> {
+    const session = await this.prisma.class_session.findUnique({
+      where: { session_id: sessionId },
+      select: { room_id: true, class_type_id: true },
+    });
+    return session ? { room_id: session.room_id, class_type_id: session.class_type_id } : null;
+  }
+
+  async isClassTypeAllowedInRoom(room_id: number, class_type_id: number): Promise<boolean> {
+    const found = await this.prisma.room_class_type.findUnique({
+      where: {
+        room_id_class_type_id: {
+          room_id,
+          class_type_id,
+        },
+      },
+    });
+    return !!found;
+  }
+
   async findAll(options: { limit?: number; offset?: number } = {}) {
     const { limit, offset } = options;
 

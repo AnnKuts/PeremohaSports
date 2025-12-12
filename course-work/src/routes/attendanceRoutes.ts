@@ -30,9 +30,8 @@ router.get("/by-id", validate(getAttendanceByIdSchema), attendanceController.get
 router.get("/session/:session_id", validate(getAttendancesBySessionIdSchema), attendanceController.getAttendancesBySessionId);
 
 // DELETE /attendance/by-id - Жорстке видалення відвідування
-router.delete("/:id", validate(deleteAttendanceSchema), attendanceController.deleteAttendance);
-
-// POST /attendance - Створити нове відвідування)
+router.delete("/:session_id/:client_id", attendanceController.deleteAttendance);router.delete("/:session_id/:client_id", attendanceController.deleteAttendance);
+// POST /attendance - Створити нове відвідування
 router.post("/", validate(createAttendanceSchema), attendanceController.createAttendance);
 
 // ТРАНЗАКЦІЇ
