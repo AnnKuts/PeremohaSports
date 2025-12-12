@@ -17,11 +17,11 @@ app.use(express.json());
 
 app.get<object, MessageResponse>("/", (req, res) => {
   res.json({
-    message: "🦄🌈✨👋🌎🌍🌏✨🌈🦄",
+    message: "kto prochital tot loh",
   });
 });
 
-app.use("/api/v1", api);
+app.use("/", api);
 
 app.use(middlewares.notFound);
 app.use(middlewares.errorHandler);
