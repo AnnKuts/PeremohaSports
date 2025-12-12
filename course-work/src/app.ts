@@ -25,11 +25,11 @@ app.get<object, MessageResponse>("/", (req, res) => {
 
 app.use("/api/v1", api);
 
-app.use(middlewares.notFound);
-app.use(middlewares.errorHandler);
-
 app.use("/", trainerRoutes);
 app.use("/", sessionRoutes);
+
+app.use(middlewares.notFound);
+app.use(middlewares.errorHandler);
 
 app.use((err: any, req: any, res: any, next: any) => {
     const status = err.status || 500;
