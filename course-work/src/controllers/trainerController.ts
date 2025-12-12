@@ -34,4 +34,9 @@ export const TrainersController = {
     const result = await TrainersService.getTrainerQualifications(Number(req.params.id));
     res.json(result);
   }),
+
+  getTrainerSessions: asyncHandler(async (req: Request, res: Response) => {
+    const result = await TrainersService.getTrainerSessions(Number(req.params.id));
+    res.json(result);
+  })
 };

@@ -50,4 +50,10 @@ export const TrainersService = {
     const trainer = await this.getTrainerById(id);
     return trainer.qualification.map(q => q.class_type);
   },
+
+  async getTrainerSessions(id: number) {
+    const trainer = await TrainersRepository.findById(id);
+    if(!trainer) throw new Error("Trainer not found");
+    return await TrainersRepository.getSessionsByTrainer(id);
+  }
 };

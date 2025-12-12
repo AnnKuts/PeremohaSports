@@ -103,4 +103,11 @@ export const TrainersRepository = {
       return tx.trainer.findUnique({ where: { trainer_id: id } });
     });
   },
+
+  async getSessionsByTrainer(trainerId: number) {
+    return prisma.class_session.findMany({
+      where: { trainer_id: trainerId },
+      orderBy: { date: 'desc' }
+    });
+  }
 };
