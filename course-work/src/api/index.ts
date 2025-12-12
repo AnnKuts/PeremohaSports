@@ -6,6 +6,8 @@ import attendanceRoutes from "../routes/attendanceRoutes.js";
 import classTypesRoutes from "../routes/classTypesRoutes.js";
 import gymRoutes from "../routes/gymRoutes.js";
 import roomRoutes from "../routes/roomRoutes.js";
+import trainerRoutes from "../routes/trainerRoutes";
+import sessionRoutes from "../routes/sessionRoutes";
 
 const router = express.Router();
 
@@ -15,6 +17,8 @@ router.get<object, MessageResponse>("/", (req, res) => {
   });
 });
 
+router.use("/", trainerRoutes);
+router.use("/", sessionRoutes);
 router.use("/gyms", gymRoutes);
 router.use("/rooms", roomRoutes);
 router.use("/class-types", classTypesRoutes);

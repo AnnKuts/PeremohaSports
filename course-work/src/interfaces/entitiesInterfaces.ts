@@ -7,7 +7,6 @@ export interface IAttendanceRepository {
   create(sessionId: number, clientId: number, status: string): Promise<any>;
   getSessionWithRoomAndClassType(sessionId: number): Promise<{ room_id: number, class_type_id: number } | null>;
   isClassTypeAllowedInRoom(room_id: number, class_type_id: number): Promise<boolean>;
-  /** Проверяет, есть ли у клиента активный membership на class_type */
   hasActiveMembershipForClassType(clientId: number, classTypeId: number): Promise<boolean>;
 }
 

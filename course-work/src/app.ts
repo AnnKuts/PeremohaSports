@@ -2,8 +2,6 @@ import cors from "cors";
 import express from "express";
 import helmet from "helmet";
 import morgan from "morgan";
-import trainerRoutes from "./routes/trainerRoutes";
-import sessionRoutes from "./routes/sessionRoutes";
 
 import type MessageResponse from "./interfaces/message-response.js";
 
@@ -24,9 +22,6 @@ app.get<object, MessageResponse>("/", (req, res) => {
 });
 
 app.use("/", api);
-
-app.use("/", trainerRoutes);
-app.use("/", sessionRoutes);
 
 app.use(middlewares.notFound);
 app.use(middlewares.errorHandler);

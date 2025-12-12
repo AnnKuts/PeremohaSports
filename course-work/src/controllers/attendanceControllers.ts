@@ -35,18 +35,16 @@ export class AttendanceController {
   });
 
   deleteAttendance = asyncHandler(async (req: ValidatedRequest, res: Response) => {
-    const { session_id, client_id } = req.validated?.params || req.params;
+    const { session_id, client_id } = req.validated?.query || {};
 
     try {
       const result = await this.attendanceService.deleteAttendance(Number(session_id), Number(client_id));
-
       res.json(successResponse(result, { message: "Attendance record deleted successfully" }));
     }
     catch (error) {
       if (error instanceof Error && error.message === "Attendance record not found") {
         return res.status(404).json({ error: "Attendance record not found" });
       }
-
       throw error;
     }
   });
