@@ -1,156 +1,102 @@
-import type { Request, Response } from "express";
+import type { Response } from "express";
 
 import type { RoomService } from "../services/roomServices.js";
+import type { ValidatedRequest } from "../types/requests.js";
 
 import { asyncHandler } from "../utils/async-handler.js";
 import { successResponse } from "../utils/responses.js";
-import { parseId, parsePaginationParams } from "../utils/validation.js";
 
 export class RoomController {
   constructor(private roomService: RoomService) {}
 
-  createRoom = asyncHandler(async (req: Request, res: Response) => {
-    const { capacity, gym_id } = req.body;
-
-    if (!capacity || !gym_id) {
-      return res.status(400).json({ error: "Capacity and gym_id are required" });
-    }
-
-    const capacityNum = Number.parseInt(capacity);
-    const gymIdNum = Number.parseInt(gym_id);
-
-    if (Number.isNaN(capacityNum) || capacityNum <= 0) {
-      return res.status(400).json({ error: "Invalid capacity" });
-    }
-
-    if (Number.isNaN(gymIdNum)) {
-      return res.status(400).json({ error: "Invalid gym_id" });
-    }
-
-    const room = await this.roomService.createRoom({
-      capacity: capacityNum,
-      gym_id: gymIdNum,
-    });
+  createRoom = asyncHandler(async (req: ValidatedRequest, res: Response) => {
+    const { capacity, gym_id } = req.validated?.body || {};
+    const room = await this.roomService.createRoom({ capacity, gym_id });
     res.status(201).json(successResponse(room));
   });
 
-  getAllRooms = asyncHandler(async (req: Request, res: Response) => {
-    const result = await this.roomService.getAllRooms(parsePaginationParams(req.query));
-
+  getAllRooms = asyncHandler(async (req: ValidatedRequest, res: Response) => {
+    const { limit, offset, includeStats } = req.validated?.query || {};
+    const result = await this.roomService.getAllRooms({ limit, offset, includeStats });
     res.json(successResponse(result.rooms, { total: result.total }));
   });
 
-  getRoomById = asyncHandler(async (req: Request, res: Response) => {
-    const roomId = parseId(req.params.id, "room ID");
-
-    const room = await this.roomService.getRoomById(roomId);
+  getRoomById = asyncHandler(async (req: ValidatedRequest, res: Response) => {
+    const { id } = req.validated?.params || {};
+    const room = await this.roomService.getRoomById(id);
     if (!room) {
       return res.status(404).json({ error: "Room not found" });
     }
-
     res.json(successResponse(room));
   });
 
-  getRoomClassTypes = asyncHandler(async (req: Request, res: Response) => {
-    const roomId = parseId(req.params.id, "room ID");
-    const classTypes = await this.roomService.getRoomClassTypes(roomId);
-    res.json({ ...successResponse(classTypes), room_id: roomId });
+  getRoomClassTypes = asyncHandler(async (req: ValidatedRequest, res: Response) => {
+    const { id } = req.validated?.params || {};
+    const classTypes = await this.roomService.getRoomClassTypes(id);
+    res.json({ ...successResponse(classTypes), room_id: id });
   });
 
-  getRoomSessions = asyncHandler(async (req: Request, res: Response) => {
-    const roomId = parseId(req.params.id, "room ID");
-    const sessions = await this.roomService.getRoomSessions(roomId);
-    res.json({ ...successResponse(sessions), room_id: roomId });
+  getRoomSessions = asyncHandler(async (req: ValidatedRequest, res: Response) => {
+    const { id } = req.validated?.params || {};
+    const sessions = await this.roomService.getRoomSessions(id);
+    res.json({ ...successResponse(sessions), room_id: id });
   });
 
-  createRoomClassType = asyncHandler(async (req: Request, res: Response) => {
-    const { room_id, class_type_id } = req.body;
-
-    if (!room_id || !class_type_id) {
-      return res.status(400).json({ error: "room_id and class_type_id are required" });
-    }
-
-    const roomIdNum = Number.parseInt(room_id);
-    const classTypeIdNum = Number.parseInt(class_type_id);
-
-    if (Number.isNaN(roomIdNum) || Number.isNaN(classTypeIdNum)) {
-      return res.status(400).json({ error: "Invalid room_id or class_type_id" });
-    }
-
-    const roomClassType = await this.roomService.createRoomClassType(roomIdNum, classTypeIdNum);
-    res.status(201).json(successResponse(roomClassType));
+  searchRooms = asyncHandler(async (req: ValidatedRequest, res: Response) => {
+    const filters = req.validated?.query || {};
+    const result = await this.roomService.searchRooms(filters);
+    res.json(successResponse(result.rooms, { total: result.total }));
   });
 
-  deleteRoom = asyncHandler(async (req: Request, res: Response) => {
-    const roomId = parseId(req.params.id, "room ID");
-
-    if (roomId <= 0) {
-      return res.status(400).json({
-        error: "Invalid room ID",
-      });
-    }
-
+  createRoomClassType = asyncHandler(async (req: ValidatedRequest, res: Response) => {
+    const { id } = req.validated?.params || {};
+    const { class_type_id } = req.validated?.body || {};
+    
     try {
-      const result = await this.roomService.deleteRoom(roomId);
-
-      res.json(successResponse(result, { message: "Room deleted successfully with cascade deletion" }));
-    }
-    catch (error) {
-      if (error instanceof Error && error.message === "Room not found") {
-        return res.status(404).json({ error: "Room not found" });
+      const result = await this.roomService.createRoomClassType(id, class_type_id);
+      res.status(201).json(successResponse(result, { message: "Class type associated with room successfully" }));
+    } catch (error) {
+      if (error instanceof Error && error.message.includes("already exists")) {
+        return res.status(409).json({ error: error.message });
       }
-
       throw error;
     }
   });
 
-  updateRoomCapacity = asyncHandler(async (req: Request, res: Response) => {
-    const roomId = parseId(req.params.id, "room ID");
-    const { capacity } = req.body;
-
-    if (capacity === undefined || capacity === null) {
-      return res.status(400).json({
-        error: "Capacity is required",
-      });
-    }
-
-    const capacityNum = Number.parseInt(capacity);
-    if (Number.isNaN(capacityNum)) {
-      return res.status(400).json({
-        error: "Capacity must be a valid number",
-      });
-    }
+  updateRoomCapacity = asyncHandler(async (req: ValidatedRequest, res: Response) => {
+    const { id } = req.validated?.params || {};
+    const { capacity } = req.validated?.body || {};
 
     try {
-      const result = await this.roomService.updateRoomCapacity(roomId, capacityNum);
-
+      const result = await this.roomService.updateRoomCapacity(id, capacity);
       res.json(successResponse(result, { message: "Room capacity updated successfully" }));
-    }
-    catch (error) {
+    } catch (error) {
       if (error instanceof Error) {
         if (error.message.includes("not found")) {
           return res.status(404).json({ error: error.message });
         }
-        if (error.message.includes("must be")) {
+        if (error.message.includes("Cannot reduce capacity") || error.message.includes("must be between")) {
           return res.status(400).json({ error: error.message });
         }
+        if (error.message.includes("changed by another admin")) {
+          return res.status(409).json({ error: error.message });
+        }
       }
-
       throw error;
     }
   });
 
-  searchRooms = asyncHandler(async (req: Request, res: Response) => {
-    const { min_capacity, max_capacity, gym_id, limit, offset } = req.query;
+  deleteRoom = asyncHandler(async (req: ValidatedRequest, res: Response) => {
+    const { id } = req.validated?.params || {};
 
-    const result = await this.roomService.searchRooms({
-      minCapacity: min_capacity ? Number.parseInt(min_capacity as string) : undefined,
-      maxCapacity: max_capacity ? Number.parseInt(max_capacity as string) : undefined,
-      gymId: gym_id ? Number.parseInt(gym_id as string) : undefined,
-      limit: limit ? Number.parseInt(limit as string) : undefined,
-      offset: offset ? Number.parseInt(offset as string) : undefined,
-    });
-
-    res.json(successResponse(result.rooms, { total: result.total }));
+    try {
+      const result = await this.roomService.deleteRoom(id);
+      res.json(successResponse(result, { message: "Room deleted successfully" }));
+    } catch (error) {
+      if (error instanceof Error && error.message === "Room not found") {
+        return res.status(404).json({ error: "Room not found" });
+      }
+      throw error;
+    }
   });
 }

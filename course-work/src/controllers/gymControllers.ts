@@ -1,65 +1,56 @@
-import type { Request, Response } from "express";
+import type { Response } from "express";
+import { Prisma } from "@prisma/client";
 
 import type { GymService } from "../services/gymServices.js";
+import type { ValidatedRequest } from "../types/requests.js";
 
 import { asyncHandler } from "../utils/async-handler.js";
 import { successResponse } from "../utils/responses.js";
-import { parseId, parsePaginationParams } from "../utils/validation.js";
 
 export class GymController {
   constructor(private gymService: GymService) {}
 
-  createGym = asyncHandler(async (req: Request, res: Response) => {
-    const { address, rooms, trainerIds } = req.body;
+  createGym = asyncHandler(async (req: ValidatedRequest, res: Response) => {
+    const { address, rooms, trainers } = req.validated?.body || {};
 
-    if (!address?.trim()) {
-      return res.status(400).json({ error: "Address is required" });
-    }
+    try {
+      const result = await this.gymService.createGym({
+        address: address.trim(),
+        rooms,
+        trainerIds: trainers,
+      });
 
-    if (rooms) {
-      if (!Array.isArray(rooms)) {
-        return res.status(400).json({ error: "Rooms must be an array" });
-      }
+      const message = result.creationType === "simple"
+        ? "Simple gym created successfully"
+        : "Complete gym created successfully";
 
-      for (let i = 0; i < rooms.length; i++) {
-        const room = rooms[i];
-        if (!room.capacity || typeof room.capacity !== "number") {
-          return res.status(400).json({ error: `Room ${i + 1}: capacity is required and must be a number` });
+      res.status(201).json(successResponse(result, { message }));
+    } catch (error) {
+      if (error instanceof Prisma.PrismaClientKnownRequestError) {
+        if (error.code === 'P2002') {
+          return res.status(409).json({
+            message: "Validation failed",
+            errors: [{
+              field: "address",
+              message: `Gym with this address "${address.trim()}" already exists`
+            }]
+          });
         }
-        if (room.classTypeIds && !Array.isArray(room.classTypeIds)) {
-          return res.status(400).json({ error: `Room ${i + 1}: classTypeIds must be an array` });
-        }
       }
+      throw error; 
     }
-
-    if (trainerIds) {
-      if (!Array.isArray(trainerIds)) {
-        return res.status(400).json({ error: "TrainerIds must be an array" });
-      }
-    }
-
-    const result = await this.gymService.createGym({
-      address: address.trim(),
-      rooms,
-      trainerIds,
-    });
-
-    const message = result.creationType === "simple"
-      ? "Simple gym created successfully"
-      : "Complete gym created successfully";
-
-    res.status(201).json(successResponse(result, { message }));
   });
 
-  getAllGyms = asyncHandler(async (req: Request, res: Response) => {
-    const result = await this.gymService.getAllGyms(parsePaginationParams(req.query));
+  getAllGyms = asyncHandler(async (req: ValidatedRequest, res: Response) => {
+    const { limit, offset, includeStats } = req.validated?.query || {};
+    const result = await this.gymService.getAllGyms({ limit, offset, includeStats });
     res.json(successResponse(result.gyms, { total: result.total }));
   });
 
-  getGymById = asyncHandler(async (req: Request, res: Response) => {
-    const gymId = parseId(req.params.id, "gym ID");
+  getGymById = asyncHandler(async (req: ValidatedRequest, res: Response) => {
+    const { id } = req.validated?.params || {};
 
-    const gym = await this.gymService.getGymById(gymId);
+    const gym = await this.gymService.getGymById(id);
     if (!gym) {
       return res.status(404).json({ error: "Gym not found" });
     }
@@ -67,29 +58,23 @@ export class GymController {
     res.json(successResponse(gym));
   });
 
-  getGymRooms = asyncHandler(async (req: Request, res: Response) => {
-    const gymId = parseId(req.params.id, "gym ID");
-    const rooms = await this.gymService.getGymRooms(gymId);
-    res.json({ ...successResponse(rooms), gym_id: gymId });
+  getGymRooms = asyncHandler(async (req: ValidatedRequest, res: Response) => {
+    const { id } = req.validated?.params || {};
+    const rooms = await this.gymService.getGymRooms(id);
+    res.json({ ...successResponse(rooms), gym_id: id });
   });
 
-  getGymTrainers = asyncHandler(async (req: Request, res: Response) => {
-    const gymId = parseId(req.params.id, "gym ID");
-    const trainers = await this.gymService.getGymTrainers(gymId);
-    res.json({ ...successResponse(trainers), gym_id: gymId });
+  getGymTrainers = asyncHandler(async (req: ValidatedRequest, res: Response) => {
+    const { id } = req.validated?.params || {};
+    const trainers = await this.gymService.getGymTrainers(id);
+    res.json({ ...successResponse(trainers), gym_id: id });
   });
 
-  deleteGym = asyncHandler(async (req: Request, res: Response) => {
-    const gymId = parseId(req.params.id, "gym ID");
-
-    if (gymId <= 0) {
-      return res.status(400).json({
-        error: "Invalid gym ID",
-      });
-    }
+  deleteGym = asyncHandler(async (req: ValidatedRequest, res: Response) => {
+    const { id } = req.validated?.params || {};
 
     try {
-      const result = await this.gymService.deleteGym(gymId);
+      const result = await this.gymService.deleteGym(id);
       res.json(successResponse(result, { message: "Gym deleted successfully with cascade deletion" }));
     }
     catch (error) {
@@ -100,20 +85,13 @@ export class GymController {
     }
   });
 
-  searchGyms = asyncHandler(async (req: Request, res: Response) => {
-    const { search } = req.query;
-
-    if (!search || typeof search !== "string") {
-      return res.status(400).json({ error: "Search term is required" });
-    }
-
-    const { limit, offset } = parsePaginationParams(req.query);
-    const result = await this.gymService.searchGymsByAddress(search, { limit, offset });
-
+  searchGyms = asyncHandler(async (req: ValidatedRequest, res: Response) => {
+    const { address, limit, offset } = req.validated?.query || {};
+    const result = await this.gymService.searchGymsByAddress(address, { limit, offset });
     res.json(successResponse(result.gyms, { total: result.total }));
   });
 
-  getGymUtilizationAnalysis = asyncHandler(async (req: Request, res: Response) => {
+  getGymUtilizationAnalysis = asyncHandler(async (req: ValidatedRequest, res: Response) => {
     const result = await this.gymService.getGymUtilizationAnalysis();
     res.json(successResponse(result, { message: "Gym utilization analysis" }));
   });
