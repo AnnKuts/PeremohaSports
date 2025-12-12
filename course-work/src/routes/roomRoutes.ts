@@ -3,10 +3,12 @@ import { Router } from "express";
 
 import { RoomController } from "../controllers/roomControllers.js";
 import { RoomService } from "../services/roomServices.js";
+import { RoomRepository } from "../repositories/roomRepositories.js";
 
 const router = Router();
 const prisma = new PrismaClient();
-const roomService = new RoomService(prisma);
+const roomRepository = new RoomRepository(prisma);
+const roomService = new RoomService(roomRepository);
 const roomController = new RoomController(roomService);
 
 // 2.6. POST /rooms - Створити кімнату

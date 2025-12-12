@@ -3,10 +3,12 @@ import { Router } from "express";
 
 import { GymController } from "../controllers/gymControllers.js";
 import { GymService } from "../services/gymServices.js";
+import { GymRepository } from "../repositories/gymRepositories.js";
 
 const router = Router();
 const prisma = new PrismaClient();
-const gymService = new GymService(prisma);
+const gymRepository = new GymRepository(prisma);
+const gymService = new GymService(gymRepository);
 const gymController = new GymController(gymService);
 
 // 2.1. POST /gyms - Створити спортзал

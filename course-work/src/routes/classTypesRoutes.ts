@@ -3,10 +3,12 @@ import { Router } from "express";
 
 import { ClassTypeController } from "../controllers/classTypesControllers.js";
 import { ClassTypeService } from "../services/classTypesServices.js";
+import { ClassTypeRepository } from "../repositories/classTypeRepositories.js";
 
 const router = Router();
 const prisma = new PrismaClient();
-const classTypeService = new ClassTypeService(prisma);
+const classTypeRepository = new ClassTypeRepository(prisma);
+const classTypeService = new ClassTypeService(classTypeRepository);
 const classTypeController = new ClassTypeController(classTypeService);
 
 // 2.12. POST /class-types - Створити тип класу

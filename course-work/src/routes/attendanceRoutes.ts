@@ -3,10 +3,12 @@ import { Router } from "express";
 
 import { AttendanceController } from "../controllers/attendanceControllers.js";
 import { AttendanceService } from "../services/attendanceServices.js";
+import { AttendanceRepository } from "../repositories/attendanceRepositories.js";
 
 const router = Router();
 const prisma = new PrismaClient();
-const attendanceService = new AttendanceService(prisma);
+const attendanceRepository = new AttendanceRepository(prisma);
+const attendanceService = new AttendanceService(attendanceRepository);
 const attendanceController = new AttendanceController(attendanceService);
 
 // GET /attendance - Отримати список всіх відвідувань
