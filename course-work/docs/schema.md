@@ -30,6 +30,7 @@ One-to-one with the Trainer table (each trainer has one set of contact informati
 | first_name      | -   | varchar(32) | NOT NULL                                           | Client name |
 | last_name       | -   | varchar(32) | NOT NULL                                           | Client surname |
 | gender          | -   | gender_name | NOT NULL                                           | Client gender |
+| is_deleted | - | boolean | DEFAULT FALSE | Soft delete mark |
 | contact_data_id | FK  | integer     | NOT NULL references contact_data (contact_data_id) | Customer contact data identifier |
 
 **Relationships:**  
@@ -48,6 +49,7 @@ One-to-one with the ContactData table (each client has one set of contact data).
 | amount        | -   | numeric(10,2)    |  NOT NULL CHECK (amount >= 0)  | The payment amount |
 | status        | -   | payment_status(enum) | NOT NULL DEFAULT 'pending'   | The status of the payment (e.g., "pending", "completed") |
 | method        | -   | payment_method(enum)      | NOT NULL  | The payment method (e.g., "credit_card", "paypal") |
+| is_deleted | - | boolean | DEFAULT FALSE | Soft delete mark |
 | client_id     | FK  | integer          |  NOT NULL references client (client_id) | The ID of the client who made the payment |
 | membership_id | FK | integer          | references membership (membership_id)   | The ID of the membership associated with the payment |
 
@@ -84,6 +86,7 @@ One-to-one with Payment (each subscription can have one payment).
 | name          | -   | class_name(enum) | NOT NULL  | The name of the class type (e.g., "Yoga", "Pilates") |
 | description   | -   | text             | NOT NULL  | A description of the class type, explaining what it involves |
 | level         | -   | level_name(enum) | NOT NULL   | The difficulty level of the class (e.g., "beginner", "advanced") |
+| is_deleted | - | boolean | DEFAULT FALSE | Soft delete mark |
 
 **Relationships:**  
 One-to-many with Membership table (one class type can be associated with multiple subscriptions).  
@@ -100,6 +103,7 @@ One-to-many with RoomClassType table (one class type can be held in multiple roo
 | duration                 | -   | interval         | NOT NULL, CHECK (duration > INTERVAL '0'), CHECK (duration >= INTERVAL '30 minutes' AND duration <= INTERVAL '2 hours')   | Duration of the class session |
 | capacity                 | -   | int              | NOT NULL, CHECK (capacity > 0)   | The maximum number of participants allowed in the session |
 | date                     | -   | date             | NOT NULL   | The date on which the class session is scheduled |
+| is_deleted | - | boolean | DEFAULT FALSE | Soft delete mark |
 | (class_type_id, room_id) | FK  | class_name(enum) | REFERENCES room_class_type(room_id, class_type_id)   | The type of class and the room in which it will be held |
 | trainer_id               | FK  | int              | NOT NULL, REFERENCES trainer(trainer_id)   | The ID of the trainer conducting the session |
 
@@ -118,6 +122,7 @@ One-to-many with the Attendance table (multiple clients can attend a single clas
 | first_name      | -   | varchar(32) | NOT NULL                                           | The name of the trainer |
 | last_name       | -   | varchar(32) | NOT NULL                                           | The surname of the trainer |
 | is_admin        | -   | boolean     | NOT NULL                                           | Indicates whether the trainer is an admin |
+| is_deleted | - | boolean | DEFAULT FALSE | Soft delete mark |
 | contact_data_id | FK  | integer     | NOT NULL references contact_data (contact_data_id) | The ID of the contact data for the trainer |
 
 **Relationships:**  
@@ -133,6 +138,7 @@ One-to-many with TrainerPlacement table (a trainer can work in multiple gyms).
 | ------------ | --- | ----------- | --------------------------------- | ---------- |
 | gym_id       | PK  | serial      | PRIMARY KEY                       | Identifier for the gym |
 | address      | -   | varchar(60) | NOT NULL UNIQUE                   | The address of the gym |
+| is_deleted | - | boolean | DEFAULT FALSE | Soft delete mark |
 
 **Relationships:**  
 One-to-many with the TrainerPlacement table (one gym can have multiple trainers).  
@@ -146,6 +152,7 @@ One-to-many with the Room table: (one gym can have multiple rooms).
 | -------- | --- | --------- | -------------------------------- | ---------- |
 | room_id  | PK  | serial    | PRIMARY KEY                      | Identifier for the room |
 | capacity | -   | integer   | NOT NULL CHECK (capacity > 0)    | The capacity of the room |
+| is_deleted | - | boolean | DEFAULT FALSE | Soft delete mark |
 | gym_id   | FK  | integer   | NOT NULL references gym (gym_id) | The ID of the gym where the room is located |
 
 **Relationships:**  
@@ -161,6 +168,7 @@ One-to-many with the RoomClassType table (one room can be associated with multip
 | session_id    | PK, FK | integer       | NOT NULL, REFERENCES class_session (session_id) | Identifier of the class session |
 | client_id     | PK, FK | integer       | NOT NULL, REFERENCES client (client_id)  | The ID of the client |
 | status        | -      | attendance_status (enum) | NOT NULL, DEFAULT 'booked'   | The attendance status (e.g., "booked", "present", "absent") |
+| is_deleted | - | boolean | DEFAULT FALSE | Soft delete mark |
 
 **Relationships:**  
 One-to-many with the Client table (each client can attend multiple classes).  
@@ -174,6 +182,7 @@ One-to-many with the Room table (each class can be held in one room, and multipl
 |---------------|--------|-----------------|-----------| ---------- |
 | trainer_id       | PK, FK | int             | NOT NULL  | The identifier of the trainer |
 | class_type_id | PK, FK | int             | NOT NULL  | The identifier of the class type |
+| is_deleted | - | boolean | DEFAULT FALSE | Soft delete mark |
 
 **Relationships:**  
 One-to-many with the ClassType table (one type of class can be held in multiple rooms that have the corresponding qualifications).  
@@ -187,6 +196,7 @@ One-to-many with the Trainer table (one trainer can have multiple qualifications
 |------------|--------|-----------------|------------| ---------- | 
 | trainer_id | PK, FK | int             | NOT NULL, REFERENCES trainer(trainer_id)   | The identifier of the trainer |
 | gym_id     | PK, FK | int             | NOT NULL, REFERENCES gym(gym_id)   | The identifier of the gym |
+| is_deleted | - | boolean | DEFAULT FALSE | Soft delete mark |
 
 **Relationships:**  
 One-to-many with the Trainer table (one trainer can work in multiple fitness centers).  
@@ -200,6 +210,7 @@ One-to-many with the Gym table (one fitness center can have multiple trainers).
 |---------------|--------|-----------------|-------------| ----------- |
 | room_id       | PK, FK | int             | NOT NULL, REFERENCES room(room_id)    | The identifier of the room |
 | class_type_id | PK, FK | int             | NOT NULL, REFERENCES class_type(class_type_id)    | The identifier of the class type for this room |
+| is_deleted | - | boolean | DEFAULT FALSE | Soft delete mark |
 
 **Relationships:**  
 One-to-many with the Room table (a single room can be associated with multiple class types held in that room).  

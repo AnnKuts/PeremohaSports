@@ -40,7 +40,6 @@ export class AttendanceService {
       throw new Error("Client cannot be enrolled: the selected activity type is not allowed in this room");
     }
 
-    // Проверка: есть ли у клиента активный membership на этот class_type
     const hasMembership = await this.attendanceRepository.hasActiveMembershipForClassType(clientId, session.class_type_id);
     if (!hasMembership) {
       throw new Error("Client does not have an active membership for this class type");

@@ -1,5 +1,6 @@
 import type { PrismaClient, Prisma } from "@prisma/client";
-import type { IGymRepository } from "../interfaces/entitiesInterfaces";
+import type { IGymRepository, IRoomRepository } from "../interfaces/entitiesInterfaces";
+import { softDeleteRoom } from "./sharedRepositoryFunc";
 
 export class GymRepository implements IGymRepository {
   constructor(private prisma: PrismaClient) {}
@@ -45,11 +46,26 @@ export class GymRepository implements IGymRepository {
   }
 
   async delete(gymId: number) {
-    return await this.prisma.gym.delete({
-      where: { gym_id: gymId },
+    return await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+      const gym = await tx.gym.update({
+        where: { gym_id: gymId },
+        data: { is_deleted: true },
+      });
+
+      const rooms = await tx.room.findMany({ where: { gym_id: gymId } });
+      for (const room of rooms) {
+        await softDeleteRoom(tx, room.room_id);
+      }
+
+      await tx.trainer_placement.updateMany({
+        where: { gym_id: gymId },
+        data: { is_deleted: true },
+      });
+
+      return gym;
     });
   }
-
+  
   async searchByAddress(searchTerm: string, options: { limit?: number; offset?: number } = {}) {
     const { limit, offset } = options;
 

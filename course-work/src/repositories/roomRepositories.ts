@@ -1,5 +1,6 @@
 import type { PrismaClient, Prisma } from "@prisma/client";
 import type { IRoomRepository } from "../interfaces/entitiesInterfaces";
+import { softDeleteRoom } from "./sharedRepositoryFunc";
 
 export class RoomRepository implements IRoomRepository {
   constructor(private prisma: PrismaClient) {}
@@ -50,8 +51,9 @@ export class RoomRepository implements IRoomRepository {
   }
 
   async delete(roomId: number) {
-    return await this.prisma.room.delete({
-      where: { room_id: roomId },
+    return await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+      await softDeleteRoom(tx, roomId);
+      return await tx.room.findUnique({ where: { room_id: roomId } });
     });
   }
 
