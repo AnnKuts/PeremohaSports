@@ -1,7 +1,8 @@
 # Database schema documentation
 
 ## Entity-Relationship Diagram (ERD):
-<img alt="ERD" src="../er/crows-foot/crowsfoot-diagram.drawio.png" />
+
+<img width="1556" height="851" alt="image" src="https://github.com/user-attachments/assets/899e4868-b63d-4f90-a1ff-8d8806fb5de6" />
 
 ## Description of tables:
 
