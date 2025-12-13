@@ -7,12 +7,13 @@ export const RegisterController = {
       const result = await registerService.register(req.body);
       res.status(201).json(result);
     } catch (err: any) {
+      console.error('Registration error:', err);
       if (err.message.includes("already exists")) {
         res.status(409).json({ error: err.message });
       } else if (err.message.includes("required") || err.message.includes("Invalid")) {
         res.status(400).json({ error: err.message });
       } else {
-        res.status(500).json({ error: "Internal server error" });
+        res.status(500).json({ error: err.message || "Internal server error" });
       }
     }
   }

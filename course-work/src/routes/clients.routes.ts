@@ -1,7 +1,6 @@
 import {Router} from "express";
 import {validate} from "../middlewares/validate";
 import {ClientsController} from "../controllers/clients.controller";
-
 import {getClientsSchema, clientIdParamSchema, updateClientSchema} from "../schemas/clients.schema";
 
 const router = Router();

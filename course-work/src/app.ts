@@ -8,6 +8,7 @@ import registerRoutes from "./routes/register.routes.js";
 import clientsRoutes from "./routes/clients.routes.js";
 import membershipsRoutes from "./routes/memberships.routes.js";
 import paymentsRoutes from "./routes/payments.routes.js";
+import authRoutes from "./routes/auth.routes.js";
 
 import api from "./api/index.js";
 import * as middlewares from "./middlewares.js";
@@ -22,6 +23,7 @@ app.use('/register', registerRoutes);
 app.use("/clients", clientsRoutes);
 app.use("/memberships", membershipsRoutes);
 app.use("/payments", paymentsRoutes);
+app.use("/auth", authRoutes);
 
 app.get<object, MessageResponse>("/", (req, res) => {
   res.json({

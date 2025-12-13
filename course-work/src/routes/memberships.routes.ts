@@ -1,9 +1,7 @@
 import { Router } from "express";
 import { MembershipsController } from "../controllers/memberships.controller";
 import { validate } from "../middlewares/validate";
-import { membershipIdParamSchema } from "../schemas/memberships.schema";
-import { createMembershipSchema } from "../schemas/memberships.schema";
-import { updateMembershipSchema } from "../schemas/memberships.schema";
+import { membershipIdParamSchema, createMembershipSchema, updateMembershipSchema } from "../schemas/memberships.schema";
 
 const router = Router();
 
