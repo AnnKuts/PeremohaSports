@@ -1,0 +1,126 @@
+@startuml
+
+!theme plain
+
+object Client {
+PK client_id
+FK contact_data_id
+first_name
+last_name
+gender
+}
+
+object ContactData {
+PK contact_data_id
+phone
+email
+}
+
+object Membership {
+PK membership_id
+FK client_id
+FK class_type_id
+start_date
+end_date
+price
+status
+is_disposable
+}
+
+object Payment {
+PK payment_id
+FK client_id
+FK membership_id
+timestamp
+amount
+status
+method
+}
+
+object Trainer {
+PK trainer_id
+FK contact_data_id
+first_name
+last_name
+specialty
+}
+
+object TrainerPlacement {
+PK,FK trainer_id
+PK,FK gym_id
+}
+
+object Gym {
+PK gym_id
+address
+gym_capacity
+}
+
+object Qualification {
+PK,FK trainer_id
+PK,FK class_type_id
+}
+
+object Attendance {
+PK,FK session_id
+PK,FK client_id
+status
+}
+
+object ClassType {
+PK class_type_id
+name
+level
+description
+}
+
+object Room {
+PK room_id
+FK gym_id
+capacity
+}
+
+object RoomClassType {
+PK,FK room_id
+PK,FK class_type_id
+name
+}
+
+object ClassSession {
+PK session_id
+FK trainer_id
+FK (class_type_id, room_id)
+duration
+capacity
+date
+}
+
+Membership "1" *-- "1" Payment : covers
+
+Client "1" -- "1..*" Payment : makes
+
+Client "1" *-- "1" ContactData : has
+
+Trainer "1" *-- "1" ContactData : has
+
+Trainer "1" o-- "1..*" Qualification : has
+ClassType "1" o-- "1..*" Qualification : in
+
+TrainerPlacement "1" o-- "1..*" Trainer : placed_in
+
+Gym "1" o-- "1..*" TrainerPlacement : hosts
+
+ClassSession "1" *-- "0..*" Attendance : records
+
+Client "1" -- "0..*" Attendance
+
+Trainer "1" -- "0..*" ClassSession : conducts
+
+ClassSession ..> RoomClassType : uses allowed pair
+
+Gym "1" *-- "1..*" Room : contains
+
+Room "1" *-- "1..*" RoomClassType : allows
+ClassType "1" o-- "1..*" RoomClassType : allowed_in
+
+@enduml
