@@ -1,0 +1,253 @@
+@startuml System_Architecture_API_Server
+
+!define GREY #E5E5E5
+
+skinparam componentStyle uml2
+skinparam linetype polyline
+skinparam component {
+  BackgroundColor GREY
+  BorderColor Black
+}
+skinparam port {
+  FontSize 0
+  FontColor transparent
+}
+left to right direction
+
+
+' ===========================================================
+' FRONTEND
+' ===========================================================
+
+package "Web App" {
+
+  package "Pages" {
+
+    package "Home Page" {
+      component "Home Page" as ID_Page_Home {
+        port " " as p_Home
+      }
+      component "Home Page Components" as ID_Page_Home_Components
+      ID_Page_Home --> ID_Page_Home_Components
+    }
+
+    package "Profile Page" {
+      component "Profile Page" as ID_Page_Profile {
+        port " " as p_Profile
+      }
+      component "Profile Page Components" as ID_Page_Profile_Components
+      ID_Page_Profile --> ID_Page_Profile_Components
+    }
+
+    package "... Page" {
+      component "... Page" as ID_Page_Dots {
+        port " " as p_Dots
+      }
+      component "... Page Components" as ID_Page_Dots_Components
+      ID_Page_Dots --> ID_Page_Dots_Components
+    }
+  }
+
+  package "Components" {
+    component "Components" as ID_FrontComponents
+  }
+
+  package "Router" {
+    component "Router/Router" as ID_FrontRouter {
+      port " " as pRouter
+    }
+  }
+
+  package "Store" {
+    component "Home Store" as ID_Store_Home {
+      port " " as pHomeStore
+    }
+    component "Profile Store" as ID_Store_Profile {
+      port " " as pProfileStore
+    }
+    component "Store" as ID_Store_Global {
+      port " " as pStoreGlobal
+    }
+    component "Local Storage" as ID_LocalStorage
+
+    ID_Store_Home --> ID_Store_Global
+    ID_Store_Profile --> ID_Store_Global
+    ID_Store_Global --> ID_LocalStorage
+  }
+
+  package "API" {
+    component "Auth API" as ID_API_Auth {
+      port " " as pAuthAPI
+    }
+    component "Client API" as ID_API_Client {
+      port " " as pClientAPI
+    }
+    component "Payment API" as ID_API_Payment {
+      port " " as pPaymentAPI
+    }
+    component "Trainer API" as ID_API_Trainer {
+      port " " as pTrainerAPI
+    }
+    component "... API" as ID_API_Dots {
+      port " " as pAPI_Dots
+    }
+  }
+}
+
+
+' ===========================================================
+' API SERVER (BACKEND)
+' ===========================================================
+
+package "API Server" {
+
+  component "HTTP Router" as ID_HTTP_Router {
+    port " " as pHTTPRouter
+  }
+
+  ' ----------------------- AUTH MODULE ------------------------
+  package "Auth Module" {
+    component "Auth Controller" as ID_Auth_Controller {
+      port " " as pCtrlAuth
+    }
+    component "Auth Service" as ID_Auth_Service {
+      port " " as pSvcAuth
+    }
+    component "Auth Repository" as ID_Auth_Repo {
+      port " " as pRepoAuth
+    }
+
+    component "OTP Repository" as ID_OTP_Repo {
+      port " " as pRepoOTP
+    }
+
+    pCtrlAuth --> pSvcAuth
+    pSvcAuth --> pRepoAuth
+    pSvcAuth --> pRepoOTP
+  }
+
+  ' ----------------------- PAYMENT MODULE ---------------------
+  package "Payment Module" {
+    component "Payment Controller" as ID_Payment_Controller {
+      port " " as pCtrlPayment
+    }
+    component "Payment Service" as ID_Payment_Service {
+      port " " as pSvcPayment
+    }
+    component "Payment Repository" as ID_Payment_Repo {
+      port " " as pRepoPayment
+    }
+    component "LiqPay Webhook" as ID_LiqPay_Webhook {
+      port " " as pWebhook
+    }
+
+    pCtrlPayment --> pSvcPayment
+    pSvcPayment --> pRepoPayment
+    pWebhook --> pSvcPayment
+  }
+
+  ' ----------------------- CLIENT MODULE ----------------------
+  package "Client Module" {
+    component "Client Controller" as ID_Client_Controller {
+      port " " as pCtrlClient
+    }
+    component "Client Service" as ID_Client_Service {
+      port " " as pSvcClient
+    }
+    component "Client Repository" as ID_Client_Repo {
+      port " " as pRepoClient
+    }
+
+    pCtrlClient --> pSvcClient
+    pSvcClient --> pRepoClient
+  }
+
+  ' ----------------------- TRAINER MODULE ---------------------
+  package "Trainer Module" {
+    component "Trainer Controller" as ID_Trainer_Controller {
+      port " " as pCtrlTrainer
+    }
+    component "Trainer Service" as ID_Trainer_Service {
+      port " " as pSvcTrainer
+    }
+    component "Trainer Repository" as ID_Trainer_Repo {
+      port " " as pRepoTrainer
+    }
+
+    pCtrlTrainer --> pSvcTrainer
+    pSvcTrainer --> pRepoTrainer
+  }
+
+  ' ----------------------- OTHER MODULE -----------------------
+  package "Module" {
+    component "... Controller" as ID_Dots_Controller {
+      port " " as pCtrlDots
+    }
+    component "... Service" as ID_Dots_Service {
+      port " " as pSvcDots
+    }
+    component "... Repository" as ID_Dots_Repo {
+      port " " as pRepoDots
+    }
+
+    pCtrlDots --> pSvcDots
+    pSvcDots --> pRepoDots
+  }
+}
+
+
+' ===========================================================
+' EXTERNAL SERVICES
+' ===========================================================
+
+component "LiqPay API" as ID_LiqPay_API {
+  port " " as pLiqPay
+}
+
+component "OTP Service" as ID_OTP_Service {
+  port " " as pSvcOTP
+}
+
+ID_Auth_Service --> pSvcOTP
+pSvcOTP --> pRepoOTP
+
+ID_Payment_Service --> pLiqPay
+
+
+' ===========================================================
+' FRONTEND → API SERVER ROUTING
+' ===========================================================
+
+ID_API_Auth --> pHTTPRouter
+ID_API_Client --> pHTTPRouter
+ID_API_Payment --> pHTTPRouter
+ID_API_Trainer --> pHTTPRouter
+ID_API_Dots --> pHTTPRouter
+
+pHTTPRouter --> pCtrlAuth
+pHTTPRouter --> pCtrlClient
+pHTTPRouter --> pCtrlPayment
+pHTTPRouter --> pCtrlTrainer
+pHTTPRouter --> pCtrlDots
+pHTTPRouter --> pWebhook
+
+
+' ===========================================================
+' ORM + DATABASE
+' ===========================================================
+
+component "Prisma ORM" as ID_Prisma {
+  port " " as pPrisma
+}
+database "PostgreSQL" as ID_Postgres
+
+pRepoAuth --> pPrisma
+pRepoOTP --> pPrisma
+pRepoPayment --> pPrisma
+pRepoClient --> pPrisma
+pRepoTrainer --> pPrisma
+pRepoDots --> pPrisma
+
+pPrisma --> ID_Postgres
+
+@enduml
