@@ -12,13 +12,6 @@ export const validate =
         });
         next();
       } catch (err) {
-        if (err instanceof ZodError) {
-          return res.status(400).json({
-            message: "Validation failed",
-            errors: err.issues,
-          });
-        }
-        console.error("Validation middleware error", err);
-        return res.status(500).json({ message: "Internal validation error" });
+        next(err);
       }
     };

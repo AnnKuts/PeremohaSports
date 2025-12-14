@@ -20,6 +20,7 @@ export class RoomRepository implements IRoomRepository {
 
     const [rooms, total] = await Promise.all([
       this.prisma.room.findMany({
+        where: { is_deleted: false },
         include: includeStats
           ? {
               gym: true,
@@ -30,15 +31,15 @@ export class RoomRepository implements IRoomRepository {
         take: limit,
         skip: offset,
       }),
-      this.prisma.room.count(),
+      this.prisma.room.count({ where: { is_deleted: false } }),
     ]);
 
     return { rooms, total };
   }
 
   async findById(roomId: number) {
-    return await this.prisma.room.findUnique({
-      where: { room_id: roomId },
+    return await this.prisma.room.findFirst({
+      where: { room_id: roomId, is_deleted: false },
       include: {
         gym: true,
         _count: {

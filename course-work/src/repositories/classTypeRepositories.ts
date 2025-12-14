@@ -28,6 +28,7 @@ export class ClassTypeRepository implements IClassTypeRepository {
 
     const [classTypes, total] = await Promise.all([
       this.prisma.class_type.findMany({
+        where: { is_deleted: false },
         include: includeStats
           ? {
               _count: {
@@ -43,15 +44,15 @@ export class ClassTypeRepository implements IClassTypeRepository {
         take: limit,
         skip: offset,
       }),
-      this.prisma.class_type.count(),
+      this.prisma.class_type.count({ where: { is_deleted: false } }),
     ]);
 
     return { classTypes, total };
   }
 
   async findById(classTypeId: number) {
-    return await this.prisma.class_type.findUnique({
-      where: { class_type_id: classTypeId },
+    return await this.prisma.class_type.findFirst({
+      where: { class_type_id: classTypeId, is_deleted: false },
       include: {
         _count: {
           select: {

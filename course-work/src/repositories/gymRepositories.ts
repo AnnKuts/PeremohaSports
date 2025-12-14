@@ -12,8 +12,8 @@ export class GymRepository implements IGymRepository {
   }
 
   async findById(gymId: number) {
-    return await this.prisma.gym.findUnique({
-      where: { gym_id: gymId },
+    return await this.prisma.gym.findFirst({
+      where: { gym_id: gymId, is_deleted: false },
       include: {
         _count: {
           select: {
@@ -30,6 +30,7 @@ export class GymRepository implements IGymRepository {
 
     const [gyms, total] = await Promise.all([
       this.prisma.gym.findMany({
+        where: { is_deleted: false },
         include: includeStats
           ? {
               _count: { select: { room: true, trainer_placement: true } },
@@ -39,7 +40,7 @@ export class GymRepository implements IGymRepository {
         take: limit,
         skip: offset,
       }),
-      this.prisma.gym.count(),
+      this.prisma.gym.count({ where: { is_deleted: false } }),
     ]);
 
     return { gyms, total };

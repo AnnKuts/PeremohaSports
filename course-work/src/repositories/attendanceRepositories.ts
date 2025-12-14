@@ -44,6 +44,7 @@ export class AttendanceRepository implements IAttendanceRepository {
 
     const [attendances, total] = await Promise.all([
       this.prisma.attendance.findMany({
+        where: { is_deleted: false },
         orderBy: [
           { session_id: "desc" },
           { client_id: "asc" },
@@ -51,26 +52,25 @@ export class AttendanceRepository implements IAttendanceRepository {
         take: limit,
         skip: offset,
       }),
-      this.prisma.attendance.count(),
+      this.prisma.attendance.count({ where: { is_deleted: false } }),
     ]);
 
     return { attendances, total };
   }
 
   async findById(sessionId: number, clientId: number) {
-    return await this.prisma.attendance.findUnique({
+    return await this.prisma.attendance.findFirst({
       where: {
-        session_id_client_id: {
-          session_id: sessionId,
-          client_id: clientId,
-        },
+        session_id: sessionId,
+        client_id: clientId,
+        is_deleted: false,
       },
     });
   }
 
   async findBySessionId(sessionId: number) {
     return await this.prisma.attendance.findMany({
-      where: { session_id: sessionId },
+      where: { session_id: sessionId, is_deleted: false },
       orderBy: {
         client_id: "asc",
       },

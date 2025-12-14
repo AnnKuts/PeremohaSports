@@ -13,7 +13,6 @@ export class AttendanceController {
   getAllAttendances = asyncHandler(async (req: ValidatedRequest, res: Response) => {
     const { limit, offset } = req.validated?.query || {};
     const result = await this.attendanceService.getAllAttendances({ limit, offset });
-
     res.json(successResponse(result.attendances, { total: result.total }));
   });
 
@@ -52,7 +51,6 @@ export class AttendanceController {
 
   updateAttendanceStatus = asyncHandler(async (req: ValidatedRequest, res: Response) => {
     const { session_id, client_id, status } = req.validated?.body || {};
-
     const result = await this.attendanceService.updateAttendanceStatus(
       session_id,
       client_id,
