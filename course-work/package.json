@@ -19,6 +19,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
+    "@aws-sdk/client-ses": "^3.948.0",
     "@prisma/adapter-pg": "^7.1.0",
     "@prisma/client": "^6.19.0",
     "cors": "^2.8.5",

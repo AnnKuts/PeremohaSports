@@ -1,5 +1,10 @@
 import prisma from "../lib/prisma";
-import { CreatePaymentInput, UpdatePaymentInput, GetPaymentsQuery } from "../schemas/payments.schema";
+import {
+  CreatePaymentInput,
+  UpdatePaymentInput,
+  GetPaymentsQuery,
+} from "../schemas/payments.schema";
+import { emailService } from "./email.service";
 
 export const paymentsService = {
   async getPayments(query?: GetPaymentsQuery) {
@@ -14,7 +19,7 @@ export const paymentsService = {
     }
 
     if (query?.client_id) {
-      where.client_id = parseInt(query.client_id);
+      where.client_id = Number(query.client_id);
     }
 
     return prisma.payment.findMany({
@@ -32,7 +37,7 @@ export const paymentsService = {
         },
       },
       orderBy: {
-        created_at: 'desc',
+        created_at: "desc",
       },
     });
   },
@@ -80,11 +85,11 @@ export const paymentsService = {
   },
 
   async updatePayment(id: number, data: UpdatePaymentInput) {
-    const payment = await prisma.payment.findUnique({
+    const existingPayment = await prisma.payment.findUnique({
       where: { payment_id: id },
     });
 
-    if (!payment) {
+    if (!existingPayment) {
       throw new Error("Payment not found");
     }
 
@@ -105,37 +110,28 @@ export const paymentsService = {
       },
     });
 
-    if (data.status === 'completed') {
-
+    if (data.status === "completed") {
       const completedCount = await prisma.payment.count({
         where: {
           client_id: updatedPayment.client_id,
-          status: 'completed'
-        }
+          status: "completed",
+        },
       });
 
       if (completedCount === 1) {
         const email = updatedPayment.client.contact_data.email;
+
         if (email) {
-          const { authService } = await import("./auth.service");
-          const { code } = authService.generateActivationCode(email, updatedPayment.client_id);
-          await authService.sendActivationCode(email, code);
+          const { code } = emailService.generateActivationCode(
+            email,
+            updatedPayment.client_id
+          );
+
+          await emailService.sendActivationEmail(email, code);
         }
       }
     }
 
     return updatedPayment;
   },
-
-  // async deletePayment(id: number) {
-  //   const payment = await prisma.payment.findUnique({
-  //     where: { payment_id: id },
-  //   });
-  //   if (!payment) {
-  //     throw new Error("Payment not found");
-  //   }
-  //   return prisma.payment.delete({
-  //     where: { payment_id: id },
-  //   });
-  // },
 };

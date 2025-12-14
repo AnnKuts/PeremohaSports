@@ -10,11 +10,17 @@ export function notFound(req: Request, res: Response, next: NextFunction) {
   next(error);
 }
 
-export function errorHandler(err: Error, req: Request, res: Response<ErrorResponse>, _next: NextFunction) {
-  const statusCode = res.statusCode !== 200 ? res.statusCode : 500;
-  res.status(statusCode);
-  res.json({
-    message: err.message,
-    stack: env.NODE_ENV === "production" ? "🥞" : err.stack,
+export function errorHandler(
+  err: any,
+  req: any,
+  res: any,
+  next: any
+) {
+  console.error("🔥 ERROR:", err);
+
+  res.status(500).json({
+    message: err.message || "Internal Server Error",
+    stack: err.stack, // ← тимчасово
   });
 }
+
