@@ -15,6 +15,7 @@ export interface IGymRepository {
   findById(gymId: number): Promise<any>;
   findAll(options?: { includeStats?: boolean; limit?: number; offset?: number }): Promise<{ gyms: any[], total: number }>;
   delete(gymId: number): Promise<any>;
+  update(gymId: number, data: { address: string }): Promise<any>;
   searchByAddress(searchTerm: string, options?: { limit?: number; offset?: number }): Promise<{ gyms: any[], total: number }>;
   findGymsWithUtilizationData(): Promise<any[]>;
   createGymWithRoomsAndTrainers(data: any): Promise<any>;
@@ -40,4 +41,5 @@ export interface IClassTypeRepository {
   findById(classTypeId: number): Promise<any>;
   findTrainersByClassTypeId(classTypeId: number): Promise<any[]>;
   getTrainers(classTypeId: number): Promise<any[]>;
+  update(classTypeId: number, updateData: Partial<{ name: string; description?: string; level?: string }>): Promise<any>;
 }

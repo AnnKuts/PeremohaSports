@@ -2,6 +2,13 @@ import AppError from "../utils/AppError";
 import type { IGymRepository } from "../interfaces/entitiesInterfaces";
 
 export class GymService {
+
+    async updateGym(gymId: number, data: { address: string }) {
+      if (!data.address || typeof data.address !== "string" || !data.address.trim()) {
+        throw new AppError("Address is required", 400);
+      }
+      return await this.gymRepository.update(gymId, { address: data.address.trim() });
+    }
   constructor(private gymRepository: IGymRepository) {}
 
   async createGym(data: {

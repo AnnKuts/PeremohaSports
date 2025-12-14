@@ -5,7 +5,7 @@ import type { ValidatedRequest } from "../types/requests.js";
 
 import { asyncHandler } from "../utils/async-handler.js";
 import { successResponse } from "../utils/responses.js";
-import AppError from "../utils/AppError";
+import AppError from "../utils/AppError.js";
 
 export class RoomController {
   constructor(private roomService: RoomService) {}
@@ -26,7 +26,7 @@ export class RoomController {
     const { id } = req.validated?.params || {};
     const room = await this.roomService.getRoomById(id);
     if (!room) {
-      return res.status(404).json({ error: "Room not found" });
+      throw new AppError("Room not found", 404);
     }
     res.json(successResponse(room));
   });

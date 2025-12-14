@@ -1,8 +1,17 @@
 import type { PrismaClient, Prisma } from "@prisma/client";
 import type { IGymRepository, IRoomRepository } from "../interfaces/entitiesInterfaces";
 import { softDeleteRoom } from "./sharedRepositoryFunc";
+import AppError from "../utils/AppError";
 
 export class GymRepository implements IGymRepository {
+
+    async update(gymId: number, data: { address: string }) {
+      const updated = await this.prisma.gym.update({
+        where: { gym_id: gymId },
+        data: { address: data.address },
+      });
+      return updated;
+    }
   constructor(private prisma: PrismaClient) {}
 
   async create(address: string) {
@@ -155,6 +164,15 @@ export class GymRepository implements IGymRepository {
       }
 
       if (data.trainerIds && data.trainerIds.length > 0) {
+        const foundTrainers = await tx.trainer.findMany({
+          where: { trainer_id: { in: data.trainerIds } },
+          select: { trainer_id: true },
+        });
+        const foundIds = foundTrainers.map(t => t.trainer_id);
+        const missingIds = data.trainerIds.filter(id => !foundIds.includes(id));
+        if (missingIds.length > 0) {
+          throw new AppError(`Trainer(s) not found: ${missingIds.join(", ")}`, 404);
+        }
         for (const trainerId of data.trainerIds) {
           await tx.trainer_placement.create({
             data: {

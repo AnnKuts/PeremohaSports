@@ -82,4 +82,28 @@ export class ClassTypeRepository implements IClassTypeRepository {
   async getTrainers(classTypeId: number) {
     return await this.findTrainersByClassTypeId(classTypeId);
   }
+  
+  async update(classTypeId: number, updateData: Partial<{ name: string; description?: string; level?: string }>) {
+    const data: any = { ...updateData };
+    if (data.name === "swimming pool") data.name = "swimming_pool";
+    if (data.name && !["workout", "yoga", "swimming_pool"].includes(data.name)) delete data.name;
+    if (data.level && !["beginner", "intermediate", "advanced"].includes(data.level)) delete data.level;
+    const updated = await this.prisma.class_type.updateMany({
+      where: { class_type_id: classTypeId, is_deleted: false },
+      data,
+    });
+    if (updated.count === 0) return null;
+    return await this.prisma.class_type.findFirst({
+      where: { class_type_id: classTypeId },
+      include: {
+        _count: {
+          select: {
+            membership: true,
+            qualification: true,
+            room_class_type: true,
+          },
+        },
+      },
+    });
+  }
 }

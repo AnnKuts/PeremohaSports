@@ -6,9 +6,16 @@ import type { ValidatedRequest } from "../types/requests.js";
 
 import { asyncHandler } from "../utils/async-handler.js";
 import { successResponse } from "../utils/responses.js";
-import AppError from "../utils/AppError";
+import AppError from "../utils/AppError.js";
 
 export class GymController {
+    updateGym = asyncHandler(async (req: ValidatedRequest, res: Response) => {
+      const { id } = req.validated?.params || {};
+      const { address } = req.validated?.body || {};
+      const updated = await this.gymService.updateGym(id, { address });
+      if (!updated) throw new AppError("Gym not found", 404);
+      res.json(successResponse(updated, { message: "Gym updated successfully" }));
+    });
   constructor(private gymService: GymService) {}
 
   createGym = asyncHandler(async (req: ValidatedRequest, res: Response) => {
@@ -35,7 +42,6 @@ export class GymController {
 
   getGymById = asyncHandler(async (req: ValidatedRequest, res: Response) => {
     const { id } = req.validated?.params || {};
-
     const gym = await this.gymService.getGymById(id);
     if (!gym) {
       throw new AppError("Gym not found", 404);

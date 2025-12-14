@@ -5,7 +5,7 @@ import type { ValidatedRequest } from "../types/requests.js";
 
 import { asyncHandler } from "../utils/async-handler.js";
 import { successResponse } from "../utils/responses.js";
-import AppError from "../utils/AppError";
+import AppError from "../utils/AppError.js";
 
 export class AttendanceController {
   constructor(private attendanceService: AttendanceService) {}
@@ -24,6 +24,9 @@ export class AttendanceController {
       throw new AppError("Invalid session_id or client_id", 400);
     }
     const attendance = await this.attendanceService.getAttendanceById(sessionId, clientId);
+    if (!attendance) {
+      throw new AppError("Attendance not found", 404);
+    }
     res.json(successResponse(attendance));
   });
 

@@ -1,4 +1,3 @@
-
 import { PrismaClient, Prisma } from "@prisma/client";
 import "dotenv/config";
 
