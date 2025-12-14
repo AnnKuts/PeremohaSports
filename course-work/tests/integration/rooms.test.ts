@@ -51,6 +51,13 @@ describe("Rooms API Integration", () => {
       expect(Array.isArray(res.body.data)).toBe(true);
       expect(res.body.data.some((r: any) => r.capacity === 999)).toBe(false);
     });
+
+    it("GET /rooms/search - filter by capacity", async () => {
+      const res = await request(app)
+        .get("/rooms/search?minCapacity=10");
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body.data)).toBe(true);
+    });
   });
 
   describe("CREATE", () => {
