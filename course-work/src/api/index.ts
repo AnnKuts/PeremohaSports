@@ -17,8 +17,8 @@ router.get<object, MessageResponse>("/", (req, res) => {
   });
 });
 
-router.use("/trainers", trainerRoutes);
-router.use("/sessions", sessionRoutes);
+router.use("/", trainerRoutes);
+router.use("/", sessionRoutes);
 router.use("/gyms", gymRoutes);
 router.use("/rooms", roomRoutes);
 router.use("/class-types", classTypesRoutes);
