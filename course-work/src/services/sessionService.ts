@@ -9,5 +9,12 @@ export const SessionsService = {
     const session = await SessionsRepository.findById(id);
     if (!session) throw new Error("Session not found");
     return session;
+  },
+
+   async deleteSession(id: number) {
+    const session = await SessionsRepository.findById(id);
+    if (!session) throw new Error("Session not found");
+
+    return await SessionsRepository.softDelete(id);
   }
 };

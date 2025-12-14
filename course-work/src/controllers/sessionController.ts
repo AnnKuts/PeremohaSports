@@ -15,4 +15,10 @@ export const SessionsController = {
     
     res.json(result);
   }),
+
+    deleteSession: asyncHandler(async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    await SessionsService.deleteSession(id);
+    res.json({ message: "Session deleted successfully" });
+  }),
 };

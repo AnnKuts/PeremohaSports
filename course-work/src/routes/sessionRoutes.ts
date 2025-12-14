@@ -9,4 +9,6 @@ router.get("/sessions", SessionsController.getAllSessions);
 
 router.get("/sessions/:id", validate(sessionIdParamSchema), SessionsController.getSessionById);
 
+router.delete("/admin/sessions/:id", validate(sessionIdParamSchema), SessionsController.deleteSession);
+
 export default router;
