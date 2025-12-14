@@ -9,6 +9,9 @@ import {
 
 const router = Router();
 
+router.get("/analytics/top-trainer", TrainersController.getTopTrainer);
+router.get("/analytics/trainers/popular", TrainersController.getPopularTrainers);
+router.get("/trainers/:id/workload", validate(trainerIdParamSchema), TrainersController.getTrainerWorkload);
 
 router.post("/admin/trainers", validate(createTrainerSchema), TrainersController.createTrainer);
 

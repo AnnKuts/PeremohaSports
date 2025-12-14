@@ -123,5 +123,66 @@ export const TrainersRepository = {
       where: { trainer_id: trainerId },
       orderBy: { date: 'desc' }
     });
+  },
+
+  async getTopTrainerStats(oneMonthAgo: Date) {
+    return prisma.class_session.groupBy({
+      by: ["trainer_id"],
+      where: { 
+          date: { gte: oneMonthAgo },
+          is_deleted: false 
+      },
+      _count: { session_id: true },
+      orderBy: { _count: { session_id: "desc" } },
+      take: 1,
+    });
+  },
+
+   async getTrainersPopularity() {
+    return prisma.trainer.findMany({
+      where: { is_deleted: false },
+      select: {
+        trainer_id: true,
+        first_name: true,
+        last_name: true,
+        class_session: {
+          where: { is_deleted: false },
+          select: {
+            _count: {
+              select: { 
+                attendance: { 
+                  where: { status: 'attended' }
+                } 
+              }
+            }
+          }
+        }
+      },
+    });
+  },
+
+  async getTrainerWorkloadStats(trainerId: number) {
+    return prisma.class_session.groupBy({
+      by: ['class_type_id'],
+      where: {
+        trainer_id: trainerId,
+        is_deleted: false
+      },
+      _count: {
+        session_id: true
+      },
+      orderBy: {
+        _count: {
+          session_id: 'desc'
+        }
+      }
+    });
+  },
+
+  async getClassTypesByIds(ids: number[]) {
+    return prisma.class_type.findMany({
+      where: { class_type_id: { in: ids } },
+      select: { class_type_id: true, name: true }
+    });
   }
 };
