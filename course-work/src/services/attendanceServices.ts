@@ -1,3 +1,5 @@
+import AppError from "../utils/AppError";
+import { handlePrismaError } from "../utils/handlePrismaError";
 import type { IAttendanceRepository } from "../interfaces/entitiesInterfaces";
 
 export class AttendanceService {
@@ -8,7 +10,11 @@ export class AttendanceService {
   }
 
   async getAttendanceById(sessionId: number, clientId: number) {
-    return await this.attendanceRepository.findById(sessionId, clientId);
+    const attendance = await this.attendanceRepository.findById(sessionId, clientId);
+    if (!attendance) {
+      throw new AppError("Attendance not found", 404);
+    }
+    return attendance;
   }
 
   async getAttendancesBySessionId(sessionId: number) {
@@ -19,7 +25,7 @@ export class AttendanceService {
     const attendance = await this.attendanceRepository.findById(sessionId, clientId);
 
     if (!attendance) {
-      throw new Error("Attendance record not found");
+      throw new AppError("Attendance record not found", 404);
     }
 
     const deletedAttendance = await this.attendanceRepository.delete(sessionId, clientId);
@@ -33,40 +39,44 @@ export class AttendanceService {
   async createAttendance(sessionId: number, clientId: number) {
     const session = await this.attendanceRepository.getSessionWithRoomAndClassType(sessionId);
     if (!session) {
-      throw new Error("Session not found");
+      throw new AppError("Session not found", 404);
     }
     const isAllowed = await this.attendanceRepository.isClassTypeAllowedInRoom(session.room_id, session.class_type_id);
     if (!isAllowed) {
-      throw new Error("Client cannot be enrolled: the selected activity type is not allowed in this room");
+      throw new AppError("Client cannot be enrolled: the selected activity type is not allowed in this room", 400);
     }
 
     const hasMembership = await this.attendanceRepository.hasActiveMembershipForClassType(clientId, session.class_type_id);
     if (!hasMembership) {
-      throw new Error("Client does not have an active membership for this class type");
+      throw new AppError("Client does not have an active membership for this class type", 400);
     }
 
-    const newAttendance = await this.attendanceRepository.create(sessionId, clientId, "booked");
-    return {
-      success: true,
-      attendance: newAttendance,
-    };
+    try {
+      const newAttendance = await this.attendanceRepository.create(sessionId, clientId, "booked");
+      return {
+        success: true,
+        attendance: newAttendance,
+      };
+    } catch (err: any) {
+      throw handlePrismaError(err);
+    }
   }
 
   async updateAttendanceStatus(sessionId: number, clientId: number, newStatus: "booked" | "attended" | "missed" | "cancelled") {
     const currentAttendance = await this.attendanceRepository.findById(sessionId, clientId);
     
     if (!currentAttendance) {
-      throw new Error("Attendance record not found");
+      throw new AppError("Attendance record not found", 404);
     }
 
     const oldStatus = currentAttendance.status;
 
     if (oldStatus === "attended" && newStatus !== "attended") {
-      throw new Error(`Cannot change status from 'attended' to '${newStatus}'`);
+      throw new AppError(`Cannot change status from 'attended' to '${newStatus}'`, 400);
     }
 
     if (oldStatus === newStatus) {
-      throw new Error(`Status is already '${newStatus}'`);
+      throw new AppError(`Status is already '${newStatus}'`, 400);
     }
 
     return await this.attendanceRepository.updateStatus(sessionId, clientId, newStatus);

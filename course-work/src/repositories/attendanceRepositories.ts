@@ -1,5 +1,6 @@
 import type { PrismaClient, Prisma } from "@prisma/client";
 import type { IAttendanceRepository } from "../interfaces/entitiesInterfaces";
+import AppError from "../utils/AppError";
 
 export class AttendanceRepository implements IAttendanceRepository {
   constructor(private prisma: PrismaClient) {}
@@ -120,7 +121,7 @@ export class AttendanceRepository implements IAttendanceRepository {
       });
 
       if (!currentAttendance) {
-        throw new Error("Attendance record not found");
+        throw new AppError("Attendance record not found", 404);
       }
 
       const oldStatus = currentAttendance.status;

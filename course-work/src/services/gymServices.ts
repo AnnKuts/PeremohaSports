@@ -1,3 +1,4 @@
+import AppError from "../utils/AppError";
 import type { IGymRepository } from "../interfaces/entitiesInterfaces";
 
 export class GymService {
@@ -15,7 +16,7 @@ export class GymService {
       for (let i = 0; i < data.rooms.length; i++) {
         const roomData = data.rooms[i];
         if (roomData.capacity < 1 || roomData.capacity > 200) {
-          throw new Error(`Room ${i + 1} capacity must be between 1 and 200`);
+          throw new AppError(`Room ${i + 1} capacity must be between 1 and 200`, 400);
         }
       }
     }
@@ -62,7 +63,7 @@ export class GymService {
     const gym = await this.gymRepository.findById(gymId);
 
     if (!gym) {
-      throw new Error("Gym not found");
+      throw new AppError("Gym not found", 404);
     }
 
     const deletedGym = await this.gymRepository.delete(gymId);

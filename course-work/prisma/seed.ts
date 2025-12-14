@@ -1,9 +1,47 @@
-import { PrismaClient } from "@prisma/client";
+
+import { PrismaClient, Prisma } from "@prisma/client";
 import "dotenv/config";
 
 const prisma = new PrismaClient();
 
-async function main() {
+export async function main() {
+  console.log("Starting database seeding...");
+
+  await prisma.attendance.deleteMany({});
+  await prisma.payment.deleteMany({});
+  await prisma.membership.deleteMany({});
+  await prisma.class_session.deleteMany({});
+  await prisma.room_class_type.deleteMany({});
+  await prisma.trainer_placement.deleteMany({});
+  await prisma.qualification.deleteMany({});
+  await prisma.client.deleteMany({});
+  await prisma.trainer.deleteMany({});
+  await prisma.room.deleteMany({});
+  await prisma.class_type.deleteMany({});
+  await prisma.gym.deleteMany({});
+  await prisma.contact_data.deleteMany({});
+
+  const tables: Array<{ model: string; pk: string }> = [
+    { model: "contact_data", pk: "contact_data_id" },
+    { model: "client", pk: "client_id" },
+    { model: "trainer", pk: "trainer_id" },
+    { model: "gym", pk: "gym_id" },
+    { model: "room", pk: "room_id" },
+    { model: "class_type", pk: "class_type_id" },
+    { model: "class_session", pk: "session_id" },
+    { model: "membership", pk: "membership_id" },
+    { model: "payment", pk: "payment_id" },
+  ];
+  for (const table of tables) {
+    await prisma.$executeRawUnsafe(`
+      SELECT setval(
+        pg_get_serial_sequence('"${table.model}"', '${table.pk}'),
+        1,
+        false
+      );
+    `);
+  }
+
   await prisma.contact_data.createMany({
     data: [
       { phone: "380501112233", email: "ivan.petrenko@example.com" },
@@ -116,6 +154,15 @@ async function main() {
         client_id: 4,
         class_type_id: 3,
       },
+      {
+        start_date: new Date("2025-10-01"),
+        end_date: new Date("2025-12-31"),
+        price: 500,
+        status: "active",
+        is_disposable: false,
+        client_id: 1,
+        class_type_id: 1,
+      },
     ],
   });
 
@@ -135,11 +182,18 @@ async function main() {
     ],
   });
 
-  console.warn("seed completed");
+  console.log("Auto-increment sequences reset.");
+  console.log("Seeding finished successfully!");
 }
 
-main()
-  .catch(console.error)
-  .finally(async () => {
-    await prisma.$disconnect();
-  });
+if (require.main === module) {
+  main()
+    .then(async () => {
+      await prisma.$disconnect();
+    })
+    .catch(async (e) => {
+      console.error(e);
+      await prisma.$disconnect();
+      process.exit(1);
+    });
+}
