@@ -14,8 +14,12 @@
     "start": "node --env-file=.env dist/src/index.js",
     "dev": "tsx watch --env-file=.env src/index.ts",
     "build": "tsc",
-    "lint": "eslint --fix src test",
+    "lint": "eslint --fix src tests",
     "test": "vitest run",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run --config vitest.integration.ts",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -45,10 +49,11 @@
     "supertest": "^7.1.4",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.6"
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^4.0.15"
   },
   "directories": {
-    "test": "test"
+    "test": "tests"
   },
   "bugs": {
     "url": "https://github.com/w3cj/express-api-starter-ts/issues"

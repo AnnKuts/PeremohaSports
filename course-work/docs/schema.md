@@ -2,6 +2,8 @@
 
 ## Entity-Relationship Diagram (ERD):
 
+<img width="1556" height="851" alt="image" src="https://github.com/user-attachments/assets/899e4868-b63d-4f90-a1ff-8d8806fb5de6" />
+
 ## Description of tables:
 
 ### Table: `ContactData`
