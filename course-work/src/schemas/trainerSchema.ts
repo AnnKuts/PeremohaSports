@@ -24,6 +24,7 @@ export const updateTrainerSchema = z.object({
     last_name: z.string().min(2).optional(),
     email: z.string().email().optional(),
     phone: z.string().min(10).optional(),
+    is_deleted: z.boolean().optional(),
     gym_ids: z.array(z.number().int().positive()).optional(),
     class_type_ids: z.array(z.number().int().positive()).optional(),
   }),

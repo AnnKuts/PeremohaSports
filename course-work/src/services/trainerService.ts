@@ -41,6 +41,13 @@ export const TrainersService = {
     return await TrainersRepository.update(id, data, trainer.contact_data_id);
   },
 
+  async deleteTrainer(id: number) {
+    const trainer = await TrainersRepository.findById(id);
+    if (!trainer) throw new Error("Trainer not found");
+
+    return await TrainersRepository.softDelete(id);
+  },
+
   async getTrainerGyms(id: number) {
     const trainer = await this.getTrainerById(id);
     return trainer.trainer_placement.map(p => p.gym);

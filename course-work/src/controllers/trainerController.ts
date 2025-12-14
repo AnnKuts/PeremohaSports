@@ -25,6 +25,12 @@ export const TrainersController = {
     res.json(result);
   }),
 
+    deleteTrainer: asyncHandler(async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    await TrainersService.deleteTrainer(id);
+    res.json({ message: "Trainer deactivated (Soft Deleted)" });
+  }),
+
   getTrainerGyms: asyncHandler(async (req: Request, res: Response) => {
     const result = await TrainersService.getTrainerGyms(Number(req.params.id));
     res.json(result);

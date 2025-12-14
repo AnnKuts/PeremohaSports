@@ -19,6 +19,6 @@ router.get("/trainers/:id/qualifications", validate(trainerIdParamSchema), Train
 router.get("/trainers/:id/sessions", validate(trainerIdParamSchema), TrainersController.getTrainerSessions);
 
 router.patch("/admin/trainers/:id", validate(trainerIdParamSchema), validate(updateTrainerSchema), TrainersController.updateTrainer);
-
+router.delete("/admin/trainers/:id", validate(trainerIdParamSchema), TrainersController.deleteTrainer);
 
 export default router;
