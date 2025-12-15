@@ -19,7 +19,6 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@aws-sdk/client-ses": "^3.948.0",
     "@prisma/adapter-pg": "^7.1.0",
     "@prisma/client": "^6.19.0",
     "@types/nodemailer": "^7.0.4",
@@ -31,6 +30,25 @@
     "pg": "^8.16.3",
     "prisma": "^6.19.0",
     "zod": "^4.1.12"
+    "lint": "eslint --fix src tests",
+    "test": "vitest run",
+    "test:unit": "vitest run tests/unit",
+    "test:integration": "vitest run --config vitest.integration.ts",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@prisma/adapter-pg": "^7.1.0",
+    "@prisma/client": "^6.19.0",
+    "@prisma/engines": "^7.1.0",
+    "cors": "^2.8.5",
+    "express": "^5.1.0",
+    "helmet": "^8.1.0",
+    "morgan": "^1.10.1",
+    "pg": "^8.16.3",
+    "prisma": "^6.19.0",
+    "zod": "^4.1.13"
   },
   "devDependencies": {
     "@antfu/eslint-config": "^6.2.0",
