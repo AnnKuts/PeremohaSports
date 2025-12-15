@@ -1,8 +1,6 @@
 import crypto from "crypto";
-import { SendEmailCommand } from "@aws-sdk/client-ses";
-import { sesClient } from "../lib/ses";
 import { authConfig } from "../config/auth.config";
-import { awsConfig } from "../config/aws.config";
+import { mailTransporter, nodemailerConfig } from "../config/mail.config";
 
 export interface ActivationPayload {
   email: string;
@@ -67,25 +65,16 @@ export const emailService = {
   },
 
   async sendActivationEmail(email: string, code: string) {
-    const command = new SendEmailCommand({
-      Source: awsConfig.sesFromEmail, // MUST be verified in SES
-      Destination: {
-        ToAddresses: [email],
-      },
-      Message: {
-        Subject: {
-          Data: "Your login code",
-          Charset: "UTF-8",
-        },
-        Body: {
-          Text: {
-            Data: `Your one-time login code:\n\n${code}\n\nThis code expires in 15 minutes.`,
-            Charset: "UTF-8",
-          },
-        },
-      },
-    });
+    await mailTransporter.sendMail({
+      from: nodemailerConfig.from,
+      to: email,
+      subject: "Your login code",
+      text: `Your one-time login code:
 
-    await sesClient.send(command);
+${code}
+
+This code expires in 15 minutes.`,
+       html: `<p>Your one-time login code:</p><b>${code}</b>`,
+    });
   },
 };
