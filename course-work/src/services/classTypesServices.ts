@@ -23,4 +23,8 @@ export class ClassTypeService {
   async updateClassType(classTypeId: number, updateData: Partial<{ name: string; description?: string; level?: string }>) {
     return await this.classTypeRepository.update(classTypeId, updateData);
   }
+
+  async DeleteClassType(classTypeId: number) {
+    return await this.classTypeRepository.delete(classTypeId);
+  }  
 }

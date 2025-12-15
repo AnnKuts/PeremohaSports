@@ -78,24 +78,27 @@ export class AttendanceRepository implements IAttendanceRepository {
   }
 
   async delete(sessionId: number, clientId: number) {
-    const attendance = await this.prisma.attendance.findUnique({
-      where: {
-        session_id_client_id: {
-          session_id: sessionId,
-          client_id: clientId,
+    return await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+      const attendance = await tx.attendance.findUnique({
+        where: {
+          session_id_client_id: {
+            session_id: sessionId,
+            client_id: clientId,
+          },
         },
-      },
-    });
-    return await this.prisma.attendance.update({
-      where: {
-        session_id_client_id: {
-          session_id: sessionId,
-          client_id: clientId,
+      });
+
+      return await tx.attendance.update({
+        where: {
+          session_id_client_id: {
+            session_id: sessionId,
+            client_id: clientId,
+          },
         },
-      },
-      data: {
-        is_deleted: true,
-      },
+        data: {
+          is_deleted: true,
+        },
+      });
     });
   }
 

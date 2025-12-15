@@ -115,4 +115,46 @@ export class ClassTypeRepository implements IClassTypeRepository {
       },
     });
   }
+
+  async delete(classTypeId: number) {
+    return await this.prisma.$transaction(async (tx) => {
+      const classType = await tx.class_type.update({
+        where: { class_type_id: classTypeId },
+        data: { is_deleted: true },
+      });
+
+      await tx.qualification.updateMany({
+        where: { class_type_id: classTypeId },
+        data: { is_deleted: true },
+      });
+
+      await tx.membership.updateMany({
+        where: { class_type_id: classTypeId },
+        data: { status: "frozen" },
+      });
+
+      await tx.room_class_type.updateMany({
+        where: { class_type_id: classTypeId },
+        data: { is_deleted: true },
+      });
+
+      const sessions = await tx.class_session.findMany({
+        where: { class_type_id: classTypeId },
+        select: { session_id: true },
+      });
+      const sessionIds = sessions.map(s => s.session_id);
+      if (sessionIds.length > 0) {
+        await tx.class_session.updateMany({
+          where: { session_id: { in: sessionIds } },
+          data: { is_deleted: true },
+        });
+        await tx.attendance.updateMany({
+          where: { session_id: { in: sessionIds } },
+          data: { is_deleted: true, status: "cancelled" },
+        });
+      }
+
+      return classType;
+    });
+  }
 }

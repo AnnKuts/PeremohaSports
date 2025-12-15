@@ -42,4 +42,5 @@ export interface IClassTypeRepository {
   findTrainersByClassTypeId(classTypeId: number): Promise<any[]>;
   getTrainers(classTypeId: number): Promise<any[]>;
   update(classTypeId: number, updateData: Partial<{ name: string; description?: string; level?: string }>): Promise<any>;
+  delete(classTypeId: number): Promise<any>;
 }

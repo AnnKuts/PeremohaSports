@@ -46,4 +46,14 @@ export class ClassTypeController {
     }
     res.json(successResponse(updated, { message: "Class type updated successfully" }));
   });
+
+  delete = asyncHandler(async (req: ValidatedRequest, res: Response) => {
+    const { id } = req.validated?.params || {};
+    const deleted = await this.classTypeService.DeleteClassType(Number(id));
+    if (!deleted) {
+      throw new AppError("Class type not found", 404);
+    }
+    res.json(successResponse(deleted, { message: "Class type soft-deleted successfully" }));
+  });
+
 }
