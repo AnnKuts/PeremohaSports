@@ -8,7 +8,6 @@ import type MessageResponse from "./interfaces/message-response.js";
 
 import api from "./api/index.js";
 import * as middlewares from "./middlewares.js";
-import AppError from "./utils/AppError";
 import { globalErrorHandler } from "./utils/error-handler";
 
 const app = express();

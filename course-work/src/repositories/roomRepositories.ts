@@ -1,6 +1,7 @@
 import type { PrismaClient, Prisma } from "@prisma/client";
 import type { IRoomRepository } from "../interfaces/entitiesInterfaces";
 import { softDeleteRoom } from "./sharedRepositoryFunc";
+import AppError from "../utils/AppError";
 
 export class RoomRepository implements IRoomRepository {
   constructor(private prisma: PrismaClient) {}
@@ -161,7 +162,7 @@ export class RoomRepository implements IRoomRepository {
       });
 
       if (!room) {
-        throw new Error("Room not found");
+        throw new AppError("Room not found", 404);
       }
 
       const oldCapacity = room.capacity;
@@ -190,8 +191,9 @@ export class RoomRepository implements IRoomRepository {
         );
 
         if (hasConflicts) {
-          throw new Error(
+          throw new AppError(
             `Cannot reduce capacity to ${newCapacity}: some future sessions already have more bookings`,
+            400,
           );
         }
       }
@@ -205,8 +207,9 @@ export class RoomRepository implements IRoomRepository {
       });
 
       if (updateResult.count === 0) {
-        throw new Error(
+        throw new AppError(
           "Room capacity was changed by another admin. Please refresh and try again",
+          409,
         );
       }
 
