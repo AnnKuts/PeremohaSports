@@ -28,16 +28,19 @@ export const updateClientSchema = z.object({
       first_name: z.string().min(1).max(32).optional(),
       last_name: z.string().min(1).max(32).optional(),
       gender: z.enum(["male", "female"]).optional(),
-      contact_data: z.object({
-        email: z.string().email().optional(),
-        phone: z.string().max(32).optional(),
-      }).optional(),
+      contact_data: z
+        .object({
+          email: z.string().email().optional(),
+          phone: z.string().max(32).optional(),
+        })
+        .optional(),
     })
+    .strict()
     .refine(
       (data) => Object.keys(data).length > 0,
       "At least one field must be provided for update"
-    )
-    .strict(),
+    ),
 });
 
-export type UpdateClientInput = z.infer<typeof updateClientSchema>["body"];
+export type UpdateClientInput =
+  z.infer<typeof updateClientSchema>["body"];
