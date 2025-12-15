@@ -1,4 +1,4 @@
-import prisma from "../lib/prisma";
+import { registerRepository } from "../repositories/register.repository";
 
 interface RegisterData {
   firstName: string;
@@ -39,75 +39,23 @@ export const registerService = {
       throw new Error("Invalid phone format");
     }
 
-    return prisma.$transaction(async (tx) => {
-      const existing = await tx.contact_data.findFirst({
-        where: {
-          OR: [
-            {email: data.email},
-            {phone: data.phone}
-          ]
-        }
-      });
+    const existing = await registerRepository.findContactByEmailOrPhone(data.email, data.phone);
 
-      if (existing) {
-        throw new Error("Email or phone already exists");
-      }
+    if (existing) {
+      throw new Error("Email or phone already exists");
+    }
 
-      const classType = await tx.class_type.findUnique({
-        where: {class_type_id: data.membershipType}
-      });
+    const classType = await registerRepository.findClassTypeById(data.membershipType);
 
-      if (!classType) {
-        throw new Error("Invalid membership type");
-      }
+    if (!classType) {
+      throw new Error("Invalid membership type");
+    }
 
-      const contact = await tx.contact_data.create({
-        data: {
-          email: data.email,
-          phone: data.phone
-        },
-      });
+    const result = await registerRepository.registerWithTransaction(data);
 
-      const client = await tx.client.create({
-        data: {
-          first_name: data.firstName,
-          last_name: data.lastName,
-          gender: data.gender,
-          contact_data_id: contact.contact_data_id,
-        },
-      });
-
-      const membership = await tx.membership.create({
-        data: {
-          client_id: client.client_id,
-          class_type_id: data.membershipType,
-          start_date: new Date(data.startDate),
-          end_date: new Date(data.endDate),
-          price: data.price,
-          status: "active",
-          is_disposable: data.isDisposable || false,
-        },
-      });
-
-      const payment = await tx.payment.create({
-        data: {
-          client_id: client.client_id,
-          membership_id: membership.membership_id,
-          amount: data.price,
-          method: data.paymentMethod,
-          status: "pending",
-        },
-      });
-
-      return {
-        success: true,
-        data: {
-          contact,
-          client,
-          membership,
-          payment
-        }
-      };
-    });
+    return {
+      success: true,
+      data: result
+    };
   },
 };

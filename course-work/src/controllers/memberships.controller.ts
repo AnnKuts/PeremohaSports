@@ -1,64 +1,41 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { membershipsService } from "../services/memberships.service";
+import { asyncHandler } from "../utils/async-handler";
 
 export const MembershipsController = {
-  async getMemberships(req: Request, res: Response, next: NextFunction) {
-    try {
-      const result = await membershipsService.getMemberships();
-      res.json(result);
-    } catch (error) {
-      next(error);
-    }
-  },
+  getMemberships: asyncHandler(async (req: Request, res: Response) => {
+    const result = await membershipsService.getMemberships();
+    res.json(result);
+  }),
 
-  async getMembershipById(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = Number(req.params.id);
-      const result = await membershipsService.getMembershipById(id);
-      res.json(result);
-    } catch (error) {
-      next(error);
-    }
-  },
+  getMembershipById: asyncHandler(async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    const result = await membershipsService.getMembershipById(id);
+    res.json(result);
+  }),
 
-  async createMembership(req: Request, res: Response, next: NextFunction) {
-    try {
-      const data = req.body;
-      const result = await membershipsService.createMembership(data);
-      res.status(201).json(result);
-    } catch (error) {
-      next(error);
-    }
-  },
+  createMembership: asyncHandler(async (req: Request, res: Response) => {
+    const data = req.body;
+    const result = await membershipsService.createMembership(data);
+    res.status(201).json(result);
+  }),
 
-  async updateMembership(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = Number(req.params.id);
-      const data = req.body;
-      const result = await membershipsService.updateMembership(id, data);
-      res.json(result);
-    } catch (error) {
-      next(error);
-    }
-  },
+  updateMembership: asyncHandler(async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    const data = req.body;
+    const result = await membershipsService.updateMembership(id, data);
+    res.json(result);
+  }),
 
-  async getMembershipPayments(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = Number(req.params.id);
-      const result = await membershipsService.getMembershipPayments(id);
-      res.json(result);
-    } catch (error) {
-      next(error);
-    }
-  },
+  getMembershipPayments: asyncHandler(async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    const result = await membershipsService.getMembershipPayments(id);
+    res.json(result);
+  }),
 
-  async deleteMembership(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = Number(req.params.id);
-      const result = await membershipsService.deleteMembership(id);
-      res.json(result);
-    } catch (error) {
-      next(error);
-    }
-  },
+  deleteMembership: asyncHandler(async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    const result = await membershipsService.deleteMembership(id);
+    res.json(result);
+  }),
 };

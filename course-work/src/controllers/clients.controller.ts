@@ -1,65 +1,42 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response } from "express";
 import { clientsService } from "../services/clients.service";
+import { asyncHandler } from "../utils/async-handler";
 
 export const ClientsController = {
-  async getClients(req: Request, res: Response, next: NextFunction) {
-    try {
-      const isActive = req.query.active === "true";
-      const result = await clientsService.getClients(isActive);
-      res.json(result);
-    } catch (error) {
-      next(error);
-    }
-  },
+  getClients: asyncHandler(async (req: Request, res: Response) => {
+    const isActive = req.query.active === "true";
+    const result = await clientsService.getClients(isActive);
+    res.json(result);
+  }),
 
-  async getClientById(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = Number(req.params.id);
-      const result = await clientsService.getClientById(id);
-      res.json(result);
-    } catch (error) {
-      next(error);
-    }
-  },
+  getClientById: asyncHandler(async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    const result = await clientsService.getClientById(id);
+    res.json(result);
+  }),
 
-  async getClientMemberships(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = Number(req.params.id);
-      const result = await clientsService.getClientMemberships(id);
-      res.json(result);
-    } catch (error) {
-      next(error);
-    }
-  },
+  getClientMemberships: asyncHandler(async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    const result = await clientsService.getClientMemberships(id);
+    res.json(result);
+  }),
 
-  async getClientPayments(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = Number(req.params.id);
-      const result = await clientsService.getClientPayments(id);
-      res.json(result);
-    } catch (error) {
-      next(error);
-    }
-  },
+  getClientPayments: asyncHandler(async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    const result = await clientsService.getClientPayments(id);
+    res.json(result);
+  }),
 
-  async getClientAttendance(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = Number(req.params.id);
-      const result = await clientsService.getClientAttendance(id);
-      res.json(result);
-    } catch (error) {
-      next(error);
-    }
-  },
+  getClientAttendance: asyncHandler(async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    const result = await clientsService.getClientAttendance(id);
+    res.json(result);
+  }),
 
-  async updateClient(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = Number(req.params.id);
-      const data = req.body;
-      const result = await clientsService.updateClient(id, data);
-      res.json(result);
-    } catch (error) {
-      next(error);
-    }
-  },
+  updateClient: asyncHandler(async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    const data = req.body;
+    const result = await clientsService.updateClient(id, data);
+    res.json(result);
+  }),
 };

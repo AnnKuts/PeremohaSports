@@ -1,137 +1,48 @@
-import prisma from "../lib/prisma";
 import {
   CreatePaymentInput,
   UpdatePaymentInput,
   GetPaymentsQuery,
 } from "../schemas/payments.schema";
 import { emailService } from "./email.service";
+import { paymentsRepository } from "../repositories/payments.repository";
 
 export const paymentsService = {
   async getPayments(query?: GetPaymentsQuery) {
-    const where: any = {};
-
-    if (query?.status) {
-      where.status = query.status;
-    }
-
-    if (query?.method) {
-      where.method = query.method;
-    }
-
-    if (query?.client_id) {
-      where.client_id = Number(query.client_id);
-    }
-
-    return prisma.payment.findMany({
-      where,
-      include: {
-        client: {
-          include: {
-            contact_data: true,
-          },
-        },
-        membership: {
-          include: {
-            class_type: true,
-          },
-        },
-      },
-      orderBy: {
-        created_at: "desc",
-      },
-    });
+    return paymentsRepository.findMany(query);
   },
 
   async getPaymentById(id: number) {
-    const payment = await prisma.payment.findUnique({
-      where: { payment_id: id },
-      include: {
-        client: {
-          include: {
-            contact_data: true,
-          },
-        },
-        membership: {
-          include: {
-            class_type: true,
-          },
-        },
-      },
-    });
-
+    const payment = await paymentsRepository.findById(id);
     if (!payment) {
       throw new Error("Payment not found");
     }
-
     return payment;
   },
 
   async createPayment(data: CreatePaymentInput) {
-    return prisma.payment.create({
-      data,
-      include: {
-        client: {
-          include: {
-            contact_data: true,
-          },
-        },
-        membership: {
-          include: {
-            class_type: true,
-          },
-        },
-      },
-    });
+    return paymentsRepository.create(data);
   },
 
   async updatePayment(id: number, data: UpdatePaymentInput) {
-    const existingPayment = await prisma.payment.findUnique({
-      where: { payment_id: id },
-    });
-
+    const existingPayment = await paymentsRepository.findById(id);
     if (!existingPayment) {
       throw new Error("Payment not found");
     }
-
-    const updatedPayment = await prisma.payment.update({
-      where: { payment_id: id },
-      data,
-      include: {
-        client: {
-          include: {
-            contact_data: true,
-          },
-        },
-        membership: {
-          include: {
-            class_type: true,
-          },
-        },
-      },
-    });
+    const updatedPayment = await paymentsRepository.update(id, data);
 
     if (data.status === "completed") {
-      const completedCount = await prisma.payment.count({
-        where: {
-          client_id: updatedPayment.client_id,
-          status: "completed",
-        },
-      });
-
+      const completedCount = await paymentsRepository.countCompletedByClientId(updatedPayment.client_id);
       if (completedCount === 1) {
         const email = updatedPayment.client.contact_data.email;
-
         if (email) {
           const { code } = emailService.generateActivationCode(
             email,
             updatedPayment.client_id
           );
-
           await emailService.sendActivationEmail(email, code);
         }
       }
     }
-
     return updatedPayment;
   },
 };

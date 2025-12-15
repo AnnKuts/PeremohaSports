@@ -1,90 +1,54 @@
-import prisma from "../lib/prisma";
 import { CreateMembershipInput, UpdateMembershipInput } from "../schemas/memberships.schema";
+import { membershipsRepository } from "../repositories/memberships.repository";
 
 export const membershipsService = {
   async _expireOverdueMemberships() {
-    await prisma.membership.updateMany({
-      where: {
-        status: "active",
-        end_date: {
-          lt: new Date(),
-        },
-      },
-      data: {
-        status: "expired",
-      },
-    });
+    await membershipsRepository.expireOverdueMemberships();
   },
 
   async getMemberships() {
     await this._expireOverdueMemberships();
 
-    return prisma.membership.findMany({
-      include: {
-        client: true,
-        class_type: true,
-      },
-      orderBy: { membership_id: 'desc' }
-    });
+    return membershipsRepository.findMany();
   },
 
   async getMembershipById(id: number) {
     await this._expireOverdueMemberships();
 
-    const membership = await prisma.membership.findUnique({
-      where: { membership_id: id },
-      include: {
-        client: { include: { contact_data: true } },
-        class_type: true,
-      },
-    });
+    const membership = await membershipsRepository.findById(id);
 
     if (!membership) throw new Error("Membership not found");
     return membership;
   },
 
   async createMembership(data: CreateMembershipInput) {
-    const client = await prisma.client.findUnique({ where: { client_id: data.client_id } });
+    const client = await membershipsRepository.findClientById(data.client_id);
     if (!client) throw new Error("Client not found");
 
-    const classType = await prisma.class_type.findUnique({ where: { class_type_id: data.class_type_id } });
+    const classType = await membershipsRepository.findClassTypeById(data.class_type_id);
     if (!classType) throw new Error("Class type not found");
 
-    return prisma.membership.create({
-      data: {
-        ...data,
-        status: "active",
-      },
-    });
+    return membershipsRepository.create(data);
   },
 
   async updateMembership(id: number, data: UpdateMembershipInput) {
-    const membership = await prisma.membership.findUnique({ where: { membership_id: id } });
+    const membership = await membershipsRepository.findById(id);
     if (!membership) throw new Error("Membership not found");
 
-    return prisma.membership.update({
-      where: { membership_id: id },
-      data,
-    });
+    return membershipsRepository.update(id, data);
   },
 
   async getMembershipPayments(id: number) {
-    const membership = await prisma.membership.findUnique({ where: { membership_id: id } });
+    const membership = await membershipsRepository.findById(id);
     if (!membership) throw new Error("Membership not found");
 
-    return prisma.payment.findMany({
-      where: { membership_id: id },
-      include: { client: true },
-    });
+    return membershipsRepository.getPaymentsByMembershipId(id);
   },
 
   async deleteMembership(id: number) {
-    const membership = await prisma.membership.findUnique({ where: { membership_id: id } });
+    const membership = await membershipsRepository.findById(id);
     if (!membership) throw new Error("Membership not found");
 
-    return prisma.membership.update({
-      where: { membership_id: id },
-      data: { status: "cancelled" },
-    });
+    return membershipsRepository.softDelete(id);
   },
 };
