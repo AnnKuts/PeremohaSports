@@ -13,6 +13,7 @@ export const paymentsService = {
 
   async getPaymentById(id: number) {
     const payment = await paymentsRepository.findById(id);
+
     if (!payment) {
       throw new Error("Payment not found");
     }
@@ -25,24 +26,34 @@ export const paymentsService = {
 
   async updatePayment(id: number, data: UpdatePaymentInput) {
     const existingPayment = await paymentsRepository.findById(id);
+
     if (!existingPayment) {
       throw new Error("Payment not found");
     }
+
     const updatedPayment = await paymentsRepository.update(id, data);
 
     if (data.status === "completed") {
-      const completedCount = await paymentsRepository.countCompletedByClientId(updatedPayment.client_id);
+      const completedCount =
+        await paymentsRepository.countCompletedByClientId(
+          updatedPayment.client_id,
+        );
+
       if (completedCount === 1) {
         const email = updatedPayment.client.contact_data.email;
+
         if (email) {
-          const { code } = emailService.generateActivationCode(
+          const { code } = emailService.generateActivationCode({
             email,
-            updatedPayment.client_id
-          );
+            actor: "client",
+            actorId: updatedPayment.client_id,
+          });
+
           await emailService.sendActivationEmail(email, code);
         }
       }
     }
+
     return updatedPayment;
   },
 };

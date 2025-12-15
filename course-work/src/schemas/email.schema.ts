@@ -2,7 +2,8 @@ import { z } from "zod";
 
 export const activationEmailPayloadSchema = z.object({
   email: z.string().email(),
-  clientId: z.number().int().positive(),
+  actor: z.enum(["client", "trainer"]),
+  actorId: z.number(),
   expiresAt: z.number().int(),
   nonce: z.string().min(8),
 });
