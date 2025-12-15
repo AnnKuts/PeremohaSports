@@ -5,6 +5,7 @@ import type { ValidatedRequest } from "../types/requests.js";
 
 import { asyncHandler } from "../utils/async-handler.js";
 import { successResponse } from "../utils/responses.js";
+import AppError from "../utils/AppError.js";
 
 export class AttendanceController {
   constructor(private attendanceService: AttendanceService) {}
@@ -12,18 +13,20 @@ export class AttendanceController {
   getAllAttendances = asyncHandler(async (req: ValidatedRequest, res: Response) => {
     const { limit, offset } = req.validated?.query || {};
     const result = await this.attendanceService.getAllAttendances({ limit, offset });
-
     res.json(successResponse(result.attendances, { total: result.total }));
   });
 
   getAttendanceById = asyncHandler(async (req: ValidatedRequest, res: Response) => {
     const { session_id, client_id } = req.validated?.query || {};
-
-    const attendance = await this.attendanceService.getAttendanceById(session_id, client_id);
-    if (!attendance) {
-      return res.status(404).json({ error: "Attendance not found" });
+    const sessionId = Number(session_id);
+    const clientId = Number(client_id);
+    if (isNaN(sessionId) || isNaN(clientId)) {
+      throw new AppError("Invalid session_id or client_id", 400);
     }
-
+    const attendance = await this.attendanceService.getAttendanceById(sessionId, clientId);
+    if (!attendance) {
+      throw new AppError("Attendance not found", 404);
+    }
     res.json(successResponse(attendance));
   });
 
@@ -37,16 +40,8 @@ export class AttendanceController {
   deleteAttendance = asyncHandler(async (req: ValidatedRequest, res: Response) => {
     const { session_id, client_id } = req.validated?.query || {};
 
-    try {
-      const result = await this.attendanceService.deleteAttendance(Number(session_id), Number(client_id));
-      res.json(successResponse(result, { message: "Attendance record deleted successfully" }));
-    }
-    catch (error) {
-      if (error instanceof Error && error.message === "Attendance record not found") {
-        return res.status(404).json({ error: "Attendance record not found" });
-      }
-      throw error;
-    }
+    const result = await this.attendanceService.deleteAttendance(Number(session_id), Number(client_id));
+    res.json(successResponse(result, { message: "Attendance record deleted successfully" }));
   });
 
   createAttendance = asyncHandler(async (req: ValidatedRequest, res: Response) => {
@@ -59,30 +54,11 @@ export class AttendanceController {
 
   updateAttendanceStatus = asyncHandler(async (req: ValidatedRequest, res: Response) => {
     const { session_id, client_id, status } = req.validated?.body || {};
-
-    try {
-      const result = await this.attendanceService.updateAttendanceStatus(
-        session_id,
-        client_id,
-        status,
-      );
-
-      res.json(successResponse(result, { message: "Status updated successfully" }));
-    }
-    catch (error) {
-      if (error instanceof Error) {
-        if (error.message.includes("not found")) {
-          return res.status(404).json({ error: error.message });
-        }
-        if (error.message.includes("Cannot change") || error.message.includes("already")) {
-          return res.status(400).json({ error: error.message });
-        }
-        if (error.message.includes("changed by another user")) {
-          return res.status(409).json({ error: error.message });
-        }
-      }
-
-      throw error;
-    }
+    const result = await this.attendanceService.updateAttendanceStatus(
+      session_id,
+      client_id,
+      status,
+    );
+    res.json(successResponse(result, { message: "Status updated successfully" }));
   });
 }

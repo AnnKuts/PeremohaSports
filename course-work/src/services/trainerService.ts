@@ -1,3 +1,4 @@
+import AppError from "../utils/AppError";
 import { TrainersRepository } from "../repositories/trainerRepository";
 import { CreateTrainerInput, UpdateTrainerInput } from "../schemas/trainerSchema";
 
@@ -8,22 +9,22 @@ export const TrainersService = {
 
   async getTrainerById(id: number) {
     const trainer = await TrainersRepository.findById(id);
-    if (!trainer) throw new Error("Trainer not found");
+    if (!trainer) throw new AppError("Trainer not found", 404);
     return trainer;
   },
 
   async createTrainer(data: CreateTrainerInput) {
     const existing = await TrainersRepository.findContactByEmail(data.email);
-    if (existing) throw new Error("Email already exists");
+    if (existing) throw new AppError("Email already exists", 400);
 
     if (data.gym_ids?.length) {
       const count = await TrainersRepository.countGyms(data.gym_ids);
-      if (count !== data.gym_ids.length) throw new Error("One or more Gym IDs are invalid");
+      if (count !== data.gym_ids.length) throw new AppError("One or more Gym IDs are invalid", 400);
     }
 
     if (data.class_type_ids?.length) {
       const count = await TrainersRepository.countClassTypes(data.class_type_ids);
-      if (count !== data.class_type_ids.length) throw new Error("One or more Class Type IDs are invalid");
+      if (count !== data.class_type_ids.length) throw new AppError("One or more Class Type IDs are invalid", 400);
     }
 
     return await TrainersRepository.create(data);
@@ -31,11 +32,11 @@ export const TrainersService = {
 
   async updateTrainer(id: number, data: UpdateTrainerInput) {
     const trainer = await TrainersRepository.findById(id);
-    if (!trainer) throw new Error("Trainer not found");
+    if (!trainer) throw new AppError("Trainer not found", 404);
 
     if (data.email && data.email !== trainer.contact_data.email) {
       const existing = await TrainersRepository.findContactByEmail(data.email);
-      if (existing) throw new Error("Email already exists");
+      if (existing) throw new AppError("Email already exists", 400);
     }
 
     return await TrainersRepository.update(id, data, trainer.contact_data_id);
@@ -53,7 +54,7 @@ export const TrainersService = {
 
   async getTrainerSessions(id: number) {
     const trainer = await TrainersRepository.findById(id);
-    if(!trainer) throw new Error("Trainer not found");
+    if(!trainer) throw new AppError("Trainer not found", 404);
     return await TrainersRepository.getSessionsByTrainer(id);
   }
 };

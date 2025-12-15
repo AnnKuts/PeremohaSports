@@ -19,4 +19,8 @@ export class ClassTypeService {
   async getClassTypeTrainers(classTypeId: number) {
     return await this.classTypeRepository.getTrainers(classTypeId);
   }
+
+  async updateClassType(classTypeId: number, updateData: Partial<{ name: string; description?: string; level?: string }>) {
+    return await this.classTypeRepository.update(classTypeId, updateData);
+  }
 }

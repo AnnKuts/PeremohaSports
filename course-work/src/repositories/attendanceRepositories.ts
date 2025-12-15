@@ -1,5 +1,6 @@
 import type { PrismaClient, Prisma } from "@prisma/client";
 import type { IAttendanceRepository } from "../interfaces/entitiesInterfaces";
+import AppError from "../utils/AppError";
 
 export class AttendanceRepository implements IAttendanceRepository {
   constructor(private prisma: PrismaClient) {}
@@ -43,6 +44,7 @@ export class AttendanceRepository implements IAttendanceRepository {
 
     const [attendances, total] = await Promise.all([
       this.prisma.attendance.findMany({
+        where: { is_deleted: false },
         orderBy: [
           { session_id: "desc" },
           { client_id: "asc" },
@@ -50,26 +52,25 @@ export class AttendanceRepository implements IAttendanceRepository {
         take: limit,
         skip: offset,
       }),
-      this.prisma.attendance.count(),
+      this.prisma.attendance.count({ where: { is_deleted: false } }),
     ]);
 
     return { attendances, total };
   }
 
   async findById(sessionId: number, clientId: number) {
-    return await this.prisma.attendance.findUnique({
+    return await this.prisma.attendance.findFirst({
       where: {
-        session_id_client_id: {
-          session_id: sessionId,
-          client_id: clientId,
-        },
+        session_id: sessionId,
+        client_id: clientId,
+        is_deleted: false,
       },
     });
   }
 
   async findBySessionId(sessionId: number) {
     return await this.prisma.attendance.findMany({
-      where: { session_id: sessionId },
+      where: { session_id: sessionId, is_deleted: false },
       orderBy: {
         client_id: "asc",
       },
@@ -77,7 +78,7 @@ export class AttendanceRepository implements IAttendanceRepository {
   }
 
   async delete(sessionId: number, clientId: number) {
-    return await this.prisma.attendance.delete({
+    const attendance = await this.prisma.attendance.findUnique({
       where: {
         session_id_client_id: {
           session_id: sessionId,
@@ -85,9 +86,20 @@ export class AttendanceRepository implements IAttendanceRepository {
         },
       },
     });
+    return await this.prisma.attendance.update({
+      where: {
+        session_id_client_id: {
+          session_id: sessionId,
+          client_id: clientId,
+        },
+      },
+      data: {
+        is_deleted: true,
+      },
+    });
   }
 
-  async create(sessionId: number, clientId: number, status: string) {
+    async create(sessionId: number, clientId: number, status: string) {
     return await this.prisma.attendance.create({
       data: {
         session_id: sessionId,
@@ -109,7 +121,7 @@ export class AttendanceRepository implements IAttendanceRepository {
       });
 
       if (!currentAttendance) {
-        throw new Error("Attendance record not found");
+        throw new AppError("Attendance record not found", 404);
       }
 
       const oldStatus = currentAttendance.status;

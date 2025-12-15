@@ -1,12 +1,15 @@
 import { z } from "zod";
 import { positiveNumberString, paginationWithStatsSchema } from "./common";
-
+import { CLASS_TYPE_NAMES, CLASS_TYPE_LEVELS } from "../types/enum_types";
+export const getAllClassTypesSchema = paginationWithStatsSchema;
 export const createClassTypeSchema = z.object({
   body: z.object({
-    name: z.string().min(1, "Name is required").max(100, "Name too long"),
+    name: z.enum(CLASS_TYPE_NAMES, {
+      message: `Name must be one of: ${CLASS_TYPE_NAMES.join(", ")}`,
+    }),
     description: z.string().max(500, "Description too long").optional(),
-    level: z.enum(["beginner", "intermediate", "advanced"], {
-      message: "Level must be one of: beginner, intermediate, advanced",
+    level: z.enum(CLASS_TYPE_LEVELS, {
+      message: `Level must be one of: ${CLASS_TYPE_LEVELS.join(", ")}`,
     }),
   }),
 });
@@ -23,4 +26,16 @@ export const getClassTypeTrainersSchema = z.object({
   }),
 });
 
-export const getAllClassTypesSchema = paginationWithStatsSchema;
+export const updateClassTypeSchema = z.object({
+  params: z.object({
+    id: positiveNumberString,
+  }),
+  body: z.object({
+    name: z.enum(CLASS_TYPE_NAMES).optional(),
+    description: z.string().max(500, "Description too long").optional(),
+    level: z.enum(CLASS_TYPE_LEVELS).optional(),
+  }).refine((data) => Object.keys(data).length > 0, {
+    message: "At least one field must be provided for update",
+    path: ["body"],
+  }),
+});

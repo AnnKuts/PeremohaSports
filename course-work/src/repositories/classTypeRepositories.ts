@@ -28,6 +28,7 @@ export class ClassTypeRepository implements IClassTypeRepository {
 
     const [classTypes, total] = await Promise.all([
       this.prisma.class_type.findMany({
+        where: { is_deleted: false },
         include: includeStats
           ? {
               _count: {
@@ -43,15 +44,15 @@ export class ClassTypeRepository implements IClassTypeRepository {
         take: limit,
         skip: offset,
       }),
-      this.prisma.class_type.count(),
+      this.prisma.class_type.count({ where: { is_deleted: false } }),
     ]);
 
     return { classTypes, total };
   }
 
   async findById(classTypeId: number) {
-    return await this.prisma.class_type.findUnique({
-      where: { class_type_id: classTypeId },
+    return await this.prisma.class_type.findFirst({
+      where: { class_type_id: classTypeId, is_deleted: false },
       include: {
         _count: {
           select: {
@@ -64,7 +65,11 @@ export class ClassTypeRepository implements IClassTypeRepository {
     });
   }
 
-  async findTrainersByClassTypeId(classTypeId: number) {
+  async findTrainersByClassTypeId(
+    classTypeId: number,
+    options: { limit?: number; offset?: number } = {}
+  ) {
+    const { limit, offset } = options;
     const qualifications = await this.prisma.qualification.findMany({
       where: { class_type_id: classTypeId },
       include: {
@@ -74,11 +79,40 @@ export class ClassTypeRepository implements IClassTypeRepository {
           },
         },
       },
+      take: limit,
+      skip: offset,
     });
     return qualifications.map((q: any) => q.trainer);
   }
 
-  async getTrainers(classTypeId: number) {
-    return await this.findTrainersByClassTypeId(classTypeId);
+  async getTrainers(
+    classTypeId: number,
+    options: { limit?: number; offset?: number } = {}
+  ) {
+    return await this.findTrainersByClassTypeId(classTypeId, options);
+  }
+  
+  async update(classTypeId: number, updateData: Partial<{ name: string; description?: string; level?: string }>) {
+    const data: any = { ...updateData };
+    if (data.name === "swimming pool") data.name = "swimming_pool";
+    if (data.name && !["workout", "yoga", "swimming_pool"].includes(data.name)) delete data.name;
+    if (data.level && !["beginner", "intermediate", "advanced"].includes(data.level)) delete data.level;
+    const updated = await this.prisma.class_type.updateMany({
+      where: { class_type_id: classTypeId, is_deleted: false },
+      data,
+    });
+    if (updated.count === 0) return null;
+    return await this.prisma.class_type.findFirst({
+      where: { class_type_id: classTypeId },
+      include: {
+        _count: {
+          select: {
+            membership: true,
+            qualification: true,
+            room_class_type: true,
+          },
+        },
+      },
+    });
   }
 }

@@ -5,6 +5,7 @@ import type { ValidatedRequest } from "../types/requests.js";
 
 import { asyncHandler } from "../utils/async-handler.js";
 import { successResponse } from "../utils/responses.js";
+import AppError from "../utils/AppError.js";
 
 export class RoomController {
   constructor(private roomService: RoomService) {}
@@ -25,7 +26,7 @@ export class RoomController {
     const { id } = req.validated?.params || {};
     const room = await this.roomService.getRoomById(id);
     if (!room) {
-      return res.status(404).json({ error: "Room not found" });
+      throw new AppError("Room not found", 404);
     }
     res.json(successResponse(room));
   });
@@ -52,51 +53,22 @@ export class RoomController {
     const { id } = req.validated?.params || {};
     const { class_type_id } = req.validated?.body || {};
     
-    try {
-      const result = await this.roomService.createRoomClassType(id, class_type_id);
-      res.status(201).json(successResponse(result, { message: "Class type associated with room successfully" }));
-    } catch (error) {
-      if (error instanceof Error && error.message.includes("already exists")) {
-        return res.status(409).json({ error: error.message });
-      }
-      throw error;
-    }
+    const result = await this.roomService.createRoomClassType(id, class_type_id);
+    res.status(201).json(successResponse(result, { message: "Class type associated with room successfully" }));
   });
 
   updateRoomCapacity = asyncHandler(async (req: ValidatedRequest, res: Response) => {
     const { id } = req.validated?.params || {};
     const { capacity } = req.validated?.body || {};
 
-    try {
-      const result = await this.roomService.updateRoomCapacity(id, capacity);
-      res.json(successResponse(result, { message: "Room capacity updated successfully" }));
-    } catch (error) {
-      if (error instanceof Error) {
-        if (error.message.includes("not found")) {
-          return res.status(404).json({ error: error.message });
-        }
-        if (error.message.includes("Cannot reduce capacity") || error.message.includes("must be between")) {
-          return res.status(400).json({ error: error.message });
-        }
-        if (error.message.includes("changed by another admin")) {
-          return res.status(409).json({ error: error.message });
-        }
-      }
-      throw error;
-    }
+    const result = await this.roomService.updateRoomCapacity(id, capacity);
+    res.json(successResponse(result, { message: "Room capacity updated successfully" }));
   });
 
   deleteRoom = asyncHandler(async (req: ValidatedRequest, res: Response) => {
     const { id } = req.validated?.params || {};
 
-    try {
-      const result = await this.roomService.deleteRoom(id);
-      res.json(successResponse(result, { message: "Room deleted successfully" }));
-    } catch (error) {
-      if (error instanceof Error && error.message === "Room not found") {
-        return res.status(404).json({ error: "Room not found" });
-      }
-      throw error;
-    }
+    const result = await this.roomService.deleteRoom(id);
+    res.json(successResponse(result, { message: "Room deleted successfully" }));
   });
 }
