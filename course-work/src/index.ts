@@ -3,9 +3,7 @@ import { env } from "./env.js";
 
 const port = env.PORT;
 const server = app.listen(port, () => {
-  /* eslint-disable no-console */
   console.log(`Listening: http://localhost:${port}`);
-  /* eslint-enable no-console */
 });
 
 server.on("error", (err) => {

@@ -19,6 +19,14 @@ app.use(express.json());
 
 app.get<object, MessageResponse>("/", (req, res) => {
   res.json({
+    message: "peremoha bude",
+  });
+});
+
+app.use("/", api);
+
+app.get<object, MessageResponse>("/", (req, res) => {
+  res.json({
     message: "kto prochital tot loh",
   });
 });
