@@ -12,7 +12,7 @@ import {
 const router = Router();
 
 router.get("/", validate(getPaymentsSchema), PaymentsController.getPayments);
-router.get("/revenue", validate(revenueByClassTypeSchema), PaymentsController.getRevenueByClassType);
+router.get("/analytics/revenue", validate(revenueByClassTypeSchema), PaymentsController.getRevenueByClassType);
 router.get("/:id", validate(paymentIdParamSchema), PaymentsController.getPaymentById);
 router.post("/", validate(createPaymentSchema), PaymentsController.createPayment);
 router.patch("/:id", validate(updatePaymentSchema), PaymentsController.updatePayment);
