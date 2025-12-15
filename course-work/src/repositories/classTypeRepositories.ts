@@ -179,5 +179,4 @@ export class ClassTypeRepository implements IClassTypeRepository {
       ORDER BY month DESC, total_revenue DESC;
     `, minRevenue, minAttendance);
   }  
-
 }
