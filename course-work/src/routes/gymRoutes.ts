@@ -14,6 +14,8 @@ import {
   getGymTrainersSchema,
   searchGymsByAddressSchema,
 } from "../schemas/gymSchemas.js";
+import { updateGymSchema } from "../schemas/gymSchemas.js";
+
 
 const router = Router();
 const prisma = new PrismaClient();
@@ -29,5 +31,6 @@ router.get("/:id", validate(getGymByIdSchema), gymController.getGymById);
 router.get("/:id/rooms", validate(getGymRoomsSchema), gymController.getGymRooms);
 router.get("/:id/trainers", validate(getGymTrainersSchema), gymController.getGymTrainers);
 router.delete("/:id", validate(deleteGymSchema), gymController.deleteGym);
+router.put("/:id", validate(updateGymSchema), gymController.updateGym);
 
 export default router;

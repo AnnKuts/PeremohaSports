@@ -1,5 +1,7 @@
 import type { PrismaClient, Prisma } from "@prisma/client";
 import type { IRoomRepository } from "../interfaces/entitiesInterfaces";
+import { softDeleteRoom } from "./sharedRepositoryFunc";
+import AppError from "../utils/AppError";
 
 export class RoomRepository implements IRoomRepository {
   constructor(private prisma: PrismaClient) {}
@@ -19,6 +21,7 @@ export class RoomRepository implements IRoomRepository {
 
     const [rooms, total] = await Promise.all([
       this.prisma.room.findMany({
+        where: { is_deleted: false },
         include: includeStats
           ? {
               gym: true,
@@ -29,15 +32,15 @@ export class RoomRepository implements IRoomRepository {
         take: limit,
         skip: offset,
       }),
-      this.prisma.room.count(),
+      this.prisma.room.count({ where: { is_deleted: false } }),
     ]);
 
     return { rooms, total };
   }
 
   async findById(roomId: number) {
-    return await this.prisma.room.findUnique({
-      where: { room_id: roomId },
+    return await this.prisma.room.findFirst({
+      where: { room_id: roomId, is_deleted: false },
       include: {
         gym: true,
         _count: {
@@ -50,22 +53,27 @@ export class RoomRepository implements IRoomRepository {
   }
 
   async delete(roomId: number) {
-    return await this.prisma.room.delete({
-      where: { room_id: roomId },
+    return await this.prisma.$transaction(async (tx: Prisma.TransactionClient) => {
+      await softDeleteRoom(tx, roomId);
+      return await tx.room.findUnique({ where: { room_id: roomId } });
     });
   }
 
-  async findClassTypesByRoomId(roomId: number) {
+  async findClassTypesByRoomId(roomId: number, options: { limit?: number; offset?: number } = {}) {
+    const { limit, offset } = options;
     return await this.prisma.room_class_type.findMany({
       where: { room_id: roomId },
       include: {
         class_type: true,
         _count: { select: { class_session: true } },
       },
+      take: limit,
+      skip: offset,
     });
   }
 
-  async findSessionsByRoomId(roomId: number) {
+  async findSessionsByRoomId(roomId: number, options: { limit?: number; offset?: number } = {}) {
+    const { limit, offset } = options;
     return await this.prisma.class_session.findMany({
       where: { room_id: roomId },
       include: {
@@ -82,6 +90,8 @@ export class RoomRepository implements IRoomRepository {
         _count: { select: { attendance: true } },
       },
       orderBy: { date: "desc" },
+      take: limit,
+      skip: offset,
     });
   }
 
@@ -152,7 +162,7 @@ export class RoomRepository implements IRoomRepository {
       });
 
       if (!room) {
-        throw new Error("Room not found");
+        throw new AppError("Room not found", 404);
       }
 
       const oldCapacity = room.capacity;
@@ -181,8 +191,9 @@ export class RoomRepository implements IRoomRepository {
         );
 
         if (hasConflicts) {
-          throw new Error(
+          throw new AppError(
             `Cannot reduce capacity to ${newCapacity}: some future sessions already have more bookings`,
+            400,
           );
         }
       }
@@ -196,8 +207,9 @@ export class RoomRepository implements IRoomRepository {
       });
 
       if (updateResult.count === 0) {
-        throw new Error(
+        throw new AppError(
           "Room capacity was changed by another admin. Please refresh and try again",
+          409,
         );
       }
 

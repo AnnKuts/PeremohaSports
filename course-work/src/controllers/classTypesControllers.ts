@@ -5,6 +5,7 @@ import type { ValidatedRequest } from "../types/requests.js";
 
 import { asyncHandler } from "../utils/async-handler.js";
 import { successResponse } from "../utils/responses.js";
+import AppError from "../utils/AppError.js";
 
 export class ClassTypeController {
   constructor(private classTypeService: ClassTypeService) {}
@@ -24,11 +25,9 @@ export class ClassTypeController {
   getClassTypeById = asyncHandler(async (req: ValidatedRequest, res: Response) => {
     const { id } = req.validated?.params || {};
     const classType = await this.classTypeService.getClassTypeById(id);
-    
     if (!classType) {
-      return res.status(404).json({ error: "Class type not found" });
+      throw new AppError("Class type not found", 404);
     }
-
     res.json(successResponse(classType));
   });
 
@@ -36,5 +35,15 @@ export class ClassTypeController {
     const { id } = req.validated?.params || {};
     const trainers = await this.classTypeService.getClassTypeTrainers(id);
     res.json({ ...successResponse(trainers), class_type_id: id });
+  });
+
+  updateClassType = asyncHandler(async (req: ValidatedRequest, res: Response) => {
+    const { id } = req.validated?.params || {};
+    const updateData = req.validated?.body || {};
+    const updated = await this.classTypeService.updateClassType(Number(id), updateData);
+    if (!updated) {
+      throw new AppError("Class type not found", 404);
+    }
+    res.json(successResponse(updated, { message: "Class type updated successfully" }));
   });
 }

@@ -6,39 +6,32 @@ import type { ValidatedRequest } from "../types/requests.js";
 
 import { asyncHandler } from "../utils/async-handler.js";
 import { successResponse } from "../utils/responses.js";
+import AppError from "../utils/AppError.js";
 
 export class GymController {
+    updateGym = asyncHandler(async (req: ValidatedRequest, res: Response) => {
+      const { id } = req.validated?.params || {};
+      const { address } = req.validated?.body || {};
+      const updated = await this.gymService.updateGym(id, { address });
+      if (!updated) throw new AppError("Gym not found", 404);
+      res.json(successResponse(updated, { message: "Gym updated successfully" }));
+    });
   constructor(private gymService: GymService) {}
 
   createGym = asyncHandler(async (req: ValidatedRequest, res: Response) => {
     const { address, rooms, trainers } = req.validated?.body || {};
 
-    try {
-      const result = await this.gymService.createGym({
-        address: address.trim(),
-        rooms,
-        trainerIds: trainers,
-      });
+    const result = await this.gymService.createGym({
+      address: address.trim(),
+      rooms,
+      trainerIds: trainers,
+    });
 
-      const message = result.creationType === "simple"
-        ? "Simple gym created successfully"
-        : "Complete gym created successfully";
+    const message = result.creationType === "simple"
+      ? "Simple gym created successfully"
+      : "Complete gym created successfully";
 
-      res.status(201).json(successResponse(result, { message }));
-    } catch (error) {
-      if (error instanceof Prisma.PrismaClientKnownRequestError) {
-        if (error.code === 'P2002') {
-          return res.status(409).json({
-            message: "Validation failed",
-            errors: [{
-              field: "address",
-              message: `Gym with this address "${address.trim()}" already exists`
-            }]
-          });
-        }
-      }
-      throw error; 
-    }
+    res.status(201).json(successResponse(result, { message }));
   });
 
   getAllGyms = asyncHandler(async (req: ValidatedRequest, res: Response) => {
@@ -49,12 +42,10 @@ export class GymController {
 
   getGymById = asyncHandler(async (req: ValidatedRequest, res: Response) => {
     const { id } = req.validated?.params || {};
-
     const gym = await this.gymService.getGymById(id);
     if (!gym) {
-      return res.status(404).json({ error: "Gym not found" });
+      throw new AppError("Gym not found", 404);
     }
-
     res.json(successResponse(gym));
   });
 
@@ -73,16 +64,8 @@ export class GymController {
   deleteGym = asyncHandler(async (req: ValidatedRequest, res: Response) => {
     const { id } = req.validated?.params || {};
 
-    try {
-      const result = await this.gymService.deleteGym(id);
-      res.json(successResponse(result, { message: "Gym deleted successfully with cascade deletion" }));
-    }
-    catch (error) {
-      if (error instanceof Error && error.message === "Gym not found") {
-        return res.status(404).json({ error: "Gym not found" });
-      }
-      throw error;
-    }
+    const result = await this.gymService.deleteGym(id);
+    res.json(successResponse(result, { message: "Gym deleted successfully with cascade deletion" }));
   });
 
   searchGyms = asyncHandler(async (req: ValidatedRequest, res: Response) => {

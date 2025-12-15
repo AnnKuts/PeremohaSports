@@ -1,6 +1,14 @@
+import AppError from "../utils/AppError";
 import type { IGymRepository } from "../interfaces/entitiesInterfaces";
 
 export class GymService {
+
+    async updateGym(gymId: number, data: { address: string }) {
+      if (!data.address || typeof data.address !== "string" || !data.address.trim()) {
+        throw new AppError("Address is required", 400);
+      }
+      return await this.gymRepository.update(gymId, { address: data.address.trim() });
+    }
   constructor(private gymRepository: IGymRepository) {}
 
   async createGym(data: {
@@ -15,7 +23,7 @@ export class GymService {
       for (let i = 0; i < data.rooms.length; i++) {
         const roomData = data.rooms[i];
         if (roomData.capacity < 1 || roomData.capacity > 200) {
-          throw new Error(`Room ${i + 1} capacity must be between 1 and 200`);
+          throw new AppError(`Room ${i + 1} capacity must be between 1 and 200`, 400);
         }
       }
     }
@@ -62,7 +70,7 @@ export class GymService {
     const gym = await this.gymRepository.findById(gymId);
 
     if (!gym) {
-      throw new Error("Gym not found");
+      throw new AppError("Gym not found", 404);
     }
 
     const deletedGym = await this.gymRepository.delete(gymId);

@@ -21,7 +21,10 @@
 //     "perfectionist/sort-imports": ["error", {
 //       tsconfigRootDir: ".",
 //     }],
-//     "unicorn/filename-case": "off",
+//     "unicorn/filename-case": ["error", {
+//       case: "kebabCase",
+//       ignore: ["README.md"],
+//     }],
 //     "test/prefer-lowercase-title": ["off"],
 //   },
 // });

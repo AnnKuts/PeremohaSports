@@ -1,3 +1,4 @@
+import AppError from "../utils/AppError";
 import type { IRoomRepository } from "../interfaces/entitiesInterfaces";
 
 export class RoomService {
@@ -31,7 +32,7 @@ export class RoomService {
     const room = await this.roomRepository.findById(roomId);
 
     if (!room) {
-      throw new Error("Room not found");
+      throw new AppError("Room not found", 404);
     }
 
     const deletedRoom = await this.roomRepository.delete(roomId);
@@ -54,7 +55,7 @@ export class RoomService {
 
   async updateRoomCapacity(roomId: number, newCapacity: number) {
     if (newCapacity < 1 || newCapacity > 200) {
-      throw new Error("Room capacity must be between 1 and 200");
+      throw new AppError("Room capacity must be between 1 and 200", 400);
     }
 
     return await this.roomRepository.updateCapacity(roomId, newCapacity);
