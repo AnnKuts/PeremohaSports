@@ -217,11 +217,52 @@ One-to-many with the Room table (a single room can be associated with multiple c
 One-to-many with the ClassType table (a single class type can be held in multiple rooms that have the corresponding qualifications).  
 One-to-many with the ClassSession table (a single room and class type can be used to hold multiple classes. That is, a class can be held at different times in different sessions, and each session will have a corresponding relationship with a specific room and class type).  
 
+### Enumerations
+
+The following ENUM types are used in the schema:
+
+- **gender_name**  
+  Values: `male`, `female`
+
+- **class_name**  
+  Values: `workout`, `yoga`, `swimming pool`
+
+- **level_name**  
+  Values: `beginner`, `intermediate`, `advanced`
+
+- **membership_status**  
+  Values: `active`, `expired`, `frozen`, `cancelled`
+
+- **payment_status**  
+  Values: `pending`, `completed`, `failed`, `refunded`
+
+- **payment_method**  
+  Values: `cash`, `card`, `online`
+
+- **attendance_status**  
+  Values: `booked`, `attended`, `missed`, `cancelled`
+
 ## Design decisions:
 
-1. **Why we chose this schema structure:**
+### 1. **Why we chose this schema structure:**
 
-2. **Normalization level achieved:** The above schema is in third normalization (3NF) because:
+1. **Separating entities and maintaining data atomicity:**  
+   We decided to create separate tables for each entity (e.g., `Client`, `Coach`, `Payment`, `Class`) to avoid data duplication and ensure a clear separation of responsibilities for each table. This allows each entity to store only its own attributes, independent of other entities, which complies with the principles of normalization and allows for data atomicity (each column contains only one value).
+
+2. **Optimization for complex queries:**  
+   By organizing data into separate tables with clearly defined relationships, the system provides high performance when executing queries. For example, thanks to separate tables for `Payments` and `Customers`, you can easily obtain the payment history for a specific customer by executing simple SQL queries with table joins. This structure allows you to execute analytical queries without excessive load on the system.
+
+3. **Support for future changes and extensions:**  
+   Since the database structure was designed with possible changes in system requirements in mind, we have ensured scalability for future changes. This includes the ability to add new class types, payments, or trainer options without significantly changing the existing structure. Now, if new features need to be added in the future, such as additional class categories or new payment methods, the system can easily adapt to these changes.
+
+4. **Refuting complex relationships through intermediate tables:**  
+   Since in some cases there are multi-relationships (for example, between `Trainers` and `Fitness Centers`), intermediate tables like `TrainerPlacement` were used for such cases, which make data manipulation easier. This allows many-to-many relationships to be implemented without complex additional logic in the business logic.
+
+5. **Soft Delete:**  
+   Since in some cases it is necessary to store data that is no longer used (for example, clients who have canceled their membership or trainers who are no longer working), the concept of **soft delete** was used for such cases. In the schema, for each table where it is assumed that records can be deleted, an `is_deleted` field is added. This allows you to mark a record as deleted without physically deleting it from the database. This approach allows you to maintain a history of changes and ensure that data can be restored if necessary, without violating the integrity of the database.
+
+
+### 2. **Normalization level achieved:** The above schema is in third normalization (3NF) because:
 
 - **1NF (First Normalization):** All tables have atomic data, i.e. each column contains only one value, and all records are unique.
 
@@ -229,6 +270,6 @@ One-to-many with the ClassSession table (a single room and class type can be use
 
 - **3NF (Third Normalization):** There are no transitive dependencies in the tables, all attributes are direct dependencies on the primary key, and all dependencies between attributes are functional.
 
-3. **Compromises made:** 
+### 3. **Compromises made:** 
 
-4. **Indexing strategy:** 
+### 4. **Indexing strategy:** 
