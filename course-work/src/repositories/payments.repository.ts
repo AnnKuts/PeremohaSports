@@ -104,5 +104,41 @@ export const paymentsRepository = {
       },
     });
   },
+
+  async getRevenueByClassType(year?: number, month?: number) {
+    const whereConditions: any = {
+      status: "completed",
+    };
+
+    if (year || month) {
+      whereConditions.created_at = {};
+
+      if (year && month) {
+        const startDate = new Date(year, month - 1, 1);
+        const endDate = new Date(year, month, 0, 23, 59, 59, 999);
+        whereConditions.created_at.gte = startDate;
+        whereConditions.created_at.lte = endDate;
+      } else if (year) {
+        const startDate = new Date(year, 0, 1);
+        const endDate = new Date(year, 11, 31, 23, 59, 59, 999);
+        whereConditions.created_at.gte = startDate;
+        whereConditions.created_at.lte = endDate;
+      }
+    }
+
+    return prisma.payment.findMany({
+      where: whereConditions,
+      include: {
+        membership: {
+          include: {
+            class_type: true,
+          },
+        },
+      },
+      orderBy: {
+        created_at: "asc",
+      },
+    });
+  },
 };
 

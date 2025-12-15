@@ -56,4 +56,44 @@ export const paymentsService = {
 
     return updatedPayment;
   },
+
+  async getRevenueByClassType(year?: number, month?: number) {
+    const payments = await paymentsRepository.getRevenueByClassType(year, month);
+
+    const revenueMap = new Map<string, Map<string, { revenue: number; count: number; classTypeId: number }>>();
+
+    for (const payment of payments) {
+      const paymentDate = new Date(payment.created_at);
+      const monthKey = `${paymentDate.getFullYear()}-${String(paymentDate.getMonth() + 1).padStart(2, '0')}`;
+      const classTypeName = payment.membership?.class_type?.name || 'Unknown';
+      const classTypeId = payment.membership?.class_type?.class_type_id || 0;
+
+      if (!revenueMap.has(monthKey)) {
+        revenueMap.set(monthKey, new Map());
+      }
+
+      const monthData = revenueMap.get(monthKey)!;
+
+      if (!monthData.has(classTypeName)) {
+        monthData.set(classTypeName, { revenue: 0, count: 0, classTypeId });
+      }
+
+      const classTypeData = monthData.get(classTypeName)!;
+      classTypeData.revenue += Number(payment.amount);
+      classTypeData.count += 1;
+    }
+
+    const result = Array.from(revenueMap.entries()).map(([month, classTypes]) => ({
+      month,
+      classTypes: Array.from(classTypes.entries()).map(([name, data]) => ({
+        classTypeId: data.classTypeId,
+        classTypeName: name,
+        totalRevenue: data.revenue,
+        paymentsCount: data.count,
+      })),
+      totalMonthRevenue: Array.from(classTypes.values()).reduce((sum, data) => sum + data.revenue, 0),
+    }));
+
+    return result;
+  },
 };

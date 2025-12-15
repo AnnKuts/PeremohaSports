@@ -1,6 +1,6 @@
 import { Request, Response } from "express";
 import { paymentsService } from "../services/payments.service";
-import { GetPaymentsQuery, CreatePaymentInput, UpdatePaymentInput } from "../schemas/payments.schema";
+import { GetPaymentsQuery, CreatePaymentInput, UpdatePaymentInput, RevenueByClassTypeQuery } from "../schemas/payments.schema";
 import { asyncHandler } from "../utils/async-handler";
 
 export const PaymentsController = {
@@ -29,5 +29,22 @@ export const PaymentsController = {
     const paymentId = parseInt(id);
     const payment = await paymentsService.updatePayment(paymentId, data);
     res.status(200).json(payment);
+  }),
+
+  getRevenueByClassType: asyncHandler(async (req: Request, res: Response) => {
+    const query = (req as any).validated?.query as RevenueByClassTypeQuery;
+    const year = query?.year ? parseInt(query.year) : undefined;
+    const month = query?.month ? parseInt(query.month) : undefined;
+
+    const revenue = await paymentsService.getRevenueByClassType(year, month);
+
+    res.status(200).json({
+      success: true,
+      data: revenue,
+      filters: {
+        year: year || "all",
+        month: month || "all",
+      },
+    });
   }),
 };

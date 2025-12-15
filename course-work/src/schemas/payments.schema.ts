@@ -41,6 +41,14 @@ export const getPaymentsSchema = z.object({
   }),
 });
 
+export const revenueByClassTypeSchema = z.object({
+  query: z.object({
+    year: z.string().regex(/^\d{4}$/, "Year must be a 4-digit number").optional(),
+    month: z.string().regex(/^(0?[1-9]|1[0-2])$/, "Month must be between 1 and 12").optional(),
+  }),
+});
+
 export type CreatePaymentInput = z.infer<typeof createPaymentSchema>["body"];
 export type UpdatePaymentInput = z.infer<typeof updatePaymentSchema>["body"];
 export type GetPaymentsQuery = z.infer<typeof getPaymentsSchema>["query"];
+export type RevenueByClassTypeQuery = z.infer<typeof revenueByClassTypeSchema>["query"];
