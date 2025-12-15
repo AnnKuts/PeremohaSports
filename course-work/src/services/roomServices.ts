@@ -60,4 +60,8 @@ export class RoomService {
 
     return await this.roomRepository.updateCapacity(roomId, newCapacity);
   }
+
+  async getRoomRevenueAndAttendance() {
+    return await this.roomRepository.getRoomRevenueAndAttendance();
+  }
 }

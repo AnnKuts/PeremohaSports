@@ -71,4 +71,13 @@ export class RoomController {
     const result = await this.roomService.deleteRoom(id);
     res.json(successResponse(result, { message: "Room deleted successfully" }));
   });
+
+  getRoomRevenueAndAttendance = asyncHandler(async (req: ValidatedRequest, res: Response) => {
+    const result = await this.roomService.getRoomRevenueAndAttendance();
+    const normalize = (obj: unknown): unknown => JSON.parse(JSON.stringify(obj, (k, v) =>
+      typeof v === "bigint" ? Number(v) :
+      (v && typeof v === "object" && "d" in v && "e" in v && "s" in v && typeof v.toString === "function") ? v.toString() : v
+    ));
+    res.json(normalize(result));
+  });
 }

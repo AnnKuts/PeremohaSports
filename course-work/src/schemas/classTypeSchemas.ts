@@ -39,3 +39,11 @@ export const updateClassTypeSchema = z.object({
     path: ["body"],
   }),
 });
+
+export const getMonthlyRevenueByClassTypeSchema = z.object({
+  query: z.object({
+    minRevenue: z.coerce.number().min(0).optional(),
+    minAttendance: z.coerce.number().min(0).optional(),
+    months: z.coerce.number().min(1).max(36).optional(),
+  })
+});

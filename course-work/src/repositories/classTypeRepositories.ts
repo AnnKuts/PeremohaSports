@@ -157,4 +157,27 @@ export class ClassTypeRepository implements IClassTypeRepository {
       return classType;
     });
   }
+
+  async getMonthlyRevenueByClassType(options: { minRevenue?: number; minAttendance?: number; months?: number } = {}) {
+    const { minRevenue = 500, minAttendance = 0, months = 12 } = options;
+    return await this.prisma.$queryRawUnsafe<any[]>(`
+      SELECT
+        ct.name AS class_category,
+        TO_CHAR(cs.date, 'YYYY-MM') AS month,
+        COUNT(a.session_id) AS attendance_count,
+        SUM(m.price) AS total_revenue
+      FROM class_session cs
+      JOIN room_class_type rct ON cs.room_id = rct.room_id AND cs.class_type_id = rct.class_type_id
+      JOIN class_type ct ON cs.class_type_id = ct.class_type_id
+      JOIN attendance a ON cs.session_id = a.session_id
+      JOIN membership m ON a.client_id = m.client_id AND cs.class_type_id = m.class_type_id
+        AND cs.date BETWEEN m.start_date AND m.end_date
+      WHERE a.status = 'attended'
+        AND cs.date >= (CURRENT_DATE - INTERVAL '${months} months')
+      GROUP BY ct.name, month
+      HAVING SUM(m.price) > $1 AND COUNT(a.session_id) >= $2
+      ORDER BY month DESC, total_revenue DESC;
+    `, minRevenue, minAttendance);
+  }  
+
 }

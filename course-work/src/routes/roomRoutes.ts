@@ -15,6 +15,7 @@ import {
   updateRoomCapacitySchema,
   deleteRoomSchema,
   searchRoomsSchema,
+  getRoomRevenueAndAttendanceSchema,
 } from "../schemas/roomSchemas.js";
 
 const router = Router();
@@ -32,5 +33,6 @@ router.get("/:id/class-types", validate(getRoomClassTypesSchema), roomController
 router.post("/class-type", validate(createRoomClassTypeSchema), roomController.createRoomClassType);
 router.delete("/:id", validate(deleteRoomSchema), roomController.deleteRoom);
 router.put("/:id/capacity", validate(updateRoomCapacitySchema), roomController.updateRoomCapacity);
+router.get("/analytics/room-revenue", validate(getRoomRevenueAndAttendanceSchema), roomController.getRoomRevenueAndAttendance);
 
 export default router;

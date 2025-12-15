@@ -27,4 +27,8 @@ export class ClassTypeService {
   async DeleteClassType(classTypeId: number) {
     return await this.classTypeRepository.delete(classTypeId);
   }  
+
+  async getMonthlyRevenueByClassType(options: { minRevenue?: number; minAttendance?: number; months?: number } = {}) {
+    return await this.classTypeRepository.getMonthlyRevenueByClassType(options);
+  }
 }

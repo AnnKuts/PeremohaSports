@@ -175,7 +175,27 @@ describe("ClassTypes API Integration", () => {
     });
   });
 
-    describe("DELETE", () => {
+  describe("ANALYTICS", () => {
+    it("GET /class-types/analytics/monthly-revenue - should return monthly revenue analytics", async () => {
+      const res = await request(app).get("/class-types/analytics/monthly-revenue");
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body)).toBe(true);
+      if (res.body.length > 0) {
+        expect(res.body[0]).toHaveProperty("class_category");
+        expect(res.body[0]).toHaveProperty("month");
+        expect(res.body[0]).toHaveProperty("attendance_count");
+        expect(res.body[0]).toHaveProperty("total_revenue");
+      }
+    });
+
+    it("GET /class-types/analytics/monthly-revenue?months=1&minRevenue=0&minAttendance=0 - should support query params", async () => {
+      const res = await request(app).get("/class-types/analytics/monthly-revenue?months=1&minRevenue=0&minAttendance=0");
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body)).toBe(true);
+    });
+  });
+
+  describe("DELETE", () => {
     it("DELETE /class-types/:id - should soft-delete class type and cascade", async () => {
       const payload = {
         name: "yoga",

@@ -61,3 +61,6 @@ export const deleteRoomSchema = z.object({
 });
 
 export const getAllRoomsSchema = paginationWithStatsSchema;
+export const getRoomRevenueAndAttendanceSchema = z.object({
+  query: z.object({})
+});

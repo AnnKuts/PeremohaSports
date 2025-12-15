@@ -56,4 +56,19 @@ export class ClassTypeController {
     res.json(successResponse(deleted, { message: "Class type soft-deleted successfully" }));
   });
 
+  getMonthlyRevenueByClassType = asyncHandler(async (req: ValidatedRequest, res: Response) => {
+    const { minRevenue, minAttendance, months } = req.validated?.query || {};
+    const result = await this.classTypeService.getMonthlyRevenueByClassType({ minRevenue, minAttendance, months });
+    res.json(convertBigInt(result));
+  });
+}
+
+function convertBigInt(obj: any): any {
+  if (Array.isArray(obj)) return obj.map(convertBigInt);
+  if (obj && typeof obj === "object") {
+    return Object.fromEntries(
+      Object.entries(obj).map(([k, v]) => [k, typeof v === "bigint" ? Number(v) : convertBigInt(v)])
+    );
+  }
+  return obj;
 }

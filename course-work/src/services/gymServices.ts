@@ -131,4 +131,5 @@ export class GymService {
       })
       .sort((a: any, b: any) => b.utilization_rate - a.utilization_rate);
   }
+
 }
