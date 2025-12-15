@@ -12,6 +12,7 @@ describe("ClassTypeService (unit)", () => {
       findById: vi.fn(async (id) => (id === 1 ? { id, name: "Yoga" } : null)),
       getTrainers: vi.fn(async (id) => [{ id: 1, name: "Trainer" }]),
       update: vi.fn(async (id, data) => ({ id, ...data })),
+      delete: vi.fn(async (id) => ({ id, is_deleted: true })),
     };
     service = new ClassTypeService(mockRepo);
   });
@@ -63,5 +64,11 @@ describe("ClassTypeService (unit)", () => {
     mockRepo.getTrainers.mockResolvedValueOnce([]);
     const result = await service.getClassTypeTrainers(1);
     expect(result).toEqual([]);
+  });
+  
+  it("DeleteClassType: soft/cascade deletes class type and related", async () => {
+    const result = await service.DeleteClassType(1);
+    expect(result).toEqual({ id: 1, is_deleted: true });
+    expect(mockRepo.delete).toHaveBeenCalledWith(1);
   });
 });

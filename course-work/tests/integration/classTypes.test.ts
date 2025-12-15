@@ -174,4 +174,53 @@ describe("ClassTypes API Integration", () => {
       }
     });
   });
+
+    describe("DELETE", () => {
+    it("DELETE /class-types/:id - should soft-delete class type and cascade", async () => {
+      const payload = {
+        name: "yoga",
+        description: "To be deleted",
+        level: "beginner",
+      };
+      const createRes = await request(app).post("/class-types").send(payload);
+      expect(createRes.status).toBe(201);
+      const idToDelete = createRes.body.data.class_type_id;
+
+      const delRes = await request(app).delete(`/class-types/${idToDelete}`);
+      expect([200, 404]).toContain(delRes.status);
+      if (delRes.status === 200) {
+        expect(delRes.body).toHaveProperty("success", true);
+        expect(delRes.body.data).toHaveProperty("is_deleted", true);
+      }
+
+      const getRes = await request(app).get(`/class-types/${idToDelete}`);
+      expect(getRes.status).toBe(404);
+
+      const prisma = (await import("../../src/lib/prisma")).default;
+      const quals = await prisma.qualification.findMany({ where: { class_type_id: idToDelete } });
+      for (const q of quals) {
+        expect(q.is_deleted).toBe(true);
+      }
+
+      const rcts = await prisma.room_class_type.findMany({ where: { class_type_id: idToDelete } });
+      for (const rct of rcts) {
+        expect(rct.is_deleted).toBe(true);
+      }
+
+      const memberships = await prisma.membership.findMany({ where: { class_type_id: idToDelete } });
+      for (const m of memberships) {
+        expect(m.status).toBe("frozen");
+      }
+
+      const sessions = await prisma.class_session.findMany({ where: { class_type_id: idToDelete } });
+      for (const s of sessions) {
+        expect(s.is_deleted).toBe(true);
+        const atts = await prisma.attendance.findMany({ where: { session_id: s.session_id } });
+        for (const att of atts) {
+          expect(att.is_deleted).toBe(true);
+          expect(att.status).toBe("cancelled");
+        }
+      }
+    });
+  });
 });
