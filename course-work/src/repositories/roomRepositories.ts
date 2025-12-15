@@ -58,17 +58,21 @@ export class RoomRepository implements IRoomRepository {
     });
   }
 
-  async findClassTypesByRoomId(roomId: number) {
+  async findClassTypesByRoomId(roomId: number, options: { limit?: number; offset?: number } = {}) {
+    const { limit, offset } = options;
     return await this.prisma.room_class_type.findMany({
       where: { room_id: roomId },
       include: {
         class_type: true,
         _count: { select: { class_session: true } },
       },
+      take: limit,
+      skip: offset,
     });
   }
 
-  async findSessionsByRoomId(roomId: number) {
+  async findSessionsByRoomId(roomId: number, options: { limit?: number; offset?: number } = {}) {
+    const { limit, offset } = options;
     return await this.prisma.class_session.findMany({
       where: { room_id: roomId },
       include: {
@@ -85,6 +89,8 @@ export class RoomRepository implements IRoomRepository {
         _count: { select: { attendance: true } },
       },
       orderBy: { date: "desc" },
+      take: limit,
+      skip: offset,
     });
   }
 

@@ -204,7 +204,8 @@ export class GymRepository implements IGymRepository {
     });
   }
 
-  async findRoomsByGymId(gymId: number) {
+  async findRoomsByGymId(gymId: number, options: { limit?: number; offset?: number } = {}) {
+    const { limit, offset } = options;
     return await this.prisma.room.findMany({
       where: { gym_id: gymId },
       include: {
@@ -215,13 +216,18 @@ export class GymRepository implements IGymRepository {
           },
         },
       },
+      take: limit,
+      skip: offset,
     });
   }
 
-  async findTrainersByGymId(gymId: number) {
+  async findTrainersByGymId(gymId: number, options: { limit?: number; offset?: number } = {}) {
+    const { limit, offset } = options;
     const trainers = await this.prisma.trainer_placement.findMany({
       where: { gym_id: gymId },
       include: { trainer: { include: { contact_data: true } } },
+      take: limit,
+      skip: offset,
     });
     return trainers.map((tp: any) => tp.trainer);
   }

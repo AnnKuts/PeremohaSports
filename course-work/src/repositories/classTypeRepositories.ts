@@ -65,7 +65,11 @@ export class ClassTypeRepository implements IClassTypeRepository {
     });
   }
 
-  async findTrainersByClassTypeId(classTypeId: number) {
+  async findTrainersByClassTypeId(
+    classTypeId: number,
+    options: { limit?: number; offset?: number } = {}
+  ) {
+    const { limit, offset } = options;
     const qualifications = await this.prisma.qualification.findMany({
       where: { class_type_id: classTypeId },
       include: {
@@ -75,12 +79,17 @@ export class ClassTypeRepository implements IClassTypeRepository {
           },
         },
       },
+      take: limit,
+      skip: offset,
     });
     return qualifications.map((q: any) => q.trainer);
   }
 
-  async getTrainers(classTypeId: number) {
-    return await this.findTrainersByClassTypeId(classTypeId);
+  async getTrainers(
+    classTypeId: number,
+    options: { limit?: number; offset?: number } = {}
+  ) {
+    return await this.findTrainersByClassTypeId(classTypeId, options);
   }
   
   async update(classTypeId: number, updateData: Partial<{ name: string; description?: string; level?: string }>) {
