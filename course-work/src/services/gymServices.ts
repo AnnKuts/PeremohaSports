@@ -1,4 +1,5 @@
 import AppError from "../utils/AppError";
+import { handlePrismaError } from "../utils/handlePrismaError";
 import type { IGymRepository } from "../interfaces/entitiesInterfaces";
 
 export class GymService {
@@ -7,7 +8,11 @@ export class GymService {
       if (!data.address || typeof data.address !== "string" || !data.address.trim()) {
         throw new AppError("Address is required", 400);
       }
-      return await this.gymRepository.update(gymId, { address: data.address.trim() });
+      try {
+        return await this.gymRepository.update(gymId, { address: data.address.trim() });
+      } catch (err: any) {
+        throw handlePrismaError(err);
+      }
     }
   constructor(private gymRepository: IGymRepository) {}
 
@@ -28,24 +33,28 @@ export class GymService {
       }
     }
 
-    const gym = await this.gymRepository.createGymWithRoomsAndTrainers(data);
+    try {
+      const gym = await this.gymRepository.createGymWithRoomsAndTrainers(data);
 
-    const summary = {
-      roomsCreated: data.rooms?.length || 0,
-      trainersAssigned: data.trainerIds?.length || 0,
-      totalClassTypes: data.rooms 
-        ? [...new Set(data.rooms.flatMap((r: any) => r.classTypeIds || []))].length 
-        : 0,
-    };
+      const summary = {
+        roomsCreated: data.rooms?.length || 0,
+        trainersAssigned: data.trainerIds?.length || 0,
+        totalClassTypes: data.rooms 
+          ? [...new Set(data.rooms.flatMap((r: any) => r.classTypeIds || []))].length 
+          : 0,
+      };
 
-    const isSimpleCreation = !data.rooms && !data.trainerIds;
+      const isSimpleCreation = !data.rooms && !data.trainerIds;
 
-    return {
-      success: true,
-      gym,
-      summary,
-      creationType: isSimpleCreation ? "simple" : "complete",
-    };
+      return {
+        success: true,
+        gym,
+        summary,
+        creationType: isSimpleCreation ? "simple" : "complete",
+      };
+    } catch (err: any) {
+      throw handlePrismaError(err);
+    }
   }
 
   async getAllGyms(

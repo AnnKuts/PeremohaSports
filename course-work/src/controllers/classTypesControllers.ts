@@ -12,7 +12,7 @@ export class ClassTypeController {
 
   createClassType = asyncHandler(async (req: ValidatedRequest, res: Response) => {
     const { name, description, level } = req.validated?.body || {};
-    const classType = await this.classTypeService.createClassType({ name, description, level });
+  const classType = await this.classTypeService.createClassType({ name, description, level });
     res.status(201).json(successResponse(classType, { message: "Class type created successfully" }));
   });
 

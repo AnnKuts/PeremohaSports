@@ -1,10 +1,9 @@
-import type { CreateClassTypeData } from "../types/entities.js";
 import type { IClassTypeRepository } from "../interfaces/entitiesInterfaces.js";
 
 export class ClassTypeService {
   constructor(private classTypeRepository: IClassTypeRepository) {}
 
-  async createClassType(data: CreateClassTypeData) {
+  async createClassType(data: { name: string; description?: string; level: string }) {
     return await this.classTypeRepository.create(data);
   }
 

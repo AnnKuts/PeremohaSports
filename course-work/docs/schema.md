@@ -272,4 +272,13 @@ The following ENUM types are used in the schema:
 
 ### 3. **Compromises made:** 
 
+1. **Simplifying entity relationships:**
+    To reduce database complexity and improve performance, we decided to merge some entities into a single table, including using intermediate tables such as TrainerPlacement to connect trainers to fitness centers. This allowed us to implement many-to-many relationships, but required additional effort to maintain data integrity with large amounts of information.
+
+2. **Limited flexibility in membership types:**
+    The simplified Membership structure does not support very flexible subscription options. For example, each membership has only one price and one class type, which limits the ability to support a variety of pricing plans, such as discounts for specific user groups or special offers for multiple classes. This may require future schema extensions, but for the initial version, this decision was made for convenience and ease of implementation.
+
+3. **Using soft delete instead of hard delete:**
+    Using soft delete to store deleted records instead of physically deleting them allows for history and data recovery, but on the other hand, it can lead to an increase in database size. This is a trade-off between data integrity and performance, as additional optimization may be required over time to handle large amounts of "deleted" data.
+
 ### 4. **Indexing strategy:** 
