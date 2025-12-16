@@ -96,4 +96,14 @@ export const paymentsService = {
 
     return result;
   },
+
+  async deletePayment(id: number) {
+    const payment = await paymentsRepository.findById(id);
+
+    if (!payment) {
+      throw new Error("Payment not found");
+    }
+
+    return paymentsRepository.softDelete(id);
+  },
 };

@@ -18,6 +18,11 @@ export const membershipsRepository = {
 
   async findMany() {
     return prisma.membership.findMany({
+      where: {
+        status: {
+          not: 'cancelled'
+        }
+      },
       include: {
         client: true,
         class_type: true,

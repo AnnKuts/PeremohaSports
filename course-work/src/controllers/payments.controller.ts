@@ -47,4 +47,10 @@ export const PaymentsController = {
       },
     });
   }),
+  deletePayment: asyncHandler(async (req: Request, res: Response) => {
+    const { id } = (req as any).validated?.params;
+    const paymentId = parseInt(id);
+    await paymentsService.deletePayment(paymentId);
+    res.status(200).json({ success: true, message: "Payment deleted successfully" });
+  }),
 };
