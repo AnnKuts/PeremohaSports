@@ -10,20 +10,8 @@ const router = Router();
 router.get("/sessions", authenticate, SessionsController.getAllSessions);
 router.get("/sessions/:id", authenticate, validate(sessionIdParamSchema), SessionsController.getSessionById);
 
-router.post(
-  "/sessions",
-  authenticate,
-  requireTrainerRole,
-  validate(createSessionSchema),
-  SessionsController.createSession
-);
+router.post("/sessions", authenticate, requireTrainerRole, validate(createSessionSchema),SessionsController.createSession);
 
-router.delete(
-  "/admin/sessions/:id", 
-  authenticate, 
-  requireAdmin,
-  validate(sessionIdParamSchema), 
-  SessionsController.deleteSession
-);
+router.delete("/admin/sessions/:id", authenticate, requireAdmin,validate(sessionIdParamSchema), SessionsController.deleteSession);
 
 export default router;
