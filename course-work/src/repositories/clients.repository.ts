@@ -119,9 +119,18 @@ export const clientsRepository = {
     });
   },
   async softDelete(id: number) {
-    return prisma.client.update({
-      where: { client_id: id },
-      data: { is_deleted: true },
+    return prisma.$transaction(async (tx) => {
+      // Cancel active memberships
+      await tx.membership.updateMany({
+        where: { client_id: id, status: "active" },
+        data: { status: "cancelled" },
+      });
+
+      // Soft delete client
+      return tx.client.update({
+        where: { client_id: id },
+        data: { is_deleted: true },
+      });
     });
   },
 };

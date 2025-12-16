@@ -72,6 +72,20 @@ export const membershipsRepository = {
     });
   },
 
+  async findMembershipsByClientId(clientId: number) {
+    return prisma.membership.findMany({
+      where: {
+        client_id: clientId,
+        status: {
+          not: 'cancelled'
+        }
+      },
+      include: {
+        class_type: true,
+      }
+    });
+  },
+
   async softDelete(id: number) {
     return prisma.membership.update({
       where: { membership_id: id },

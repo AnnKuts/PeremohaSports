@@ -10,6 +10,7 @@ export default defineConfig({
     testTimeout: 30000,
     maxConcurrency: 1,
     pool: "threads",
+    fileParallelism: false,
   },
   resolve: {
     alias: {

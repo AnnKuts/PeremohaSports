@@ -9,6 +9,7 @@ router.post("/", validate(createMembershipSchema), MembershipsController.createM
 router.patch("/:id", validate(membershipIdParamSchema), validate(updateMembershipSchema), MembershipsController.updateMembership);
 router.get("/", MembershipsController.getMemberships);
 router.get("/:id", validate(membershipIdParamSchema), MembershipsController.getMembershipById);
+router.get("/client/:clientId", MembershipsController.getMembershipsByClient);
 router.get("/:id/payments", validate(membershipIdParamSchema), MembershipsController.getMembershipPayments);
 router.delete("/:id", validate(membershipIdParamSchema), MembershipsController.deleteMembership);
 

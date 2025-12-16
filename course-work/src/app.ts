@@ -4,8 +4,6 @@ import helmet from "helmet";
 import morgan from "morgan";
 
 import type MessageResponse from "./interfaces/message-response.js";
-
-
 import api from "./api/index.js";
 import * as middlewares from "./middlewares.js";
 import { globalErrorHandler } from "./utils/error-handler";
@@ -24,18 +22,7 @@ app.get<object, MessageResponse>("/", (req, res) => {
 });
 
 app.use("/", api);
-
-app.get<object, MessageResponse>("/", (req, res) => {
-  res.json({
-    message: "kto prochital tot loh",
-  });
-});
-
-app.use("/", api);
-
-
 app.use(middlewares.notFound);
-
 app.use(globalErrorHandler);
 
 export default app;
