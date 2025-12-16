@@ -34,7 +34,7 @@ model class_session {
 
 model class_type {
   class_type_id   Int               @id @default(autoincrement())
-  name            class_name
+  name            String
   description     String?
   level           level_name
   membership      membership[]

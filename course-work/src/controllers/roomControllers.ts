@@ -50,10 +50,8 @@ export class RoomController {
   });
 
   createRoomClassType = asyncHandler(async (req: ValidatedRequest, res: Response) => {
-    const { id } = req.validated?.params || {};
-    const { class_type_id } = req.validated?.body || {};
-    
-    const result = await this.roomService.createRoomClassType(id, class_type_id);
+    const { room_id, class_type_id } = req.validated?.body || {};
+    const result = await this.roomService.createRoomClassType(room_id, class_type_id);
     res.status(201).json(successResponse(result, { message: "Class type associated with room successfully" }));
   });
 

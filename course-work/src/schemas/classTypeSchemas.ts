@@ -1,12 +1,10 @@
 import { z } from "zod";
 import { positiveNumberString, paginationWithStatsSchema } from "./common";
-import { CLASS_TYPE_NAMES, CLASS_TYPE_LEVELS } from "../types/enum_types";
+import { CLASS_TYPE_LEVELS } from "../types/enum_types";
 export const getAllClassTypesSchema = paginationWithStatsSchema;
 export const createClassTypeSchema = z.object({
   body: z.object({
-    name: z.enum(CLASS_TYPE_NAMES, {
-      message: `Name must be one of: ${CLASS_TYPE_NAMES.join(", ")}`,
-    }),
+    name: z.string().min(2).max(32),
     description: z.string().max(500, "Description too long").optional(),
     level: z.enum(CLASS_TYPE_LEVELS, {
       message: `Level must be one of: ${CLASS_TYPE_LEVELS.join(", ")}`,
@@ -31,7 +29,7 @@ export const updateClassTypeSchema = z.object({
     id: positiveNumberString,
   }),
   body: z.object({
-    name: z.enum(CLASS_TYPE_NAMES).optional(),
+    name: z.string().min(2).max(32),
     description: z.string().max(500, "Description too long").optional(),
     level: z.enum(CLASS_TYPE_LEVELS).optional(),
   }).refine((data) => Object.keys(data).length > 0, {

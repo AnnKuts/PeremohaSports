@@ -1,31 +1,21 @@
 # **Peremoha Gym - Gym Management System**
 
-
 ## **Project Overview:**
-
 
 **Peremoha Gym** is a **gym management system** that provides convenient tools for recording and managing data about the gym, rooms, class types, qualifications, memberships, attendance etc. The system is designed to facilitate administration and improve the*efficiency of gyms through comprehensive analysis and monitoring of their activities. It also provides convenience for customers, enabling them to effectively manage their gym experience and track their progress.
 
 
----
-
 
 ### **Team Members:**
-
 
 - **[Anna Kuts](https://github.com/AnnKuts)**
  
 - **[Mariia Khorunzha](https://github.com/Impe11e)**
 
-
 - **[Mykhailov Vladyslav](https://github.com/taitami)**
 
 
----
-
-
 ### **Contribution of Each Team Member:**
-
 
 For a detailed overview of each team member's contributions to the project, refer to [Contribution of Each Team Member](./docs/CONTRIBUTIONS.md).
 
@@ -53,4 +43,11 @@ For a detailed overview of each team member's contributions to the project, refe
 ## **Project structure overview**  
 
 
+## **Database structure overview**  
+
+For a detailed overview of the database schema, refer to [Database Schema Documentation](./docs/schema.md).
+
+
 ## **API/usage examples**  
+
+For a detailed overview of each API endpoint and its usage, refer to [API Endpoints Documentation](./docs/APIs.md).

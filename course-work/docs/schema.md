@@ -281,4 +281,7 @@ The following ENUM types are used in the schema:
 3. **Using soft delete instead of hard delete:**
     Using soft delete to store deleted records instead of physically deleting them allows for history and data recovery, but on the other hand, it can lead to an increase in database size. This is a trade-off between data integrity and performance, as additional optimization may be required over time to handle large amounts of "deleted" data.
 
+4. **Removing enums for class types:**
+    One of the compromises made during the development of the system was the removal of **enum classes** for `class_type`. While using enum classes provides strong type safety and strict validation, it also imposes limitations on dynamic class creation. Without the ability to dynamically create class types without intervening in the database or the need for migrations, it would be difficult to scale and manage the system without manual changes. As a result, we opted for more flexible approaches to allow easier updates and adjustments to class types without the need for database interventions.
+
 ### 4. **Indexing strategy:** 
