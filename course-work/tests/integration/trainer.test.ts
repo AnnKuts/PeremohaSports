@@ -1,164 +1,138 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import request from 'supertest';
-import app from '../../src/app'; 
-import prisma from '../../src/lib/prisma'; 
+import request from "supertest";
+import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import app from "../../src/app";
+import { clearTestData } from "./clearTestData";
+import prisma from "../../src/lib/prisma";
+import { adminToken, createTrainerToken, clientToken } from "./testHelpers";
 
-// =====================================================================
-// 1. MOCK AUTH (ВАЖЛИВО: Пропускаємо перевірку токена та адміна)
-// =====================================================================
-vi.mock('../../src/middlewares/auth.middleware', () => ({
-  authenticate: (req: any, res: any, next: any) => next(),
-  requireAdmin: (req: any, res: any, next: any) => next(),
-}));
+let createdTrainerId: number;
+let trainerToken: string;
 
-// =====================================================================
-// 2. MOCK PRISMA (ВИПРАВЛЕНО СИНТАКСИС)
-// =====================================================================
-vi.mock('../../src/lib/prisma', () => { // <--- Додано дужку (
-  const mockPrisma = {
-    trainer: {
-      findMany: vi.fn(),
-      findFirst: vi.fn(),
-      create: vi.fn(),
-      update: vi.fn(),
-      findUnique: vi.fn(),
-    },
-    contact_data: {
-      findUnique: vi.fn(),
-      create: vi.fn(),
-      update: vi.fn(),
-    },
-    gym: { count: vi.fn() },
-    class_type: { count: vi.fn(), findMany: vi.fn() },
-    trainer_placement: { createMany: vi.fn(), deleteMany: vi.fn() },
-    qualification: { createMany: vi.fn(), deleteMany: vi.fn() },
-    class_session: { groupBy: vi.fn(), findMany: vi.fn() },
+describe("Trainers API Integration", () => {
+  beforeAll(async () => {
+    await clearTestData();
     
-    // Імітація транзакції
-    $transaction: vi.fn((callback) => callback(mockPrisma)),
-  };
-  return { default: mockPrisma };
-}); // <--- Додано закриваючу дужку )
-
-describe('Trainer Routes Integration', () => {
-
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  describe('GET /trainers', () => {
-    it('should return 200 and list of trainers', async () => {
-      const mockTrainers = [{ trainer_id: 1, first_name: "Alice" }];
-      (prisma.trainer.findMany as any).mockResolvedValue(mockTrainers);
-
-      const res = await request(app).get('/trainers');
-
-      expect(res.status).toBe(200);
-      expect(res.body).toEqual(mockTrainers);
-      expect(prisma.trainer.findMany).toHaveBeenCalledWith(
-        expect.objectContaining({ where: { is_deleted: false } })
-      );
+    await prisma.gym.create({ data: { gym_id: 1, address: "Test Gym" } });
+    await prisma.class_type.create({ 
+      data: { class_type_id: 1, name: "yoga", level: "beginner" } 
     });
   });
 
-  describe('POST /admin/trainers', () => {
-    it('should return 201 when data is valid', async () => {
-      const input = {
-        first_name: "Bob",
-        last_name: "Builder",
-        email: "bob@build.com",
+  afterAll(async () => {
+    await clearTestData();
+  });
+
+  describe("CREATE (POST /admin/trainers)", () => {
+    it("should create a trainer (Admin only)", async () => {
+      const payload = {
+        first_name: "John",
+        last_name: "Doe",
+        email: "john.doe@test.com",
         phone: "1234567890",
         gym_ids: [1],
-        class_type_ids: [2]
+        class_type_ids: [1]
       };
 
-      // Налаштування успішних відповідей моків
-      (prisma.contact_data.findUnique as any).mockResolvedValue(null);
-      (prisma.gym.count as any).mockResolvedValue(1);
-      (prisma.class_type.count as any).mockResolvedValue(1);
-      (prisma.contact_data.create as any).mockResolvedValue({ contact_data_id: 10 });
-      (prisma.trainer.create as any).mockResolvedValue({ trainer_id: 2, ...input });
-
-      const res = await request(app).post('/admin/trainers').send(input);
+      const res = await request(app)
+        .post("/admin/trainers")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send(payload);
 
       expect(res.status).toBe(201);
-      expect(res.body.first_name).toBe("Bob");
-      // Перевіряємо, що транзакція викликалась
-      expect(prisma.$transaction).toHaveBeenCalled();
+      expect(res.body).toHaveProperty("trainer_id");
+      expect(res.body.first_name).toBe(payload.first_name);
+
+      createdTrainerId = res.body.trainer_id;
+      
+      trainerToken = createTrainerToken(createdTrainerId, payload.email);
     });
 
-    it('should return 400 when Zod validation fails', async () => {
-      const invalidInput = {
-        first_name: "B", // Занадто коротке
-        email: "not-email" // Не email
-      };
+    it("should fail without token", async () => {
+      const res = await request(app).post("/admin/trainers").send({});
+      expect(res.status).toBe(401);
+    });
 
-      const res = await request(app).post('/admin/trainers').send(invalidInput);
-
-      expect(res.status).toBe(400);
+    it("should fail if not admin", async () => {
+      
+      const res = await request(app)
+        .post("/admin/trainers")
+        .set("Authorization", `Bearer ${clientToken}`)
+        .send({});
+      expect(res.status).toBe(403);
     });
   });
 
-  describe('PATCH /admin/trainers/:id', () => {
-    it('should return 200 and update trainer', async () => {
-      const updateData = { first_name: "Robert" };
+  describe("READ (GET /trainers)", () => {
+    it("should get all trainers", async () => {
+      const res = await request(app)
+        .get("/trainers")
+        .set("Authorization", `Bearer ${clientToken}`); 
       
-      // Імітуємо існування тренера
-      (prisma.trainer.findFirst as any).mockResolvedValue({ 
-        trainer_id: 1, 
-        contact_data_id: 5,
-        is_deleted: false 
+      expect(res.status).toBe(200);
+      expect(Array.isArray(res.body)).toBe(true);
+      expect(res.body.length).toBeGreaterThan(0);
+    });
+
+    it("should get trainer by id", async () => {
+      const res = await request(app)
+        .get(`/trainers/${createdTrainerId}`)
+        .set("Authorization", `Bearer ${clientToken}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.trainer_id).toBe(createdTrainerId);
+      expect(res.body).toHaveProperty("contact_data"); 
+    });
+  });
+
+  describe("UPDATE (PATCH /admin/trainers/:id)", () => {
+    it("should update own profile (Trainer Owner)", async () => {
+      const updatePayload = { first_name: "Johnny" };
+
+      const res = await request(app)
+        .patch(`/admin/trainers/${createdTrainerId}`)
+        .set("Authorization", `Bearer ${trainerToken}`) 
+        .send(updatePayload);
+
+      expect(res.status).toBe(200);
+      expect(res.body.first_name).toBe("Johnny");
+    });
+
+    it("should fail updating another trainer (Access Denied)", async () => {
+      const otherTrainerToken = createTrainerToken(999, "other@test.com");
+      
+      const res = await request(app)
+        .patch(`/admin/trainers/${createdTrainerId}`)
+        .set("Authorization", `Bearer ${otherTrainerToken}`)
+        .send({ first_name: "Hacker" });
+
+      expect(res.status).toBe(403); 
+    });
+
+    it("should update any profile if Admin", async () => {
+      const res = await request(app)
+        .patch(`/admin/trainers/${createdTrainerId}`)
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({ last_name: "AdminUpdated" });
+
+      expect(res.status).toBe(200);
+      expect(res.body.last_name).toBe("AdminUpdated");
+    });
+  });
+
+  describe("DELETE (DELETE /admin/trainers/:id)", () => {
+    it("should soft delete trainer (Admin only)", async () => {
+      const res = await request(app)
+        .delete(`/admin/trainers/${createdTrainerId}`)
+        .set("Authorization", `Bearer ${adminToken}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.message).toMatch(/Soft Deleted/);
+
+      
+      const deletedTrainer = await prisma.trainer.findUnique({
+        where: { trainer_id: createdTrainerId }
       });
-
-      const res = await request(app).patch('/admin/trainers/1').send(updateData);
-
-      expect(res.status).toBe(200);
-      expect(prisma.trainer.update).toHaveBeenCalled();
-    });
-
-    it('should return 404 if trainer not found', async () => {
-      (prisma.trainer.findFirst as any).mockResolvedValue(null);
-
-      const res = await request(app).patch('/admin/trainers/999').send({ first_name: "Ghost" });
-      
-      expect(res.status).not.toBe(200); 
+      expect(deletedTrainer?.is_deleted).toBe(true);
     });
   });
-
-  describe('DELETE /admin/trainers/:id', () => {
-    it('should perform soft delete', async () => {
-      (prisma.trainer.findFirst as any).mockResolvedValue({ trainer_id: 1 });
-      
-      const res = await request(app).delete('/admin/trainers/1');
-
-      expect(res.status).toBe(200);
-      expect(prisma.trainer.update).toHaveBeenCalledWith(
-        expect.objectContaining({
-          where: { trainer_id: 1 },
-          data: { is_deleted: true }
-        })
-      );
-    });
-  });
-
-  describe('GET /trainers/:id/workload (Analytics)', () => {
-    it('should return formatted workload stats', async () => {
-      (prisma.trainer.findFirst as any).mockResolvedValue({ first_name: "Anna" });
-      (prisma.class_session.groupBy as any).mockResolvedValue([
-        { class_type_id: 1, _count: { session_id: 10 } }
-      ]);
-      (prisma.class_type.findMany as any).mockResolvedValue([
-        { class_type_id: 1, name: "Pilates" }
-      ]);
-
-      const res = await request(app).get('/trainers/1/workload');
-
-      expect(res.status).toBe(200);
-      expect(res.body.stats[0]).toEqual({
-        class_type: "Pilates",
-        sessions_count: 10
-      });
-    });
-  });
-
 });
