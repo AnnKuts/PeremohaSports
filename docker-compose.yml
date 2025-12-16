@@ -1,8 +1,9 @@
+version: "3.9"
+
 services:
   postgres:
     image: postgres:17
     container_name: postgres
-    restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -11,15 +12,16 @@ services:
       - "${POSTGRES_PORT}:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
-      - ./sql:/docker-entrypoint-initdb.d
     networks:
       - db-network
 
   app:
-    build:
-      context: ./course-work
+    image: node:20
     container_name: app
-    restart: always
+    working_dir: /app
+    volumes:
+      - ./course-work:/app
+      - /app/node_modules
     env_file:
       - ./course-work/.env
     ports:
@@ -27,9 +29,9 @@ services:
       - "5555:5555"
     depends_on:
       - postgres
+    command: sleep infinity
     networks:
       - db-network
-    
 
 volumes:
   postgres_data:
