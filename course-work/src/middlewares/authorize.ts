@@ -1,5 +1,6 @@
 import { Response, NextFunction } from "express";
 import { AuthenticatedRequest } from "./authenticate";
+import AppError from "../utils/AppError";
 
 export const requireAdmin = (
   req: AuthenticatedRequest,
@@ -9,10 +10,7 @@ export const requireAdmin = (
   const user = req.user;
 
   if (!user || user.actor !== "trainer" || !user.isAdmin) {
-    return res.status(403).json({ 
-      success: false, 
-      message: "Access denied. Admins only." 
-    });
+    return next(new AppError("Access denied. Admins only.", 403));
   }
 
   next();
@@ -26,10 +24,7 @@ export const requireTrainerRole = (
   const user = req.user;
 
   if (!user || user.actor !== "trainer") {
-    return res.status(403).json({ 
-      success: false, 
-      message: "Access denied. Trainers or Admins only." 
-    });
+    return next(new AppError("Access denied. Trainers or Admins only.", 403));
   }
 
   next();
@@ -44,7 +39,7 @@ export const requireTrainerOwnerOrAdmin = (
   const resourceId = Number(req.params.id);
 
   if (!user) {
-    return res.status(401).json({ message: "Not authenticated" });
+    return next(new AppError("Not authenticated", 401));
   }
 
   if (user.actor === "trainer" && user.isAdmin) {
@@ -55,10 +50,7 @@ export const requireTrainerOwnerOrAdmin = (
     return next();
   }
 
-  return res.status(403).json({ 
-    success: false, 
-    message: "Access denied. You can only manage your own data." 
-  });
+  return next(new AppError("Access denied. You can only manage your own data.", 403));
 };
 
 export const requireClientOwnerOrAdmin = (
@@ -70,7 +62,7 @@ export const requireClientOwnerOrAdmin = (
   const resourceId = Number(req.params.id);
 
   if (!user) {
-    return res.status(401).json({ message: "Not authenticated" });
+    return next(new AppError("Not authenticated", 401));
   }
 
   if (user.actor === "trainer" && user.isAdmin) {
@@ -81,8 +73,5 @@ export const requireClientOwnerOrAdmin = (
     return next();
   }
 
-  return res.status(403).json({ 
-    success: false, 
-    message: "Access denied. You can only view/edit your own profile." 
-  });
+  return next(new AppError("Access denied. You can only view/edit your own profile.", 403));
 };

@@ -26,7 +26,7 @@ export const SessionsService = {
 
    async deleteSession(id: number) {
     const session = await SessionsRepository.findById(id);
-    if (!session) throw new Error("Session not found");
+    if (!session) throw new AppError("Session not found", 404);
 
     return await SessionsRepository.softDelete(id);
   }

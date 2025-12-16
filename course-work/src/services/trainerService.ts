@@ -44,7 +44,7 @@ export const TrainersService = {
 
   async deleteTrainer(id: number) {
     const trainer = await TrainersRepository.findById(id);
-    if (!trainer) throw new Error("Trainer not found");
+    if (!trainer) throw new AppError("Trainer not found", 404);
 
     return await TrainersRepository.softDelete(id);
   },

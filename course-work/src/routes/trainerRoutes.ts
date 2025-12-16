@@ -1,6 +1,11 @@
 import { Router } from "express";
 import { TrainersController } from "../controllers/trainerController";
 import { validate } from "../middlewares/validate";
+import { authenticate } from "../middlewares/authenticate"; // Перевірте шлях!
+import { 
+  requireAdmin, 
+  requireTrainerOwnerOrAdmin
+} from "../middlewares/authorize";
 import { 
   createTrainerSchema, 
   updateTrainerSchema, 
