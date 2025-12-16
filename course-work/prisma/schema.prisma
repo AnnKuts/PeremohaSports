@@ -14,6 +14,7 @@ model attendance {
   client        client            @relation(fields: [client_id], references: [client_id], onDelete: NoAction, onUpdate: NoAction)
   class_session class_session     @relation(fields: [session_id], references: [session_id], onDelete: NoAction, onUpdate: NoAction)
   is_deleted Boolean @default(false)
+
   @@id([session_id, client_id])
 }
 
@@ -30,6 +31,10 @@ model class_session {
   is_deleted Boolean @default(false)
   room_class_type room_class_type         @relation(fields: [room_id, class_type_id], references: [room_id, class_type_id], onDelete: NoAction, onUpdate: NoAction)
   trainer         trainer                 @relation(fields: [trainer_id], references: [trainer_id], onDelete: NoAction, onUpdate: NoAction)
+  
+  @@index([room_id])
+  @@index([trainer_id])
+  @@index([class_type_id, date])
 }
 
 model class_type {
@@ -41,6 +46,9 @@ model class_type {
   qualification   qualification[]
   room_class_type room_class_type[]
   is_deleted Boolean @default(false)
+
+  @@index([name])
+  @@index([level])
 }
 
 model client {
@@ -54,6 +62,8 @@ model client {
   membership      membership[]
   payment         payment[]
   is_deleted Boolean @default(false)
+
+  @@index([contact_data_id])
 }
 
 model contact_data {
@@ -70,6 +80,9 @@ model gym {
   room              room[]
   trainer_placement trainer_placement[]
   is_deleted Boolean @default(false)
+
+  @@index([address])
+
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -85,6 +98,8 @@ model membership {
   class_type    class_type        @relation(fields: [class_type_id], references: [class_type_id], onDelete: NoAction, onUpdate: NoAction)
   client        client            @relation(fields: [client_id], references: [client_id], onDelete: NoAction, onUpdate: NoAction)
   payment       payment[]
+
+  @@index([client_id, class_type_id])
 }
 
 /// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
@@ -99,6 +114,9 @@ model payment {
   is_deleted Boolean @default(false)
   client        client         @relation(fields: [client_id], references: [client_id], onDelete: NoAction, onUpdate: NoAction)
   membership    membership?    @relation(fields: [membership_id], references: [membership_id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([client_id, status])
+  @@index([membership_id])
 }
 
 model qualification {
@@ -107,6 +125,7 @@ model qualification {
   class_type    class_type @relation(fields: [class_type_id], references: [class_type_id], onDelete: NoAction, onUpdate: NoAction)
   trainer       trainer    @relation(fields: [trainer_id], references: [trainer_id], onDelete: NoAction, onUpdate: NoAction)
   is_deleted Boolean @default(false)
+  
   @@id([trainer_id, class_type_id])
 }
 
@@ -118,6 +137,9 @@ model room {
   gym             gym               @relation(fields: [gym_id], references: [gym_id], onDelete: Cascade, onUpdate: NoAction)
   room_class_type room_class_type[]
   is_deleted Boolean @default(false)
+
+  @@index([gym_id])
+
 }
 
 model room_class_type {
@@ -127,6 +149,7 @@ model room_class_type {
   class_type    class_type      @relation(fields: [class_type_id], references: [class_type_id], onDelete: NoAction, onUpdate: NoAction)
   room          room            @relation(fields: [room_id], references: [room_id], onDelete: NoAction, onUpdate: NoAction)
   is_deleted Boolean @default(false)
+
   @@id([room_id, class_type_id])
 }
 
@@ -141,6 +164,9 @@ model trainer {
   contact_data      contact_data        @relation(fields: [contact_data_id], references: [contact_data_id], onDelete: NoAction, onUpdate: NoAction)
   trainer_placement trainer_placement[]
   is_deleted Boolean @default(false)
+
+  @@index([contact_data_id])
+  @@index([first_name, last_name])
 }
 
 model trainer_placement {
@@ -149,6 +175,7 @@ model trainer_placement {
   gym        gym     @relation(fields: [gym_id], references: [gym_id], onDelete: Cascade, onUpdate: NoAction)
   trainer    trainer @relation(fields: [trainer_id], references: [trainer_id], onDelete: NoAction, onUpdate: NoAction)
   is_deleted Boolean @default(false)
+
   @@id([trainer_id, gym_id])
 }
 
