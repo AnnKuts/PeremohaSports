@@ -285,3 +285,78 @@ The following ENUM types are used in the schema:
     One of the compromises made during the development of the system was the removal of **enum classes** for `class_type`. While using enum classes provides strong type safety and strict validation, it also imposes limitations on dynamic class creation. Without the ability to dynamically create class types without intervening in the database or the need for migrations, it would be difficult to scale and manage the system without manual changes. As a result, we opted for more flexible approaches to allow easier updates and adjustments to class types without the need for database interventions.
 
 ### 4. **Indexing strategy:** 
+
+#### **Primary Key Indexes**
+
+Primary keys (PK) are automatically indexed by the database, ensuring fast and efficient access to rows by their unique identifiers. This guarantees quick lookups, uniqueness, and optimal perfor.
+
+#### **Foreign Key Indexes**
+Foreign key indexes speed up JOIN operations and lookups of related data, improving query performance when linking tables.
+
+`class_session.room_id`  
+To search for all sessions in a specific room.
+Used in:
+- Room Schedule
+- Room Availability Check
+
+`class_session.trainer_id`  
+To search for all sessions with a specific trainer.
+Used in:
+- Trainer Schedule
+- Trainer Analytics
+
+`client.contact_data_id`  
+To quickly search for a client by contact information.
+Used in:
+- Contact Uniqueness Check
+- Contact_Data Table Relationships
+
+`payment.membership_id`  
+To search for all membership payments.
+Used in:
+- Membership Payment History
+- Financial Analytics
+
+`room.gym_id`  
+To search for all rooms in a specific gym.
+Used in:
+- Displaying the gym structure
+- Facilities management
+
+`trainer.contact_data_id`  
+To search for a trainer by contact information.
+Used in:
+- Checking the uniqueness of trainers
+- Relationships with the contact_data table
+
+#### **Composite indexes**
+
+Composite indexes optimize queries that filter or sort by multiple columns together, making multi-column searches and sorts much faster.
+
+`trainer(first_name, last_name)`
+For searching trainers by first and last name.
+Used in:
+- Employee search
+- Displaying a list of trainers
+
+#### **Conditional Indexes**
+
+Conditional indexes make indexes smaller and speed up queries that often filter by certain conditions (like is_deleted = false or status = 'active'), improving overall database performance.
+
+`class_session(class_type_id, date) WHERE is_deleted = false`  
+To search for active sessions of a specific type by date.
+Used in:
+- Schedule filtering by type and date
+- Attendance reports
+
+`membership(client_id, class_type_id) WHERE status = 'active'`  
+To search for a client's active memberships by type.
+Used in:
+- Checking for a valid membership
+- Restricting access to classes
+
+`payment(client_id, status) WHERE is_deleted = false`  
+To search for client payments by status.
+Used in:
+- Payment history
+- Payment status analytics
