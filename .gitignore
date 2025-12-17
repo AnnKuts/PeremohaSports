@@ -1,3 +1,5 @@
+.env
+
 # Logs
 logs
 *.log
@@ -282,3 +284,5 @@ vite.config.ts.timestamp-*
 **/.DS_Store
 .idea
 
+#files
+/course-work/prisma/insert-admin.ts
