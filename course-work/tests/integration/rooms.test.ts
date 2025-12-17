@@ -4,6 +4,7 @@ import app from "../../src/app";
 import prisma from "../../src/lib/prisma";
 import { clearTestData } from "./utils/clearTestData";
 import { main as seed } from "../../prisma/seed";
+import { adminToken } from "./utils/testHelpers";
 
 let gymId: number;
 
@@ -12,7 +13,6 @@ describe("Rooms API Integration", () => {
     await clearTestData();
     await seed();
 
-    // Create a specific gym for tests
     const gym = await prisma.gym.create({
       data: { address: "RoomTest Gym", is_deleted: false },
     });
@@ -47,7 +47,10 @@ describe("Rooms API Integration", () => {
 
   describe("CREATE", () => {
     it("POST /rooms - should fail with missing required fields", async () => {
-      const res = await request(app).post("/rooms").send({});
+      const res = await request(app)
+        .post("/rooms")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({});
       expect(res.status).toBeGreaterThanOrEqual(400);
       expect(res.body).toHaveProperty("error");
     });
@@ -58,7 +61,10 @@ describe("Rooms API Integration", () => {
         capacity: 15,
         classTypeIds: [],
       };
-      const res = await request(app).post("/rooms").send(payload);
+      const res = await request(app)
+        .post("/rooms")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send(payload);
 
       expect(res.status).toBe(201);
       expect(res.body).toHaveProperty("success", true);
@@ -114,6 +120,7 @@ describe("Rooms API Integration", () => {
 
       const res = await request(app)
         .put(`/rooms/${room.room_id}/capacity`)
+        .set("Authorization", `Bearer ${adminToken}`)
         .send({ capacity: 25 });
 
       expect(res.status).toBe(200);
@@ -141,7 +148,9 @@ describe("Rooms API Integration", () => {
         },
       });
 
-      const res = await request(app).delete(`/rooms/${room.room_id}`);
+      const res = await request(app)
+        .delete(`/rooms/${room.room_id}`)
+        .set("Authorization", `Bearer ${adminToken}`);
 
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty("success", true);
@@ -168,7 +177,9 @@ describe("Rooms API Integration", () => {
         data: { gym_id: gymId, capacity: 10, is_deleted: false },
       });
 
-      const res = await request(app).delete(`/rooms/${room.room_id}`);
+      const res = await request(app)
+        .delete(`/rooms/${room.room_id}`)
+        .set("Authorization", `Bearer ${adminToken}`);
 
       expect(res.status).toBe(200);
       expect(res.body).toHaveProperty("success", true);

@@ -3,6 +3,7 @@ import { describe, it, expect, beforeEach, afterEach, afterAll } from "vitest";
 import app from "../../src/app";
 import prisma from "../../src/lib/prisma";
 import { clearTestData } from "./utils/clearTestData";
+import { adminToken } from "./utils/testHelpers";
 
 describe("ClassTypes API Integration", () => {
   beforeEach(async () => {
@@ -21,7 +22,10 @@ describe("ClassTypes API Integration", () => {
         level: "beginner",
       };
 
-      const res = await request(app).post("/class-types").send(payload);
+      const res = await request(app)
+        .post("/class-types")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send(payload);
 
       expect(res.status).toBe(201);
       expect(res.body.success).toBe(true);
@@ -30,7 +34,10 @@ describe("ClassTypes API Integration", () => {
     });
 
     it("should fail when required fields are missing", async () => {
-      const res = await request(app).post("/class-types").send({});
+      const res = await request(app)
+        .post("/class-types")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({});
       expect(res.status).toBeGreaterThanOrEqual(400);
       expect(res.body).toHaveProperty("error");
     });
@@ -42,7 +49,10 @@ describe("ClassTypes API Integration", () => {
         level: "pro_god_mode",
       };
 
-      const res = await request(app).post("/class-types").send(payload);
+      const res = await request(app)
+        .post("/class-types")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send(payload);
       expect(res.status).toBeGreaterThanOrEqual(400);
     });
   });
@@ -86,8 +96,10 @@ describe("ClassTypes API Integration", () => {
         data: { name: "workout", level: "beginner", description: "Old" },
       });
 
+
       const res = await request(app)
         .put(`/class-types/${created.class_type_id}`)
+        .set("Authorization", `Bearer ${adminToken}`)
         .send({ description: "New Description", level: "advanced" });
 
       expect(res.status).toBe(200);

@@ -4,6 +4,7 @@ import app from "../../src/app";
 import prisma from "../../src/lib/prisma";
 import { clearTestData } from "./utils/clearTestData";
 import { main } from "../../prisma/seed";
+import { adminToken } from "./utils/testHelpers";
 
 let testSessionId: number | undefined;
 let testClientId: number | undefined;
@@ -34,6 +35,7 @@ describe("Attendance Integration API", () => {
 
       const res = await request(app)
         .post("/attendance")
+        .set("Authorization", `Bearer ${adminToken}`)
         .send({ session_id: testSessionId, client_id: testClientId });
 
       expect([201, 400, 409]).toContain(res.status);
@@ -48,9 +50,11 @@ describe("Attendance Integration API", () => {
 
       await request(app)
         .post("/attendance")
+        .set("Authorization", `Bearer ${adminToken}`)
         .send({ session_id: testSessionId, client_id: testClientId });
       const res = await request(app)
         .post("/attendance")
+        .set("Authorization", `Bearer ${adminToken}`)
         .send({ session_id: testSessionId, client_id: testClientId });
       expect([400, 409]).toContain(res.status);
       expect(res.body).toHaveProperty("error");
@@ -63,11 +67,14 @@ describe("Attendance Integration API", () => {
 
       await request(app)
         .post("/attendance")
+        .set("Authorization", `Bearer ${adminToken}`)
         .send({ session_id: testSessionId, client_id: testClientId });
 
-      const res = await request(app).get(
-        `/attendance/by-id?session_id=${testSessionId}&client_id=${testClientId}`,
-      );
+      const res = await request(app)
+        .get(
+          `/attendance/by-id?session_id=${testSessionId}&client_id=${testClientId}`,
+        )
+        .set("Authorization", `Bearer ${adminToken}`);
 
       expect([200, 404]).toContain(res.status);
       if (res.status === 200) {
@@ -79,9 +86,11 @@ describe("Attendance Integration API", () => {
     });
 
     it("should return 404 for non-existent attendance", async () => {
-      const res = await request(app).get(
-        "/attendance/by-id?session_id=999999&client_id=999999",
-      );
+      const res = await request(app)
+        .get(
+          "/attendance/by-id?session_id=999999&client_id=999999",
+        )
+        .set("Authorization", `Bearer ${adminToken}`);
       expect(res.status).toBe(404);
     });
   });
@@ -96,6 +105,7 @@ describe("Attendance Integration API", () => {
 
       const res = await request(app)
         .put("/attendance/status")
+        .set("Authorization", `Bearer ${adminToken}`)
         .send({
           session_id: testSessionId,
           client_id: testClientId,
@@ -111,11 +121,14 @@ describe("Attendance Integration API", () => {
       if (!testSessionId || !testClientId) throw new Error("Seed data missing");
       await request(app)
         .post("/attendance")
+        .set("Authorization", `Bearer ${adminToken}`)
         .send({ session_id: testSessionId, client_id: testClientId });
 
-      const res = await request(app).delete(
-        `/attendance/by-id?session_id=${testSessionId}&client_id=${testClientId}`
-      );
+      const res = await request(app)
+        .delete(
+          `/attendance/by-id?session_id=${testSessionId}&client_id=${testClientId}`
+        )
+        .set("Authorization", `Bearer ${adminToken}`);
 
       expect([200, 404]).toContain(res.status);
 
@@ -144,13 +157,17 @@ describe("Attendance Integration API", () => {
         return;
       }
 
-      await request(app).delete(
-        `/attendance/by-id?session_id=${testSessionId}&client_id=${testClientId}`
-      );
+      await request(app)
+        .delete(
+          `/attendance/by-id?session_id=${testSessionId}&client_id=${testClientId}`
+        )
+        .set("Authorization", `Bearer ${adminToken}`);
 
-      const res = await request(app).get(
-        `/attendance?session_id=${testSessionId}&client_id=${testClientId}`
-      );
+      const res = await request(app)
+        .get(
+          `/attendance?session_id=${testSessionId}&client_id=${testClientId}`
+        )
+        .set("Authorization", `Bearer ${adminToken}`);
 
       expect(res.status).toBe(200);
       if (Array.isArray(res.body.data)) {

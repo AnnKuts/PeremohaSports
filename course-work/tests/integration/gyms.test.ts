@@ -4,6 +4,7 @@ import app from "../../src/app";
 import prisma from "../../src/lib/prisma";
 import { clearTestData } from "./utils/clearTestData";
 import { main as seed } from "../../prisma/seed";
+import { adminToken } from "./utils/testHelpers";
 
 interface ApiResponse<T> {
   success: boolean;
@@ -54,7 +55,10 @@ describe("Gyms API Integration", () => {
         trainers: [999999, 888888],
       };
 
-      const res = await request(app).post("/gyms").send(payload);
+      const res = await request(app)
+        .post("/gyms")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send(payload);
 
       expect([400, 404]).toContain(res.status);
       expect(res.body).toHaveProperty("error");
@@ -79,7 +83,10 @@ describe("Gyms API Integration", () => {
         trainers: trainers.map(t => t.trainer_id),
       };
 
-      const res = await request(app).post("/gyms").send(payload);
+      const res = await request(app)
+        .post("/gyms")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send(payload);
 
       expect(res.status).toBe(201);
       expect(res.body.success).toBe(true);
@@ -90,7 +97,10 @@ describe("Gyms API Integration", () => {
     });
 
     it("POST /gyms - should fail without required fields", async () => {
-      const res = await request(app).post("/gyms").send({});
+      const res = await request(app)
+        .post("/gyms")
+        .set("Authorization", `Bearer ${adminToken}`)
+        .send({});
 
       expect([400, 422]).toContain(res.status);
       expect(res.body).toHaveProperty("error");
@@ -103,6 +113,7 @@ describe("Gyms API Integration", () => {
 
       const res = await request(app)
         .put(`/gyms/${gym.gym_id}`)
+        .set("Authorization", `Bearer ${adminToken}`)
         .send({ address: "Updated Address" });
 
       expect([200, 404]).toContain(res.status);
@@ -167,7 +178,9 @@ describe("Gyms API Integration", () => {
         data: { capacity: 10, gym_id: gym.gym_id },
       });
 
-      const res = await request(app).delete(`/gyms/${gym.gym_id}`);
+      const res = await request(app)
+        .delete(`/gyms/${gym.gym_id}`)
+        .set("Authorization", `Bearer ${adminToken}`);
 
       expect([200, 404]).toContain(res.status);
 

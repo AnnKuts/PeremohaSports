@@ -4,6 +4,7 @@ import app from "../../src/app";
 import prisma from "../../src/lib/prisma";
 import { clearTestData } from "./utils/clearTestData";
 import { main as seed } from "../../prisma/seed";
+import { adminToken } from "./utils/testHelpers";
 
 describe("Payments API Integration", () => {
     beforeEach(async () => {
@@ -16,7 +17,9 @@ describe("Payments API Integration", () => {
     });
 
     it("GET /payments - should return all payments", async () => {
-        const res = await request(app).get("/payments");
+        const res = await request(app)
+            .get("/payments")
+            .set("Authorization", `Bearer ${adminToken}`);
 
         expect(res.status).toBe(200);
         expect(res.body.success).toBe(true);
@@ -28,7 +31,9 @@ describe("Payments API Integration", () => {
         const payment = await prisma.payment.findFirst();
         expect(payment).toBeTruthy();
 
-        const res = await request(app).get(`/payments/${payment!.payment_id}`);
+        const res = await request(app)
+            .get(`/payments/${payment!.payment_id}`)
+            .set("Authorization", `Bearer ${adminToken}`);
 
         expect(res.status).toBe(200);
         expect(res.body.success).toBe(true);
@@ -36,7 +41,9 @@ describe("Payments API Integration", () => {
     });
 
     it("GET /payments/:id - should return 404 for non-existent payment", async () => {
-        const res = await request(app).get("/payments/999999");
+        const res = await request(app)
+            .get("/payments/999999")
+            .set("Authorization", `Bearer ${adminToken}`);
         expect(res.status).toBe(404);
     });
 });
