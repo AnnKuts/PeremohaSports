@@ -1,11 +1,15 @@
 ## **API/usage examples**  
 
-10. **Table of Contents**  
+**Table of Contents**  
    - [Attendance](#attendance--attendance-)
    - [ClassTypes](#classtypes--class-types-)
    - [Gyms](#gyms--gyms-)
    - [Rooms](#rooms--rooms-)
+   - [Register](#register--register-)
+   - [Auth](#auth--auth-)
    - [Clients](#clients--clients-)
+   - [Memberships](#membershps--memberships-)
+   - [Payments](#payments--payments-)
 
 ### Attendance ( `/attendance/` )
 
@@ -1178,3 +1182,908 @@ Soft deletes the currently authenticated user.
   "message": "Account deleted successfully"
 }
    ```
+Ось API документація тільки для цих ендпоінтів:
+
+### Register ( `/register/` )
+
+#### 1. **Register new client**
+   **Method:** `POST`
+   **Endpoint:** `/`
+   **Description:**
+   Registers a new client with contact data, membership, and initial payment.
+
+   | **Role**        | **Required to access**   |
+   |-----------------|--------------------------|
+   | **Public**      | ✅                        |
+
+   **Example Request:**
+   ```http
+   POST /register
+   ```
+
+   **Request Body:**
+   ```json
+   {
+     "firstName": "Іван",
+     "lastName": "Петренко",
+     "gender": "male",
+     "email": "ivan.petrenko@example.com",
+     "phone": "+380501112233",
+     "membershipType": 1,
+     "startDate": "2025-10-10",
+     "endDate": "2025-11-10",
+     "price": 700,
+     "paymentMethod": "card",
+     "isDisposable": false
+   }
+   ```
+
+   **Example Response:**
+   ```json
+   {
+     "success": true,
+     "data": {
+       "contact": {
+         "contact_data_id": 1,
+         "email": "ivan.petrenko@example.com",
+         "phone": "+380501112233"
+       },
+       "client": {
+         "client_id": 1,
+         "first_name": "Іван",
+         "last_name": "Петренко",
+         "gender": "male",
+         "contact_data_id": 1
+       },
+       "membership": {
+         "membership_id": 1,
+         "client_id": 1,
+         "class_type_id": 1,
+         "start_date": "2025-10-10T00:00:00.000Z",
+         "end_date": "2025-11-10T00:00:00.000Z",
+         "price": 700,
+         "status": "active",
+         "is_disposable": false
+       },
+       "payment": {
+         "payment_id": 1,
+         "client_id": 1,
+         "membership_id": 1,
+         "amount": 700,
+         "method": "card",
+         "status": "pending"
+       }
+     }
+   }
+   ```
+
+### Clients ( `/clients/` )
+
+#### 1. **Get all clients**
+**Method:** `GET`  
+**Endpoint:** `/`  
+
+**Description:**  
+Returns a list of all clients.
+
+| **Role**        | **Required to access**   |  
+   |-----------------|--------------------------|  
+| **Registered**  | ❌                        |  
+| **Client**      | ❌                        |  
+| **Trainer**     | ❌                        |  
+| **Admin**       | ✅                        |  
+
+**Example Request:**
+   ```http
+   GET /clients/
+   Authorization: Bearer <admin_token>
+   ```
+
+**Example Response:**
+   ```json
+[
+  {
+    "client_id": 1,
+    "first_name": "Іван",
+    "last_name": "Петренко",
+    "gender": "male",
+    "membership": {
+      "status": "active",
+      "end_date": "2025-10-14T00:00:00.000Z"
+    }
+  },
+  {
+    "client_id": 2,
+    "first_name": "Олена",
+    "last_name": "Іванова",
+    "gender": "female",
+    "membership": null
+  },
+  {
+    "client_id": 3,
+    "first_name": "Олег",
+    "last_name": "Коваль",
+    "gender": "male",
+    "membership": null
+  }
+]
+   ```
+
+#### 2. **Get client by ID**
+**Method:** `GET`  
+**Endpoint:** `/:id`  
+**Description:**  
+Returns information about a specific client by their ID.
+
+| **Role**        | **Required to access**   |  
+   |-----------------|--------------------------|  
+| **Registered**  | ❌                        |  
+| **Client**      | ✅ (Own profile only)     |  
+| **Trainer**     | ❌                        |  
+| **Admin**       | ✅                        |  
+
+**Example Request:**
+   ```http
+   GET /clients/1
+   Authorization: Bearer <token>
+   ```
+
+**Example Response:**
+   ```json
+{
+  "client_id": 1,
+  "first_name": "Іван",
+  "last_name": "Петренко",
+  "gender": "male",
+  "contact_data_id": 5,
+  "is_deleted": false,
+  "contact_data": {
+    "contact_data_id": 5,
+    "phone": "380501112233",
+    "email": "ivan.petrenko@example.com"
+  },
+  "membership": [
+    {
+      "membership_id": 3,
+      "start_date": "2025-10-13T00:00:00.000Z",
+      "end_date": "2025-10-14T00:00:00.000Z",
+      "price": "100",
+      "status": "active",
+      "is_disposable": true,
+      "client_id": 1,
+      "class_type_id": 3,
+      "class_type": {
+        "class_type_id": 3,
+        "name": "yoga",
+        "description": "Подихайте маткою вперше на наших заняттях з йоги!",
+        "level": "beginner",
+        "is_deleted": false
+      }
+    }
+  ],
+  "payment": [
+    {
+      "payment_id": 2,
+      "created_at": "2025-12-17T08:43:09.814Z",
+      "amount": "100",
+      "status": "pending",
+      "method": "card",
+      "client_id": 1,
+      "membership_id": 3,
+      "is_deleted": false,
+      "membership": {
+        "membership_id": 3,
+        "start_date": "2025-10-13T00:00:00.000Z",
+        "end_date": "2025-10-14T00:00:00.000Z",
+        "price": "100",
+        "status": "active",
+        "is_disposable": true,
+        "client_id": 1,
+        "class_type_id": 3
+      }
+    }
+  ],
+  "attendance": [
+    {
+      "session_id": 4,
+      "client_id": 1,
+      "status": "booked",
+      "is_deleted": false,
+      "class_session": {
+        "session_id": 4,
+        "room_id": 3,
+        "class_type_id": 3,
+        "capacity": 12,
+        "date": "2025-10-13T00:00:00.000Z",
+        "trainer_id": 2,
+        "is_deleted": false,
+        "trainer": {
+          "trainer_id": 2,
+          "first_name": "Анна",
+          "last_name": "Шевченко",
+          "is_admin": false,
+          "contact_data_id": 4,
+          "is_deleted": false
+        }
+      }
+    }
+  ]
+}
+  ```
+```JSON
+{
+  "client_id": 1,
+  "first_name": "Іван",
+  "last_name": "Петренко",
+  "gender": "male",
+  "contact_data_id": 5,
+  "is_deleted": false,
+  "contact_data": {
+    "contact_data_id": 5,
+    "phone": "380501112233",
+    "email": "ivan.petrenko@example.com"
+  },
+  "membership": [
+    {
+      "membership_id": 3,
+      "start_date": "2025-10-13T00:00:00.000Z",
+      "end_date": "2025-10-14T00:00:00.000Z",
+      "price": "100",
+      "status": "active",
+      "is_disposable": true,
+      "client_id": 1,
+      "class_type_id": 3,
+      "class_type": {
+        "class_type_id": 3,
+        "name": "yoga",
+        "description": "Подихайте маткою вперше на наших заняттях з йоги!",
+        "level": "beginner",
+        "is_deleted": false
+      }
+    }
+  ],
+  "payment": [
+    {
+      "payment_id": 2,
+      "created_at": "2025-12-17T08:43:09.814Z",
+      "amount": "100",
+      "status": "completed",
+      "method": "card",
+      "client_id": 1,
+      "membership_id": 3,
+      "is_deleted": false,
+      "membership": {
+        "membership_id": 3,
+        "start_date": "2025-10-13T00:00:00.000Z",
+        "end_date": "2025-10-14T00:00:00.000Z",
+        "price": "100",
+        "status": "active",
+        "is_disposable": true,
+        "client_id": 1,
+        "class_type_id": 3
+      }
+    }
+  ],
+  "attendance": [
+    {
+      "session_id": 4,
+      "client_id": 1,
+      "status": "booked",
+      "is_deleted": false,
+      "class_session": {
+        "session_id": 4,
+        "room_id": 3,
+        "class_type_id": 3,
+        "capacity": 12,
+        "date": "2025-10-13T00:00:00.000Z",
+        "trainer_id": 2,
+        "is_deleted": false,
+        "trainer": {
+          "trainer_id": 2,
+          "first_name": "Анна",
+          "last_name": "Шевченко",
+          "is_admin": false,
+          "contact_data_id": 4,
+          "is_deleted": false
+        }
+      }
+    }
+  ]
+}
+```
+eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3RvciI6InRyYWluZXIiLCJ0cmFpbmVySWQiOjMsImVtYWlsIjoiYW5qYWt1dHMwM0BnbWFpbC5jb20iLCJpc0FkbWluIjp0cnVlLCJpYXQiOjE3NjU5NjQyNTksImV4cCI6MTc2NjA1MDY1OX0.y2HB0JXakQw6bAaAddjjwiIjhSM8vlo4NBk2VDgC2bo
+
+#### 3. **Get client's memberships**
+**Method:** `GET`  
+**Endpoint:** `/:id/memberships`  
+**Description:**  
+Returns all memberships belonging to a specific client.
+
+| **Role**        | **Required to access**   |  
+   |-----------------|--------------------------|  
+| **Client**      | ✅ (Own memberships only) |  
+| **Trainer**     | ❌                        |  
+| **Admin**       | ✅                        |
+
+**Example Request:**
+   ```http
+   GET /clients/1/memberships
+   Authorization: Bearer <token>
+   ```
+
+**Example Response:**
+   ```json
+   {
+     "success": true,
+     "data": [
+       {
+         "membership_id": 2,
+         "start_date":  "2025-10-13",
+         "end_date": "2025-10-14",
+         "price": "100.00",
+         "status": "active",
+         "is_disposable": true,
+         "client_id": 1,
+         "class_type_id": 2,
+         "class_type":  {
+           "class_type_id": 2,
+           "name": "yoga",
+           "level": "beginner",
+           "description": "Подихайте маткою вперше на наших заняттях з йоги! ",
+           "is_deleted":  false
+         }
+       }
+     ],
+     "total": 1
+   }
+   ```
+
+#### 4. **Get client's payments**
+**Method:** `GET`  
+**Endpoint:** `/:id/payments`  
+**Description:**  
+Returns all payments made by a specific client.
+
+| **Role**        | **Required to access**   |  
+   |-----------------|--------------------------|  
+| **Client**      | ✅ (Own payments only)    |  
+| **Trainer**     | ❌                        |  
+| **Admin**       | ✅                        |
+
+**Example Request:**
+   ```http
+   GET /clients/4/payments
+   Authorization: Bearer <token>
+   ```
+
+**Example Response:**
+   ```json
+   {
+     "success": true,
+     "data": [
+       {
+         "payment_id": 1,
+         "created_at": "2025-12-17T10:30:00.000Z",
+         "amount": "700.00",
+         "status": "completed",
+         "method": "online",
+         "client_id": 4,
+         "membership_id": 1,
+         "is_deleted": false,
+         "membership":  {
+           "membership_id":  1,
+           "start_date": "2025-10-10",
+           "end_date": "2025-11-11",
+           "status": "active",
+           "class_type":  {
+             "name": "swimming_pool",
+             "level": "advanced"
+           }
+         }
+       },
+       {
+         "payment_id": 3,
+         "created_at":  "2025-12-17T11:00:00.000Z",
+         "amount": "700.00",
+         "status":  "failed",
+         "method":  "online",
+         "client_id": 4,
+         "membership_id": null,
+         "is_deleted": false
+       },
+       {
+         "payment_id": 4,
+         "created_at":  "2025-12-17T11:15:00.000Z",
+         "amount": "700.00",
+         "status": "completed",
+         "method": "online",
+         "client_id": 4,
+         "membership_id": 3,
+         "is_deleted":  false,
+         "membership": {
+           "membership_id": 3,
+           "start_date": "2025-09-05",
+           "end_date":  "2025-10-06",
+           "status": "expired",
+           "class_type": {
+             "name": "swimming_pool",
+             "level":  "advanced"
+           }
+         }
+       }
+     ],
+     "total": 3
+   }
+   ```
+
+#### 5. **Get client's attendance history**
+**Method:** `GET`  
+**Endpoint:** `/:id/attendance`  
+**Description:**  
+Returns attendance history for a specific client.
+
+| **Role**        | **Required to access**   |  
+   |-----------------|--------------------------|  
+| **Client**      | ✅ (Own attendance only)  |  
+| **Trainer**     | ❌                        |  
+| **Admin**       | ✅                        |
+
+**Example Request:**
+   ```http
+   GET /clients/4/attendance
+   Authorization:  Bearer <token>
+   ```
+
+**Example Response:**
+   ```json
+   {
+     "success": true,
+     "data": [
+       {
+         "session_id": 3,
+         "client_id": 4,
+         "status": "cancelled",
+         "is_deleted":  false,
+         "class_session": {
+           "session_id": 3,
+           "date": "2025-10-12",
+           "duration": "02:00:00",
+           "capacity": 10,
+           "room_id": 3,
+           "class_type_id":  3,
+           "trainer_id": 2,
+           "is_deleted": false,
+           "trainer": {
+             "trainer_id": 2,
+             "first_name": "Анна",
+             "last_name": "Шевченко"
+           },
+           "room_class_type": {
+             "room":  {
+               "room_id":  3,
+               "capacity": 50,
+               "gym":  {
+                 "gym_id":  2,
+                 "address": "м. Львів, просп. Свободи, 25"
+               }
+             },
+             "class_type": {
+               "name": "swimming_pool",
+               "level": "advanced",
+               "description": "Тренування у басейні для професійних плавців"
+             }
+           }
+         }
+       }
+     ],
+     "total": 1
+   }
+   ```
+
+#### 6. **Update client**
+**Method:** `PATCH`  
+**Endpoint:** `/:id`  
+**Description:**  
+Updates client information (name, gender, contact data). Only allows partial updates.
+
+| **Role**        | **Required to access**   |  
+   |-----------------|--------------------------|  
+| **Client**      | ✅ (Own profile only)     |  
+| **Trainer**     | ❌                        |  
+| **Admin**       | ✅                        |
+
+**Example Request:**
+   ```http
+   PATCH /clients/1
+   Authorization: Bearer <token>
+   ```
+
+**Request Body:**
+   ```json
+{
+  "first_name": "Іван",
+  "last_name": "Бондаренко",
+  "contact_data": {
+    "email": "ivan.petrenko@example.com"
+  }
+}
+   ```
+
+**Example Response:**
+   ```json
+{
+  "client_id": 1,
+  "first_name": "Іван",
+  "last_name": "Бондаренко",
+  "gender": "male",
+  "contact_data_id": 5,
+  "is_deleted": false,
+  "contact_data": {
+    "contact_data_id": 5,
+    "phone": "380501112233",
+    "email": "ivan.petrenko@example.com"
+  }
+}
+   ```
+
+
+
+PATCH /payments/:id
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3RvciI6InRyYWluZXIiLCJ0cmFpbmVySWQiOjMsImVtYWlsIjoiYW5qYWt1dHMwM0BnbWFpbC5jb20iLCJpc0FkbWluIjp0cnVlLCJpYXQiOjE3NjU5NjQyNTksImV4cCI6MTc2NjA1MDY1OX0.y2HB0JXakQw6bAaAddjjwiIjhSM8vlo4NBk2VDgC2bo
+
+```JSON
+{
+  "status": "completed"
+}
+```
+
+```JSON
+{
+    "success": true,
+    "data": {
+        "payment_id": 2,
+        "created_at": "2025-12-17T08:43:09.814Z",
+        "amount": "100",
+        "status": "completed",
+        "method": "card",
+        "client_id": 1,
+        "membership_id": 3,
+        "is_deleted": false,
+        "client": {
+            "client_id": 1,
+            "first_name": "Іван",
+            "last_name": "Петренко",
+            "gender": "male",
+            "contact_data_id": 5,
+            "is_deleted": false,
+            "contact_data": {
+                "contact_data_id": 5,
+                "phone": "380501112233",
+                "email": "ivan.petrenko@example.com"
+            }
+        },
+        "membership": {
+            "membership_id": 3,
+            "start_date": "2025-10-13T00:00:00.000Z",
+            "end_date": "2025-10-14T00:00:00.000Z",
+            "price": "100",
+            "status": "active",
+            "is_disposable": true,
+            "client_id": 1,
+            "class_type_id": 3,
+            "class_type": {
+                "class_type_id": 3,
+                "name": "yoga",
+                "description": "Подихайте маткою вперше на наших заняттях з йоги!",
+                "level": "beginner",
+                "is_deleted": false
+            }
+        }
+    }
+}
+```
+
+### Membershps ( `/memberships/` )
+
+#### 1. **Create membership**
+   **Method:** `POST`
+   **Endpoint:** `/`
+   **Description:**
+   Creates a new membership for a client.
+
+   | **Role**        | **Required to access**   |
+   |-----------------|--------------------------|
+   | **Client**      | ✅ (via Register only)    |
+   | **Trainer**     | ❌                        |
+   | **Admin**       | ✅                        |
+
+   **Example Request:**
+   ```http
+   POST /memberships
+   ```
+
+   **Request Body:**
+   ```json
+   {
+     "client_id": 1,
+     "class_type_id": 2,
+     "start_date": "2025-10-10",
+     "end_date": "2025-11-10",
+     "price": 500,
+     "is_disposable": false
+   }
+   ```
+
+   **Example Response:**
+   ```json
+   {
+     "success": true,
+     "data": {
+       "membership_id": 5,
+       "client_id": 1,
+       "class_type_id": 2,
+       "start_date": "2025-10-10T00:00:00.000Z",
+       "end_date": "2025-11-10T00:00:00.000Z",
+       "price": 500,
+       "status": "active",
+       "is_disposable": false
+     }
+   }
+   ```
+
+#### 2. **Get all memberships**
+   **Method:** `GET`
+   **Endpoint:** `/`
+   **Description:**
+   Returns a list of all memberships.
+
+   | **Role**        | **Required to access**   |
+   |-----------------|--------------------------|
+   | **Client**      | ❌                        |
+   | **Trainer**     | ❌                        |
+   | **Admin**       | ✅                        |
+
+   **Example Request:**
+   ```http
+   GET /memberships
+   ```
+
+#### 3. **Get membership by ID**
+   **Method:** `GET`
+   **Endpoint:** `/:id`
+   **Description:**
+   Returns a membership by its ID.
+
+   | **Role**        | **Required to access**   |
+   |-----------------|--------------------------|
+   | **Client**      | ❌                        |
+   | **Trainer**     | ❌                        |
+   | **Admin**       | ✅                        |
+
+   **Example Request:**
+   ```http
+   GET /memberships/5
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3RvciI6InRyYWluZXIiLCJ0cmFpbmVySWQiOjMsImVtYWlsIjoiYW5qYWt1dHMwM0BnbWFpbC5jb20iLCJpc0FkbWluIjp0cnVlLCJpYXQiOjE3NjU5NjQyNTksImV4cCI6MTc2NjA1MDY1OX0.y2HB0JXakQw6bAaAddjjwiIjhSM8vlo4NBk2VDgC2bo
+   ```
+
+#### 4. **Update membership**
+   **Method:** `PATCH`
+   **Endpoint:** `/:id`
+   **Description:**
+   Updates membership details (dates, status, price).
+
+   | **Role**        | **Required to access**   |
+   |-----------------|--------------------------|
+   | **Client**      | ❌                        |
+   | **Trainer**     | ❌                        |
+   | **Admin**       | ✅                        |
+
+   **Example Request:**
+   ```http
+   PATCH /memberships/5
+   Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3RvciI6InRyYWluZXIiLCJ0cmFpbmVySWQiOjMsImVtYWlsIjoiYW5qYWt1dHMwM0BnbWFpbC5jb20iLCJpc0FkbWluIjp0cnVlLCJpYXQiOjE3NjU5NjQyNTksImV4cCI6MTc2NjA1MDY1OX0.y2HB0JXakQw6bAaAddjjwiIjhSM8vlo4NBk2VDgC2bo
+   ```
+
+   **Request Body:**
+   ```json
+   {
+     "status": "frozen",
+     "end_date": "2025-11-20"
+   }
+   ```
+
+#### 5. **Delete membership**
+   **Method:** `DELETE`
+   **Endpoint:** `/:id`
+   **Description:**
+   Hard deletes a membership (admin only).
+
+   | **Role**        | **Required to access**   |
+   |-----------------|--------------------------|
+   | **Client**      | ❌                        |
+   | **Trainer**     | ❌                        |
+   | **Admin**       | ✅                        |
+
+   **Example Request:**
+   ```http
+   DELETE /memberships/5
+   ```
+
+### Payments ( `/payments/` )
+
+#### 1. **Get all payments**
+   **Method:** `GET`
+   **Endpoint:** `/`
+   **Description:**
+   Returns a list of all payments. May filter by status, method, client_id.
+
+   | **Role**        | **Required to access**   |
+   |-----------------|--------------------------|
+   | **Client**      | ❌                        |
+   | **Trainer**     | ❌                        |
+   | **Admin**       | ✅                        |
+
+   **Example Request:**
+   ```http
+   GET /payments?status=completed
+   ```
+
+#### 2. **Get payment by ID**
+   **Method:** `GET`
+   **Endpoint:** `/:id`
+   **Description:**
+   Returns a payment by its ID.
+
+   | **Role**        | **Required to access**   |
+   |-----------------|--------------------------|
+   | **Client**      | ❌                        |
+   | **Trainer**     | ❌                        |
+   | **Admin**       | ✅                        |
+
+   **Example Request:**
+   ```http
+   GET /payments/2
+   ```
+
+#### 3. **Create payment**
+   **Method:** `POST`
+   **Endpoint:** `/`
+   **Description:**
+   Creates a new payment.
+
+   | **Role**        | **Required to access**   |
+   |-----------------|--------------------------|
+   | **Public/Auth** | ✅ (Public for initial)   |
+
+   **Example Request:**
+   ```http
+   POST /payments
+   ```
+
+   **Request Body:**
+   ```json
+   {
+     "amount": 100,
+     "method": "card",
+     "client_id": 1,
+     "membership_id": 3
+   }
+   ```
+
+#### 4. **Update payment**
+   **Method:** `PATCH`
+   **Endpoint:** `/:id`
+   **Description:**
+   Updates payment status or details.
+
+   | **Role**        | **Required to access**   |
+   |-----------------|--------------------------|
+   | **Client**      | ❌                        |
+   | **Trainer**     | ❌                        |
+   | **Admin**       | ✅                        |
+
+   **Example Request:**
+   ```http
+   PATCH /payments/1
+   Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3RvciI6InRyYWluZXIiLCJ0cmFpbmVySWQiOjMsImVtYWlsIjoiYW5qYWt1dHMwM0BnbWFpbC5jb20iLCJpc0FkbWluIjp0cnVlLCJpYXQiOjE3NjU5NjQyNTksImV4cCI6MTc2NjA1MDY1OX0.y2HB0JXakQw6bAaAddjjwiIjhSM8vlo4NBk2VDgC2bo
+   ```
+
+   **Request Body:**
+   ```json
+   {
+     "status": "completed"
+   }
+   ```
+**Example Response:**
+```JSON
+{
+    "success": true,
+    "data": {
+        "payment_id": 2,
+        "created_at": "2025-12-17T08:43:09.814Z",
+        "amount": "100",
+        "status": "completed",
+        "method": "card",
+        "client_id": 1,
+        "membership_id": 3,
+        "is_deleted": false,
+        "client": {
+            "client_id": 1,
+            "first_name": "Іван",
+            "last_name": "Петренко",
+            "gender": "male",
+            "contact_data_id": 5,
+            "is_deleted": false,
+            "contact_data": {
+                "contact_data_id": 5,
+                "phone": "380501112233",
+                "email": "ivan.petrenko@example.com"
+            }
+        },
+        "membership": {
+            "membership_id": 3,
+            "start_date": "2025-10-13T00:00:00.000Z",
+            "end_date": "2025-10-14T00:00:00.000Z",
+            "price": "100",
+            "status": "active",
+            "is_disposable": true,
+            "client_id": 1,
+            "class_type_id": 3,
+            "class_type": {
+                "class_type_id": 3,
+                "name": "yoga",
+                "description": "Подихайте маткою вперше на наших заняттях з йоги!",
+                "level": "beginner",
+                "is_deleted": false
+            }
+        }
+    }
+}
+```
+
+#### 5. **Get revenue analytics**
+   **Method:** `GET`
+   **Endpoint:** `/analytics/revenue`
+   **Description:**
+   Returns revenue analytics grouped by class type.
+
+   | **Role**        | **Required to access**   |
+   |-----------------|--------------------------|
+   | **Client**      | ❌                        |
+   | **Trainer**     | ❌                        |
+   | **Admin**       | ✅                        |
+
+   **Example Request:**
+   ```http
+   GET /payments/analytics/revenue?year=2025&month=12
+   ```
+**Example Request:**
+```JSON
+{
+"success": true,
+"data": [
+{
+"month": "2025-12",
+"classTypes": [
+{
+"classTypeId": 2,
+"classTypeName": "swimming_pool",
+"totalRevenue": 1400,
+"paymentsCount": 2
+},
+{
+"classTypeId": 3,
+"classTypeName": "yoga",
+"totalRevenue": 100,
+"paymentsCount": 1
+}
+],
+"totalMonthRevenue": 1500
+}
+],
+"filters": {
+"year": 2025,
+"month": 12
+}
+}
+```
