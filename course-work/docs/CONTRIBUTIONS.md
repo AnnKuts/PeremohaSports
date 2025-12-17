@@ -28,6 +28,19 @@
 - Created reusable **utility modules**, including centralized custom error handling (AppError), Prisma error handling utilities, and asynchronous controller wrappers.
 
 - Partially completed project documentation, including the database schema description (`schema.md`, `README.md`, `APIs.md`).
+- 
+## Participant 2: Anna Kuts (aka AnnKuts)
+
+- Designed and implemented full functionality for the **Clients**, **Memberships**, **Payments** modules, including database schema, routing, controllers, services, and repositories.
+
+- Implemented complete **CRUD operations** for clients, memberships, and payments with proper input validation and consistent error handling.
+
+- Implemented `auth` and `email` services, as well as the registration and authentication logic: input validation, password hashing, token generation and verification, email confirmation, and password recovery.
+
+- Configure test environment
+
+...to be continued
+
 
 ## **Complex analytical queries overview**  
 

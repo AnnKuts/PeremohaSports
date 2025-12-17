@@ -152,4 +152,48 @@ Explanation:
 | gym_id | gym_address            | room_id | room_capacity | class_category | attendance_count |
 |--------|------------------------|---------|---------------|----------------|------------------|
 | 1      | "м. Київ, вул. Спортивна, 10" | 2       | 90            | yoga           | 1                |
-| 2      | "м. Львів, просп. Свободи, 25" | 2       | 120           | yoga           | 1                |
+
+## 4. Payment-based Revenue Analytics
+
+**Business Question:**
+What is the actual realized revenue from payments, grouped by month and class type?
+
+**SQL Query:**
+
+```sql
+SELECT 
+  TO_CHAR(p.created_at, 'YYYY-MM') AS month,
+  ct.name AS class_type_name,
+  SUM(p.amount) AS total_revenue,
+  COUNT(p.payment_id) as payments_count
+FROM payment p
+JOIN membership m ON p.membership_id = m.membership_id
+JOIN class_type ct ON m.class_type_id = ct.class_type_id
+WHERE p.status = 'completed' 
+  AND p.is_deleted = false
+  -- Optional: Filter by year/month
+  AND p.created_at >= '2025-01-01' 
+  AND p.created_at <= '2025-12-31'
+GROUP BY TO_CHAR(p.created_at, 'YYYY-MM'), ct.name
+ORDER BY month ASC;
+```
+
+**Explanation:**
+
+- **Source Table:** Uses the `payment` table as the source of truth for financial data, rather than estimating based on attendance
+- .
+- **JOINs:** Joins with `membership` and `class_type` to categorize revenue by the specific type of class/service purchased.
+
+- **Filters:** Includes only `completed` payments that are not soft-deleted. Can be filtered by date range (year/month).
+
+- **Aggregations:**
+  - `SUM(p.amount)`: Calculates total actual revenue.
+  - `COUNT(p.payment_id)`: Counts the number of successful transactions.
+- **Grouping:** Aggregates data by Month and Class Type name.
+
+**Sample Output:**
+
+| month      | class_type_name | total_revenue | payments_count |
+|------------|-----------------|---------------|----------------|
+| 2025-10    | yoga            | 1400.00       | 2              |
+| 2025-11    | swimming        | 2100.00       | 3              |
