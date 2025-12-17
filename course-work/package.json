@@ -16,10 +16,13 @@
     "build": "tsc",
     "lint": "eslint --fix src tests",
     "test": "vitest run",
-    "test:unit": "vitest run tests/unit",
-    "test:integration": "vitest run --config vitest.integration.ts",
+    "test:u": "vitest run tests/unit",
+    "test:i": "vitest run --config vitest.integration.ts",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "test:all": "npm run test:u && npm run test:i",
+    "pretest:i": "docker compose -f ../docker-compose.test.yaml up -d && echo 'good luck with testing b*tch' && sleep 10 && npx prisma generate && npx prisma migrate deploy && npx prisma db seed",
+    "posttest:i": "docker compose down",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

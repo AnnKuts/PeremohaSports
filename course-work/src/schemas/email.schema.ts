@@ -1,4 +1,5 @@
 import { z } from "zod";
+import AppError from "../utils/AppError";
 
 export const activationEmailPayloadSchema = z.object({
   email: z.string().email(),
@@ -18,11 +19,11 @@ export function parseActivationEmailPayload(
   const parsed = activationEmailPayloadSchema.safeParse(data);
 
   if (!parsed.success) {
-    throw new Error("Invalid activation email payload");
+    throw new AppError("Invalid activation email payload", 400);
   }
 
   if (Date.now() > parsed.data.expiresAt) {
-    throw new Error("Activation code expired");
+    throw new AppError("Activation code expired", 400);
   }
 
   return parsed.data;

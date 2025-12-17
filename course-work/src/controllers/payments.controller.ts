@@ -7,20 +7,20 @@ export const PaymentsController = {
   getPayments: asyncHandler(async (req: Request, res: Response) => {
     const query = (req as any).validated?.query as GetPaymentsQuery;
     const payments = await paymentsService.getPayments(query);
-    res.status(200).json(payments);
+    res.status(200).json({ success: true, data: payments });
   }),
 
   getPaymentById: asyncHandler(async (req: Request, res: Response) => {
     const { id } = (req as any).validated?.params;
     const paymentId = parseInt(id);
     const payment = await paymentsService.getPaymentById(paymentId);
-    res.status(200).json(payment);
+    res.status(200).json({ success: true, data: payment });
   }),
 
   createPayment: asyncHandler(async (req: Request, res: Response) => {
     const data = (req as any).validated?.body as CreatePaymentInput;
     const payment = await paymentsService.createPayment(data);
-    res.status(201).json(payment);
+    res.status(201).json({ success: true, data: payment });
   }),
 
   updatePayment: asyncHandler(async (req: Request, res: Response) => {
@@ -28,7 +28,7 @@ export const PaymentsController = {
     const data = (req as any).validated?.body as UpdatePaymentInput;
     const paymentId = parseInt(id);
     const payment = await paymentsService.updatePayment(paymentId, data);
-    res.status(200).json(payment);
+    res.status(200).json({ success: true, data: payment });
   }),
 
   getRevenueByClassType: asyncHandler(async (req: Request, res: Response) => {
@@ -46,5 +46,11 @@ export const PaymentsController = {
         month: month || "all",
       },
     });
+  }),
+  deletePayment: asyncHandler(async (req: Request, res: Response) => {
+    const { id } = (req as any).validated?.params;
+    const paymentId = parseInt(id);
+    await paymentsService.deletePayment(paymentId);
+    res.status(200).json({ success: true, message: "Payment deleted successfully" });
   }),
 };

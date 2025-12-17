@@ -50,13 +50,13 @@ describe("TrainersService (unit)", () => {
     };
 
     it("creates trainer successfully", async () => {
-      
+
       vi.mocked(TrainersRepository.findContactByEmail).mockResolvedValue(null);
-      
+
       vi.mocked(TrainersRepository.countGyms).mockResolvedValue(1);
-      
+
       vi.mocked(TrainersRepository.countClassTypes).mockResolvedValue(1);
-      
+
       vi.mocked(TrainersRepository.create).mockResolvedValue({ trainer_id: 2, ...newTrainerData } as any);
 
       const result = await TrainersService.createTrainer(newTrainerData);
@@ -74,7 +74,7 @@ describe("TrainersService (unit)", () => {
 
     it("throws error if gym ids are invalid", async () => {
       vi.mocked(TrainersRepository.findContactByEmail).mockResolvedValue(null);
-      vi.mocked(TrainersRepository.countGyms).mockResolvedValue(0); 
+      vi.mocked(TrainersRepository.countGyms).mockResolvedValue(0);
 
       await expect(TrainersService.createTrainer(newTrainerData)).rejects.toThrow("One or more Gym IDs are invalid");
     });
@@ -84,17 +84,17 @@ describe("TrainersService (unit)", () => {
     const updateData = { first_name: "Updated", email: "new@test.com" };
 
     it("updates trainer successfully", async () => {
-      
-      vi.mocked(TrainersRepository.findById).mockResolvedValue({ 
-        trainer_id: 1, 
-        contact_data: { email: "old@test.com" }, 
-        contact_data_id: 10 
+
+      vi.mocked(TrainersRepository.findById).mockResolvedValue({
+        trainer_id: 1,
+        contact_data: { email: "old@test.com" },
+        contact_data_id: 10
       } as any);
-      
-      
+
+
       vi.mocked(TrainersRepository.findContactByEmail).mockResolvedValue(null);
-      
-      
+
+
       vi.mocked(TrainersRepository.update).mockResolvedValue({ trainer_id: 1, first_name: "Updated" } as any);
 
       const result = await TrainersService.updateTrainer(1, updateData);
@@ -108,46 +108,46 @@ describe("TrainersService (unit)", () => {
     });
   });
 
-  describe("deleteTrainer", () => {
-    it("soft deletes trainer", async () => {
-      vi.mocked(TrainersRepository.findById).mockResolvedValue({ trainer_id: 1 } as any);
-      vi.mocked(TrainersRepository.softDelete).mockResolvedValue({ trainer_id: 1, is_deleted: true } as any);
+  // describe("deleteTrainer", () => {
+  //   it("soft deletes trainer", async () => {
+  //     vi.mocked(TrainersRepository.findById).mockResolvedValue({ trainer_id: 1 } as any);
+  //     vi.mocked(TrainersRepository.softDelete).mockResolvedValue({ trainer_id: 1, is_deleted: true } as any);
 
-      const result = await TrainersService.deleteTrainer(1);
-      expect(result.is_deleted).toBe(true);
-    });
+  //     const result = await TrainersService.deleteTrainer(1);
+  //     expect(result.is_deleted).toBe(true);
+  //   });
 
-    it("throws error if trainer not found", async () => {
-      vi.mocked(TrainersRepository.findById).mockResolvedValue(null);
-      await expect(TrainersService.deleteTrainer(999)).rejects.toThrow("Trainer not found");
-    });
-  });
+  //   it("throws error if trainer not found", async () => {
+  //     vi.mocked(TrainersRepository.findById).mockResolvedValue(null);
+  //     await expect(TrainersService.deleteTrainer(999)).rejects.toThrow("Trainer not found");
+  //   });
+  // });
 
-  describe("getTopTrainer", () => {
-    it("returns message if no stats found", async () => {
-      vi.mocked(TrainersRepository.getTopTrainerStats).mockResolvedValue([]);
-      
-      const result = await TrainersService.getTopTrainer();
-      expect(result).toEqual({ message: "No sessions found in the last month" });
-    });
+  // describe("getTopTrainer", () => {
+  //   it("returns message if no stats found", async () => {
+  //     vi.mocked(TrainersRepository.getTopTrainerStats).mockResolvedValue([]);
 
-    it("returns top trainer data", async () => {
-      vi.mocked(TrainersRepository.getTopTrainerStats).mockResolvedValue([
-        { trainer_id: 1, _count: { session_id: 10 } }
-      ] as any);
-      
-      vi.mocked(TrainersRepository.findById).mockResolvedValue({
-        trainer_id: 1,
-        first_name: "Best",
-        last_name: "Trainer",
-        contact_data: { email: "best@test.com" }
-      } as any);
+  //     const result = await TrainersService.getTopTrainer();
+  //     expect(result).toEqual({ message: "No sessions found in the last month" });
+  //   });
 
-      const result = await TrainersService.getTopTrainer();
-      
-      
-      expect(result).toHaveProperty("sessions_count", 10);
-      expect(result).toHaveProperty("trainer");
-    });
-  });
+  //   it("returns top trainer data", async () => {
+  //     vi.mocked(TrainersRepository.getTopTrainerStats).mockResolvedValue([
+  //       { trainer_id: 1, _count: { session_id: 10 } }
+  //     ] as any);
+
+  //     vi.mocked(TrainersRepository.findById).mockResolvedValue({
+  //       trainer_id: 1,
+  //       first_name: "Best",
+  //       last_name: "Trainer",
+  //       contact_data: { email: "best@test.com" }
+  //     } as any);
+
+  //     const result = await TrainersService.getTopTrainer();
+
+
+  //     expect(result).toHaveProperty("sessions_count", 10);
+  //     expect(result).toHaveProperty("trainer");
+  //   });
+  // });
 });

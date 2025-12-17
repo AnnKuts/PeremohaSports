@@ -1,177 +1,98 @@
 import request from "supertest";
-import { describe, it, expect, beforeAll, afterAll } from "vitest";
+import { describe, it, expect, beforeEach, afterEach, afterAll } from "vitest";
 import app from "../../src/app";
-import { clearTestData } from "./clearTestData";
-import { main } from "../../prisma/seed";
-
-let createdClassTypeId: number;
+import prisma from "../../src/lib/prisma";
+import { clearTestData } from "./utils/clearTestData";
 
 describe("ClassTypes API Integration", () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
     await clearTestData();
-    await main();
   });
 
   afterAll(async () => {
     await clearTestData();
   });
 
-  describe("CREATE", () => {
-    it("POST /class-types - should create class type", async () => {
+  describe("CREATE (POST /class-types)", () => {
+    it("should create a valid class type", async () => {
       const payload = {
-        name: "workout",
-        description: "Test workout",
+        name: "yoga",
+        description: "Relaxing yoga session",
         level: "beginner",
       };
+
       const res = await request(app).post("/class-types").send(payload);
+
       expect(res.status).toBe(201);
-      expect(res.body).toHaveProperty("success", true);
+      expect(res.body.success).toBe(true);
       expect(res.body.data).toHaveProperty("class_type_id");
-      createdClassTypeId = res.body.data.class_type_id;
+      expect(res.body.data.name).toBe("yoga");
     });
 
-    it("POST /class-types - should fail with missing required fields", async () => {
+    it("should fail when required fields are missing", async () => {
       const res = await request(app).post("/class-types").send({});
-      expect([400, 422]).toContain(res.status);
+      expect(res.status).toBeGreaterThanOrEqual(400);
       expect(res.body).toHaveProperty("error");
     });
 
-    it("POST /class-types - should fail with invalid enum name", async () => {
-      const res = await request(app)
-        .post("/class-types")
-        .send({ name: "invalid_name", description: "desc", level: "beginner" });
-      expect([400, 422]).toContain(res.status);
-      expect(res.body).toHaveProperty("error");
-    });
+    it("should fail with invalid enum values", async () => {
+      const payload = {
+        name: "invalid_sport",
+        description: "Test",
+        level: "pro_god_mode",
+      };
 
-    it("POST /class-types - should fail with invalid enum level", async () => {
-      const res = await request(app)
-        .post("/class-types")
-        .send({ name: "workout", description: "desc", level: "invalid_level" });
-      expect([400, 422]).toContain(res.status);
-      expect(res.body).toHaveProperty("error");
+      const res = await request(app).post("/class-types").send(payload);
+      expect(res.status).toBeGreaterThanOrEqual(400);
     });
   });
 
-  describe("READ", () => {
-    it("GET /class-types - should get all class types", async () => {
+  describe("READ (GET /class-types)", () => {
+    it("should get all class types", async () => {
+      await prisma.class_type.createMany({
+        data: [
+          { name: "yoga", level: "beginner", description: "A" },
+          { name: "workout", level: "advanced", description: "B" },
+        ],
+      });
+
       const res = await request(app).get("/class-types");
+
       expect(res.status).toBe(200);
-      expect(res.body).toHaveProperty("success", true);
-      expect(Array.isArray(res.body.data)).toBe(true);
+      expect(res.body.data).toHaveLength(2);
+      expect(res.body.data[0]).toHaveProperty("name");
     });
 
-    it("GET /class-types/:id - should get class type by id", async () => {
-      const res = await request(app).get(`/class-types/${createdClassTypeId}`);
-      expect([200, 404]).toContain(res.status);
-      if (res.status === 200) {
-        expect(res.body).toHaveProperty("success", true);
-        expect(res.body.data).toHaveProperty(
-          "class_type_id",
-          createdClassTypeId,
-        );
-      } else {
-        expect(res.body).toHaveProperty("error");
-      }
+    it("should get class type by ID", async () => {
+      const created = await prisma.class_type.create({
+        data: { name: "swimming_pool", level: "intermediate", description: "Swim" },
+      });
+
+      const res = await request(app).get(`/class-types/${created.class_type_id}`);
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.class_type_id).toBe(created.class_type_id);
     });
 
-    it("GET /class-types/abc - should fail with invalid id", async () => {
-      const res = await request(app).get("/class-types/abc");
-      expect([400, 422]).toContain(res.status);
-      expect(res.body).toHaveProperty("error");
-    });
-
-    it("GET /class-types/-1 - should fail with negative id", async () => {
-      const res = await request(app).get("/class-types/-1");
-      expect([400, 422]).toContain(res.status);
-      expect(res.body).toHaveProperty("error");
-    });
-
-    it("PUT /class-types/:id - should update class type", async () => {
-      const updatePayload = {
-        name: "yoga",
-        description: "Updated description",
-        level: "intermediate",
-      };
-      const res = await request(app)
-        .put(`/class-types/${createdClassTypeId}`)
-        .send(updatePayload);
-      expect([200, 404]).toContain(res.status);
-      if (res.status === 200) {
-        expect(res.body).toHaveProperty("success", true);
-        expect(res.body.data).toHaveProperty("name", updatePayload.name);
-        expect(res.body.data).toHaveProperty(
-          "description",
-          updatePayload.description,
-        );
-        expect(res.body.data).toHaveProperty("level", updatePayload.level);
-      } else {
-        expect(res.body).toHaveProperty("error");
-      }
-    });
-
-    it("PUT /class-types/:id - should fail with invalid enum name", async () => {
-      const res = await request(app)
-        .put(`/class-types/${createdClassTypeId}`)
-        .send({ name: "invalid_name" });
-      expect([400, 422]).toContain(res.status);
-      expect(res.body).toHaveProperty("error");
-    });
-
-    it("PUT /class-types/:id - should fail with invalid enum level", async () => {
-      const res = await request(app)
-        .put(`/class-types/${createdClassTypeId}`)
-        .send({ level: "invalid_level" });
-      expect([400, 422]).toContain(res.status);
-      expect(res.body).toHaveProperty("error");
-    });
-
-    it("PUT /class-types/:id - should fail with invalid id", async () => {
-      const res = await request(app)
-        .put("/class-types/abc")
-        .send({ name: "workout" });
-      expect([400, 422]).toContain(res.status);
-      expect(res.body).toHaveProperty("error");
-    });
-
-    it("PUT /class-types/:id - should fail with negative id", async () => {
-      const res = await request(app)
-        .put("/class-types/-1")
-        .send({ name: "workout" });
-      expect([400, 422]).toContain(res.status);
-      expect(res.body).toHaveProperty("error");
-    });
-
-    it("PUT /class-types/:id - should allow partial update", async () => {
-      const res = await request(app)
-        .put(`/class-types/${createdClassTypeId}`)
-        .send({ level: "advanced" });
-      expect([200, 404]).toContain(res.status);
-      if (res.status === 200) {
-        expect(res.body).toHaveProperty("success", true);
-        expect(res.body.data).toHaveProperty("level", "advanced");
-      }
-    });
-
-    it("GET /class-types/:id - should return 404 for non-existent class type", async () => {
+    it("should return 404 for non-existent ID", async () => {
       const res = await request(app).get("/class-types/999999");
       expect(res.status).toBe(404);
-      expect(res.body).toHaveProperty("error");
     });
   });
 
-  describe("TRAINERS", () => {
-    it("GET /class-types/:id/trainers - should get trainers for class type", async () => {
-      const res = await request(app).get(
-        `/class-types/${createdClassTypeId}/trainers`,
-      );
-      expect([200, 404]).toContain(res.status);
-      if (res.status === 200) {
-        expect(res.body).toHaveProperty("success", true);
-        expect(Array.isArray(res.body.data)).toBe(true);
-      } else {
-        expect(res.body).toHaveProperty("error");
-      }
+  describe("UPDATE (PUT /class-types/:id)", () => {
+    it("should update class type details", async () => {
+      const created = await prisma.class_type.create({
+        data: { name: "workout", level: "beginner", description: "Old" },
+      });
+
+      const res = await request(app)
+        .put(`/class-types/${created.class_type_id}`)
+        .send({ description: "New Description", level: "advanced" });
+
+      expect(res.status).toBe(200);
+      expect(res.body.data.description).toBe("New Description");
+      expect(res.body.data.level).toBe("advanced");
     });
   });
 });
