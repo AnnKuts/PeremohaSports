@@ -5,6 +5,8 @@ import { ClassTypeController } from "../controllers/classTypesControllers.js";
 import { ClassTypeService } from "../services/classTypesServices.js";
 import { ClassTypeRepository } from "../repositories/classTypeRepositories.js";
 import { validate } from "../middlewares/validate.js";
+import { authenticate } from "../middlewares/authenticate";
+import { requireAdmin } from "../middlewares/authorize";
 import {
   createClassTypeSchema,
   getAllClassTypesSchema,
@@ -19,11 +21,11 @@ const classTypeRepository = new ClassTypeRepository(prisma);
 const classTypeService = new ClassTypeService(classTypeRepository);
 const classTypeController = new ClassTypeController(classTypeService);
 
-router.post("/", validate(createClassTypeSchema), classTypeController.createClassType);
+router.post("/", authenticate, requireAdmin, validate(createClassTypeSchema), classTypeController.createClassType);
 router.get("/", validate(getAllClassTypesSchema), classTypeController.getAllClassTypes);
 router.get("/:id", validate(getClassTypeByIdSchema), classTypeController.getClassTypeById);
 
-router.put("/:id", validate(updateClassTypeSchema), classTypeController.updateClassType);
+router.put("/:id", authenticate, requireAdmin, validate(updateClassTypeSchema), classTypeController.updateClassType);
 router.get("/:id/trainers", validate(getClassTypeTrainersSchema), classTypeController.getClassTypeTrainers);
 
 export default router;

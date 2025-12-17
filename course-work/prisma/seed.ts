@@ -91,7 +91,7 @@ export async function main() {
         price: 700,
         status: "active",
         is_disposable: false,
-        client_id: clients[3].client_id, // Марія
+        client_id: clients[3].client_id, 
         class_type_id: classTypes[2].class_type_id,
       }
     }),
@@ -102,7 +102,7 @@ export async function main() {
         price: 100,
         status: "active",
         is_disposable: true,
-        client_id: clients[0].client_id, // Іван
+        client_id: clients[0].client_id, 
         class_type_id: classTypes[1].class_type_id,
       }
     }),
@@ -113,7 +113,7 @@ export async function main() {
         price: 700,
         status: "expired",
         is_disposable: false,
-        client_id: clients[3].client_id, // Марія
+        client_id: clients[3].client_id,
         class_type_id: classTypes[2].class_type_id,
       }
     }),
@@ -140,8 +140,6 @@ export async function main() {
   console.log("seed completed");
 }
 
-// Execute logic only if run directly (e.g. via 'prisma db seed')
-// We check if the current file path is in the execution arguments
 if (process.argv[1].endsWith("prisma/seed.ts")) {
   main()
     .catch((e) => {

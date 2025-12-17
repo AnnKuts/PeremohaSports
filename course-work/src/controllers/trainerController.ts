@@ -25,6 +25,12 @@ export const TrainersController = {
     res.json(result);
   }),
 
+    deleteTrainer: asyncHandler(async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    await TrainersService.deleteTrainer(id);
+    res.json({ message: "Trainer deactivated (Soft Deleted)" });
+  }),
+
   getTrainerGyms: asyncHandler(async (req: Request, res: Response) => {
     const result = await TrainersService.getTrainerGyms(Number(req.params.id));
     res.json(result);
@@ -38,5 +44,21 @@ export const TrainersController = {
   getTrainerSessions: asyncHandler(async (req: Request, res: Response) => {
     const result = await TrainersService.getTrainerSessions(Number(req.params.id));
     res.json(result);
-  })
+  }),
+
+    getTopTrainer: asyncHandler(async (req: Request, res: Response) => {
+    const result = await TrainersService.getTopTrainer();
+    res.json(result);
+  }),
+
+   getPopularTrainers: asyncHandler(async (req: Request, res: Response) => {
+    const result = await TrainersService.getPopularTrainers();
+    res.json(result);
+  }),
+
+  getTrainerWorkload: asyncHandler(async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    const result = await TrainersService.getTrainerWorkloadStats(id);
+    res.json(result);
+  }),
 };
