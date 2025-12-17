@@ -110,7 +110,9 @@ describe("ClassTypes API Integration", () => {
 
   describe("ANALYTICS", () => {
     it("GET /class-types/analytics/monthly-revenue - should return monthly revenue analytics", async () => {
-      const res = await request(app).get("/class-types/analytics/monthly-revenue");
+      const res = await request(app)
+        .get("/class-types/analytics/monthly-revenue")
+        .set("Authorization", `Bearer ${adminToken}`);
       expect(res.status).toBe(200);
       expect(Array.isArray(res.body)).toBe(true);
       if (res.body.length > 0) {
@@ -122,7 +124,9 @@ describe("ClassTypes API Integration", () => {
     });
 
     it("GET /class-types/analytics/monthly-revenue?months=1&minRevenue=0&minAttendance=0 - should support query params", async () => {
-      const res = await request(app).get("/class-types/analytics/monthly-revenue?months=1&minRevenue=0&minAttendance=0");
+      const res = await request(app)
+        .get("/class-types/analytics/monthly-revenue?months=1&minRevenue=0&minAttendance=0")
+        .set("Authorization", `Bearer ${adminToken}`);
       expect(res.status).toBe(200);
       expect(Array.isArray(res.body)).toBe(true);
     });

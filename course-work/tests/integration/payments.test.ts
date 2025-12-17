@@ -46,4 +46,33 @@ describe("Payments API Integration", () => {
             .set("Authorization", `Bearer ${adminToken}`);
         expect(res.status).toBe(404);
     });
+
+    describe("ANALYTICS", () => {
+        it("GET /payments/analytics/revenue - should return revenue by class type", async () => {
+            const res = await request(app)
+                .get("/payments/analytics/revenue")
+                .set("Authorization", `Bearer ${adminToken}`);
+
+            expect(res.status).toBe(200);
+            expect(res.body.success).toBe(true);
+            expect(Array.isArray(res.body.data)).toBe(true);
+            if (res.body.data.length > 0) {
+                expect(res.body.data[0]).toHaveProperty("month");
+                expect(res.body.data[0]).toHaveProperty("classTypes");
+                expect(res.body.data[0]).toHaveProperty("totalMonthRevenue");
+                expect(Array.isArray(res.body.data[0].classTypes)).toBe(true);
+            }
+        });
+
+        it("GET /payments/analytics/revenue - should support query filters", async () => {
+            const res = await request(app)
+                .get("/payments/analytics/revenue")
+                .query({ year: 2025, month: 12 })
+                .set("Authorization", `Bearer ${adminToken}`);
+
+            expect(res.status).toBe(200);
+            expect(res.body.success).toBe(true);
+            expect(Array.isArray(res.body.data)).toBe(true);
+        });
+    });
 });
