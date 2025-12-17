@@ -39,4 +39,9 @@ export const ClientsController = {
     const result = await clientsService.updateClient(id, data);
     res.json(result);
   }),
+  deleteClient: asyncHandler(async (req: Request, res: Response) => {
+    const id = Number(req.params.id);
+    await clientsService.deleteClient(id);
+    res.json({ success: true, message: "Client deleted successfully" });
+  }),
 };

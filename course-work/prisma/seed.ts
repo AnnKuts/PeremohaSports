@@ -1,198 +1,154 @@
-import {PrismaClient, Prisma} from "@prisma/client";
+import prisma from "../src/lib/prisma";
 import "dotenv/config";
-
-const prisma = new PrismaClient();
 
 export async function main() {
   console.log("Starting database seeding...");
 
-  await prisma.attendance.deleteMany({});
-  await prisma.payment.deleteMany({});
-  await prisma.membership.deleteMany({});
-  await prisma.class_session.deleteMany({});
-  await prisma.room_class_type.deleteMany({});
-  await prisma.trainer_placement.deleteMany({});
-  await prisma.qualification.deleteMany({});
-  await prisma.client.deleteMany({});
-  await prisma.trainer.deleteMany({});
-  await prisma.room.deleteMany({});
-  await prisma.class_type.deleteMany({});
-  await prisma.gym.deleteMany({});
-  await prisma.contact_data.deleteMany({});
-
-  const tables: Array<{ model: string; pk: string }> = [
-    { model: "contact_data", pk: "contact_data_id" },
-    { model: "client", pk: "client_id" },
-    { model: "trainer", pk: "trainer_id" },
-    { model: "gym", pk: "gym_id" },
-    { model: "room", pk: "room_id" },
-    { model: "class_type", pk: "class_type_id" },
-    { model: "class_session", pk: "session_id" },
-    { model: "membership", pk: "membership_id" },
-    { model: "payment", pk: "payment_id" },
-  ];
-  for (const table of tables) {
-    await prisma.$executeRawUnsafe(`
-      SELECT setval(
-        pg_get_serial_sequence('"${table.model}"', '${table.pk}'),
-        1,
-        false
-      );
-    `);
-  }
-
-  await prisma.contact_data.createMany({
-    data: [
-      { phone: "380501112233", email: "ivan.petrenko@example.com" },
-      { phone: "380671234567", email: "olena.ivanova@example.com" },
-      { phone: "380931112244", email: "oleh.koval@example.com" },
-      { phone: "380631231231", email: "maria.bondar@example.com" },
-      { phone: "380991111222", email: "serhiy.melnyk@example.com" },
-      { phone: "380681234567", email: "anna.shevchenko@example.com" },
-    ],
-  });
+  const contacts = await Promise.all([
+    prisma.contact_data.create({ data: { phone: "380501112233", email: "ivan.petrenko@example.com" } }),
+    prisma.contact_data.create({ data: { phone: "380671234567", email: "olena.ivanova@example.com" } }),
+    prisma.contact_data.create({ data: { phone: "380931112244", email: "oleh.koval@example.com" } }),
+    prisma.contact_data.create({ data: { phone: "380631231231", email: "maria.bondar@example.com" } }),
+    prisma.contact_data.create({ data: { phone: "380991111222", email: "serhiy.melnyk@example.com" } }),
+    prisma.contact_data.create({ data: { phone: "380681234587", email: "anna.shevchenko@example.com" } }),
+  ]);
 
   await prisma.client.createMany({
     data: [
-      { first_name: "Іван", last_name: "Петренко", gender: "male", contact_data_id: 1 },
-      { first_name: "Олена", last_name: "Іванова", gender: "female", contact_data_id: 2 },
-      { first_name: "Олег", last_name: "Коваль", gender: "male", contact_data_id: 3 },
-      { first_name: "Марія", last_name: "Бондар", gender: "female", contact_data_id: 4 },
+      { first_name: "Іван", last_name: "Петренко", gender: "male", contact_data_id: contacts[0].contact_data_id },
+      { first_name: "Олена", last_name: "Іванова", gender: "female", contact_data_id: contacts[1].contact_data_id },
+      { first_name: "Олег", last_name: "Коваль", gender: "male", contact_data_id: contacts[2].contact_data_id },
+      { first_name: "Марія", last_name: "Бондар", gender: "female", contact_data_id: contacts[3].contact_data_id },
     ],
   });
 
   await prisma.trainer.createMany({
     data: [
-      { first_name: "Сергій", last_name: "Мельник", is_admin: true, contact_data_id: 5 },
-      { first_name: "Анна", last_name: "Шевченко", is_admin: false, contact_data_id: 6 },
+      { first_name: "Сергій", last_name: "Мельник", is_admin: true, contact_data_id: contacts[4].contact_data_id },
+      { first_name: "Анна", last_name: "Шевченко", is_admin: false, contact_data_id: contacts[5].contact_data_id },
     ],
   });
 
-  await prisma.gym.createMany({
-    data: [
-      { address: "м. Київ, вул. Спортивна, 10" },
-      { address: "м. Львів, просп. Свободи, 25" },
-    ],
-  });
+  const gyms = await Promise.all([
+    prisma.gym.create({ data: { address: "м. Київ, вул. Спортивна, 10" } }),
+    prisma.gym.create({ data: { address: "м. Львів, просп. Свободи, 25" } }),
+  ]);
 
-  await prisma.room.createMany({
-    data: [
-      { capacity: 80, gym_id: 1 },
-      { capacity: 90, gym_id: 1 },
-      { capacity: 50, gym_id: 2 },
-      { capacity: 70, gym_id: 2 },
-    ],
-  });
+  const rooms = await Promise.all([
+    prisma.room.create({ data: { capacity: 80, gym_id: gyms[0].gym_id } }),
+    prisma.room.create({ data: { capacity: 90, gym_id: gyms[0].gym_id } }),
+    prisma.room.create({ data: { capacity: 50, gym_id: gyms[1].gym_id } }),
+    prisma.room.create({ data: { capacity: 70, gym_id: gyms[1].gym_id } }),
+  ]);
 
-  await prisma.class_type.createMany({
-    data: [
-      { name: "workout", description: "Силові тренування for gym rats only", level: "intermediate" },
-      { name: "yoga", description: "Подихайте маткою вперше на наших заняттях з йоги!", level: "beginner" },
-      { name: "swimming_pool", description: "Тренування у басейні для професійних плавців", level: "advanced" },
-    ],
-  });
+  const classTypes = await Promise.all([
+    prisma.class_type.create({ data: { name: "workout", description: "Силові тренування for gym rats only", level: "intermediate" } }),
+    prisma.class_type.create({ data: { name: "yoga", description: "Подихайте маткою вперше на наших заняттях з йоги!", level: "beginner" } }),
+    prisma.class_type.create({ data: { name: "swimming_pool", description: "Тренування у басейні для професійних плавців", level: "advanced" } }),
+  ]);
 
   await prisma.room_class_type.createMany({
     data: [
-      { room_id: 1, class_type_id: 1 },
-      { room_id: 2, class_type_id: 2 },
-      { room_id: 3, class_type_id: 3 },
-      { room_id: 4, class_type_id: 1 },
+      { room_id: rooms[0].room_id, class_type_id: classTypes[0].class_type_id },
+      { room_id: rooms[1].room_id, class_type_id: classTypes[1].class_type_id },
+      { room_id: rooms[2].room_id, class_type_id: classTypes[2].class_type_id },
+      { room_id: rooms[3].room_id, class_type_id: classTypes[0].class_type_id },
     ],
   });
 
+  const trainers = await prisma.trainer.findMany();
+
   await prisma.$executeRawUnsafe(`
     INSERT INTO class_session (room_id, class_type_id, duration, capacity, date, trainer_id)
-    VALUES (1, 1, '01:30:00', 20, '2025-10-10', 1),
-      (4, 1, '01:00:00', 15, '2025-10-11', 1),
-      (3, 3, '02:00:00', 10, '2025-10-12', 2),
-      (2, 2, '01:15:00', 12, '2025-10-13', 2);
+    VALUES (${rooms[0].room_id}, ${classTypes[0].class_type_id}, '01:30:00', 20, '2025-10-10', ${trainers[0].trainer_id}),
+      (${rooms[3].room_id}, ${classTypes[0].class_type_id}, '01:00:00', 15, '2025-10-11', ${trainers[0].trainer_id}),
+      (${rooms[2].room_id}, ${classTypes[2].class_type_id}, '02:00:00', 10, '2025-10-12', ${trainers[1].trainer_id}),
+      (${rooms[1].room_id}, ${classTypes[1].class_type_id}, '01:15:00', 12, '2025-10-13', ${trainers[1].trainer_id});
   `);
 
   await prisma.qualification.createMany({
     data: [
-      { trainer_id: 1, class_type_id: 1 },
-      { trainer_id: 1, class_type_id: 2 },
-      { trainer_id: 2, class_type_id: 3 },
+      { trainer_id: trainers[0].trainer_id, class_type_id: classTypes[0].class_type_id },
+      { trainer_id: trainers[0].trainer_id, class_type_id: classTypes[1].class_type_id },
+      { trainer_id: trainers[1].trainer_id, class_type_id: classTypes[2].class_type_id },
     ],
   });
 
   await prisma.trainer_placement.createMany({
     data: [
-      { trainer_id: 1, gym_id: 1 },
-      { trainer_id: 2, gym_id: 2 },
+      { trainer_id: trainers[0].trainer_id, gym_id: gyms[0].gym_id },
+      { trainer_id: trainers[1].trainer_id, gym_id: gyms[1].gym_id },
     ],
   });
 
-  await prisma.membership.createMany({
-    data: [
-      {
+  const clients = await prisma.client.findMany();
+
+  const memberships = await Promise.all([
+    prisma.membership.create({
+      data: {
         start_date: new Date("2025-10-10"),
         end_date: new Date("2025-11-11"),
         price: 700,
         status: "active",
         is_disposable: false,
-        client_id: 4,
-        class_type_id: 3,
-      },
-      {
+        client_id: clients[3].client_id, // Марія
+        class_type_id: classTypes[2].class_type_id,
+      }
+    }),
+    prisma.membership.create({
+      data: {
         start_date: new Date("2025-10-13"),
         end_date: new Date("2025-10-14"),
         price: 100,
         status: "active",
         is_disposable: true,
-        client_id: 1,
-        class_type_id: 2,
-      },
-      {
+        client_id: clients[0].client_id, // Іван
+        class_type_id: classTypes[1].class_type_id,
+      }
+    }),
+    prisma.membership.create({
+      data: {
         start_date: new Date("2025-09-05"),
         end_date: new Date("2025-10-06"),
         price: 700,
         status: "expired",
         is_disposable: false,
-        client_id: 4,
-        class_type_id: 3,
-      },
-      {
-        start_date: new Date("2025-10-01"),
-        end_date: new Date("2025-12-31"),
-        price: 500,
-        status: "active",
-        is_disposable: false,
-        client_id: 1,
-        class_type_id: 1,
-      },
-    ],
-  });
+        client_id: clients[3].client_id, // Марія
+        class_type_id: classTypes[2].class_type_id,
+      }
+    }),
+  ]);
 
   await prisma.payment.createMany({
     data: [
-      { amount: 700, status: "completed", method: "online", client_id: 4, membership_id: 1 },
-      { amount: 100, status: "pending", method: "card", client_id: 1, membership_id: 2 },
-      { amount: 700, status: "failed", method: "online", client_id: 4 },
-      { amount: 700, status: "completed", method: "online", client_id: 4, membership_id: 3 },
+      { amount: 700, status: "completed", method: "online", client_id: clients[3].client_id, membership_id: memberships[0].membership_id },
+      { amount: 100, status: "pending", method: "card", client_id: clients[0].client_id, membership_id: memberships[1].membership_id },
+      { amount: 700, status: "failed", method: "online", client_id: clients[3].client_id },
+      { amount: 700, status: "completed", method: "online", client_id: clients[3].client_id, membership_id: memberships[2].membership_id },
     ],
   });
+
+  const sessions = await prisma.class_session.findMany();
 
   await prisma.attendance.createMany({
     data: [
-      { session_id: 3, client_id: 4, status: "cancelled" },
-      { session_id: 4, client_id: 1, status: "booked" },
+      { session_id: sessions[2].session_id, client_id: clients[3].client_id, status: "cancelled" },
+      { session_id: sessions[3].session_id, client_id: clients[0].client_id, status: "booked" },
     ],
   });
 
-  console.log("Auto-increment sequences reset.");
-  console.log("Seeding finished successfully!");
+  console.log("seed completed");
 }
 
-if (require.main === module) {
+// Execute logic only if run directly (e.g. via 'prisma db seed')
+// We check if the current file path is in the execution arguments
+if (process.argv[1].endsWith("prisma/seed.ts")) {
   main()
-    .then(async () => {
-      await prisma.$disconnect();
-    })
-    .catch(async (e) => {
+    .catch((e) => {
       console.error(e);
-      await prisma.$disconnect();
       process.exit(1);
+    })
+    .finally(async () => {
+      await prisma.$disconnect();
     });
 }

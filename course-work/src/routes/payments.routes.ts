@@ -16,5 +16,6 @@ router.get("/analytics/revenue", validate(revenueByClassTypeSchema), PaymentsCon
 router.get("/:id", validate(paymentIdParamSchema), PaymentsController.getPaymentById);
 router.post("/", validate(createPaymentSchema), PaymentsController.createPayment);
 router.patch("/:id", validate(updatePaymentSchema), PaymentsController.updatePayment);
+router.delete("/:id", validate(paymentIdParamSchema), PaymentsController.deletePayment);
 
 export default router;

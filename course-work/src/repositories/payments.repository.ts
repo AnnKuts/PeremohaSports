@@ -7,7 +7,9 @@ import {
 
 export const paymentsRepository = {
   async findMany(query?: GetPaymentsQuery) {
-    const where: any = {};
+    const where: any = {
+      is_deleted: false,
+    };
 
     if (query?.status) {
       where.status = query.status;
@@ -43,7 +45,7 @@ export const paymentsRepository = {
 
   async findById(id: number) {
     return prisma.payment.findUnique({
-      where: { payment_id: id },
+      where: { payment_id: id, is_deleted: false },
       include: {
         client: {
           include: {
@@ -108,6 +110,7 @@ export const paymentsRepository = {
   async getRevenueByClassType(year?: number, month?: number) {
     const whereConditions: any = {
       status: "completed",
+      is_deleted: false,
     };
 
     if (year || month) {
@@ -138,6 +141,13 @@ export const paymentsRepository = {
       orderBy: {
         created_at: "asc",
       },
+    });
+  },
+
+  async softDelete(id: number) {
+    return prisma.payment.update({
+      where: { payment_id: id },
+      data: { is_deleted: true },
     });
   },
 };
