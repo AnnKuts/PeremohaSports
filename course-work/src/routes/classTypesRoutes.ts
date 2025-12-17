@@ -23,6 +23,7 @@ const classTypeService = new ClassTypeService(classTypeRepository);
 const classTypeController = new ClassTypeController(classTypeService);
 
 router.post("/", authenticate, requireAdmin, validate(createClassTypeSchema), classTypeController.createClassType);
+router.get("/analytics/monthly-revenue", authenticate, requireAdmin, validate(getMonthlyRevenueByClassTypeSchema), classTypeController.getMonthlyRevenueByClassType);
 router.get("/", validate(getAllClassTypesSchema), classTypeController.getAllClassTypes);
 router.get("/:id", validate(getClassTypeByIdSchema), classTypeController.getClassTypeById);
 
