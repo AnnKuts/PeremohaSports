@@ -7,7 +7,6 @@ export async function clearTestData() {
   clearLock = new Promise((resolve) => {
     releaseLock = resolve;
   });
-
   try {
     await prisma.$transaction([
       prisma.attendance.deleteMany({}),

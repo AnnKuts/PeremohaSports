@@ -22,8 +22,8 @@
     "test:all": "npm run test:u && npm run test:i",
     "pretest:i": "dotenv -e .env.test -- docker compose -f ../docker-compose.test.yaml up -d && echo 'good luck with testing' && sleep 10 && dotenv -e .env.test -- npx prisma generate && dotenv -e .env.test -- npx prisma migrate reset --skip-generate --force",
     "test:i": "dotenv -e .env.test -- vitest run tests/integration --no-file-parallelism",
-    "dev:full": "docker compose up -d &&  npx prisma migrate generate && npx prisma migrate deploy && npx prisma db seed && npx tsx prisma/insert-admin.ts && npm run dev",
-    "posttest:i": "docker compose down",
+    "dev:full": "docker compose -f ../docker-compose.yml --env-file .env up -d && npx prisma generate && npx prisma migrate deploy && npx prisma db seed && npx tsx prisma/insert-admin.ts && npm run dev",
+    "posttest:i": "dotenv -e .env.test -- docker compose -f ../docker-compose.test.yaml down",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

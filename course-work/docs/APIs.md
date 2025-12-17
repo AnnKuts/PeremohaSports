@@ -1,5 +1,12 @@
 ## **API/usage examples**  
 
+10. **Table of Contents**  
+   - [Attendance](#attendance--attendance-)
+   - [ClassTypes](#classtypes--class-types-)
+   - [Gyms](#gyms--gyms-)
+   - [Rooms](#rooms--rooms-)
+   - [Clients](#clients--clients-)
+
 ### Attendance ( `/attendance/` )
 
 #### 1. **Get all attendances (with pagination)**  
@@ -1025,4 +1032,149 @@
         "total_revenue": "100"
     }
    ]
+   ```
+
+
+### Auth ( `/auth/` )
+
+#### 1. **Login**
+**Method:** `POST`  
+**Endpoint:** `/login`  
+**Endpoint:** `/request-code`
+**Description:**  
+Sends OTP code to user's email for authentication.  Creates new user if doesn't exist, or logs in existing user.
+
+| **Role**        | **Required to access**   |  
+   |-----------------|--------------------------|  
+| **Guest**       | ✅                        |  
+| **Client**      | ❌                        |  
+| **Trainer**     | ❌                        |  
+| **Admin**       | ❌                        |
+
+**Example Request:**
+   ```http
+   POST /auth/request-code
+   POST /auth/login
+   ```
+
+**Request Body:**
+   ```json
+   {
+     "email": "ivan.petrenko@example.com"
+   }
+   ```
+
+**Example Response:**
+   ```json
+{
+  "success": true,
+  "message": "If an account exists, a code has been sent."
+}
+   ```
+
+#### 2. **Verify OTP**
+**Method:** `POST`  
+**Endpoint:** `/verify-code`  
+**Description:**  
+Verifies the OTP code sent to user's email and returns JWT token.
+
+| **Role**        | **Required to access**   |  
+   |-----------------|--------------------------|  
+| **Guest**       | ✅                        |  
+| **Client**      | ❌                        |  
+| **Trainer**     | ❌                        |  
+| **Admin**       | ❌                        |
+
+**Example Request:**
+   ```http
+   POST /auth/verify-code
+   ```
+
+**Request Body:**
+   ```json
+{
+  "email": "anjakuts03@gmail.com",
+  "code": "eyJlbWFpbCI6ImFuamFrdXRzMDNAZ21haWwuY29tIiwiYWN0b3IiOiJ0cmFpbmVyIiwiYWN0b3JJZCI6MywiZXhwaXJlc0F0IjoxNzY1OTYxODk4NDY3LCJub25jZSI6IjJlNmVhZmNjNjM2NjU3ZjgifXwwM2YyNmRjNjg3MzA2MmUzNjRmMmZlYzA4N2EzNmFjMWVjODJjYjVlNTY1NDczYmNhMmRjYWRhMzgwYTFhYTg0"
+}
+   ```
+
+**Example Response:**
+   ```json
+{
+  "success": true,
+  "actor": "trainer",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3RvciI6InRyYWluZXIiLCJ0cmFpbmVySWQiOjMsImVtYWlsIjoiYW5qYWt1dHMwM0BnbWFpbC5jb20iLCJpc0FkbWluIjp0cnVlLCJpYXQiOjE3NjU5NjEyNzAsImV4cCI6MTc2NjA0NzY3MH0.vkF_kuNMzJBlk7tan2t4uY81wZacPA2J_CyOCz8brhY",
+  "data": {
+    "id": 3,
+    "firstName": "Анна",
+    "lastName": "Куц",
+    "email": "anjakuts03@gmail.com",
+    "isAdmin": true
+  }
+}
+   ```
+
+#### 3. **Get Current User**
+**Method:** `GET`  
+**Endpoint:** `/me`  
+**Description:**  
+Returns information about the currently authenticated user.
+
+| **Role**        | **Required to access**   |  
+   |-----------------|--------------------------|  
+| **Registered**  | ✅                        |  
+| **Client**      | ✅                        |  
+| **Trainer**     | ✅                        |  
+| **Admin**       | ✅                        |
+
+**Example Request:**
+   ```http
+   GET /auth/me
+   Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3RvciI6InRyYWluZXIiLCJ0cmFpbmVySWQiOjMsImVtYWlsIjoiYW5qYWt1dHMwM0BnbWFpbC5jb20iLCJpc0FkbWluIjp0cnVlLCJpYXQiOjE3NjU5NjEyNzAsImV4cCI6MTc2NjA0NzY3MH0.vkF_kuNMzJBlk7tan2t4uY81wZacPA2J_CyOCz8brhY 
+   ```
+
+**Example Response:**
+   ```json
+   {
+  "success": true,
+  "actor": "trainer",
+  "data": {
+    "id": 3,
+    "firstName": "Анна",
+    "lastName": "Куц",
+    "email": "anjakuts03@gmail.com",
+    "isAdmin": true,
+    "qualifications": [],
+    "gyms": []
+  }
+}
+   ```
+
+#### 3. **Get Current User**
+**Method:** `DELETE`  
+**Endpoint:** `/me`  
+**Description:**  
+Soft deletes the currently authenticated user.
+
+
+| **Role**       | **Required to access**   |  
+   |----------------|--------------------------|  
+| **Registered** | ✅                        |  
+| **Client**     | ✅                        |  
+| **Trainer**    | ✅                        |  
+| **Admin**      | ✅                        |
+
+
+**Example Request:**
+   ```http
+   DELETE /auth/me 
+   Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3RvciI6ImNsaWVudCIsImNsaWVudElkIjo0LCJlbWFpbCI6Im1hcmlhLmJvbmRhckBleGFtcGxlLmNvbSIsImlhdCI6MTc2NTk2Mjc1MCwiZXhwIjoxNzY2MDQ5MTUwfQ.i5Lb8-U1VAt0GGcpSeBsgqCzKNluAcskvs8o1K8OOIE
+   ```
+
+**Example Response:**
+   ```json
+{
+  "success": true,
+  "message": "Account deleted successfully"
+}
    ```
