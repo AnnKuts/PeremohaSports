@@ -100,7 +100,7 @@ describe("ClassTypes API Integration", () => {
       const res = await request(app)
         .put(`/class-types/${created.class_type_id}`)
         .set("Authorization", `Bearer ${adminToken}`)
-        .send({ description: "New Description", level: "advanced" });
+        .send({ name: "workout", description: "New Description", level: "advanced" });
 
       expect(res.status).toBe(200);
       expect(res.body.data.description).toBe("New Description");
