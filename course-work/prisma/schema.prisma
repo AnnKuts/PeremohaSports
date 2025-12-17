@@ -1,0 +1,224 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url     = env("DATABASE_URL")
+}
+
+model attendance {
+  session_id    Int
+  client_id     Int
+  status        attendance_status @default(booked)
+  client        client            @relation(fields: [client_id], references: [client_id], onDelete: NoAction, onUpdate: NoAction)
+  class_session class_session     @relation(fields: [session_id], references: [session_id], onDelete: NoAction, onUpdate: NoAction)
+  is_deleted Boolean @default(false)
+
+  @@id([session_id, client_id])
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model class_session {
+  session_id      Int                     @id @default(autoincrement())
+  room_id         Int
+  class_type_id   Int
+  duration        Unsupported("interval")
+  capacity        Int
+  date            DateTime                @db.Date
+  trainer_id      Int
+  attendance      attendance[]
+  is_deleted Boolean @default(false)
+  room_class_type room_class_type         @relation(fields: [room_id, class_type_id], references: [room_id, class_type_id], onDelete: NoAction, onUpdate: NoAction)
+  trainer         trainer                 @relation(fields: [trainer_id], references: [trainer_id], onDelete: NoAction, onUpdate: NoAction)
+  
+  @@index([room_id])
+  @@index([trainer_id])
+  @@index([class_type_id, date])
+}
+
+model class_type {
+  class_type_id   Int               @id @default(autoincrement())
+  name            String
+  description     String?
+  level           level_name
+  membership      membership[]
+  qualification   qualification[]
+  room_class_type room_class_type[]
+  is_deleted Boolean @default(false)
+
+  @@index([name])
+  @@index([level])
+}
+
+model client {
+  client_id       Int          @id @default(autoincrement())
+  first_name      String       @db.VarChar(32)
+  last_name       String       @db.VarChar(32)
+  gender          gender_name
+  contact_data_id Int
+  attendance      attendance[]
+  contact_data    contact_data @relation(fields: [contact_data_id], references: [contact_data_id], onDelete: NoAction, onUpdate: NoAction)
+  membership      membership[]
+  payment         payment[]
+  is_deleted Boolean @default(false)
+
+  @@index([contact_data_id])
+}
+
+model contact_data {
+  contact_data_id Int       @id @default(autoincrement())
+  phone           String    @unique @db.VarChar(32)
+  email           String    @unique @db.VarChar(32)
+  client          client[]
+  trainer         trainer[]
+}
+
+model gym {
+  gym_id            Int                 @id @default(autoincrement())
+  address           String              @unique @db.VarChar(60)
+  room              room[]
+  trainer_placement trainer_placement[]
+  is_deleted Boolean @default(false)
+
+  @@index([address])
+
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model membership {
+  membership_id Int               @id @default(autoincrement())
+  start_date    DateTime          @db.Date
+  end_date      DateTime          @db.Date
+  price         Decimal           @db.Decimal(10, 2)
+  status        membership_status @default(active)
+  is_disposable Boolean           @default(false)
+  client_id     Int
+  class_type_id Int
+  class_type    class_type        @relation(fields: [class_type_id], references: [class_type_id], onDelete: NoAction, onUpdate: NoAction)
+  client        client            @relation(fields: [client_id], references: [client_id], onDelete: NoAction, onUpdate: NoAction)
+  payment       payment[]
+
+  @@index([client_id, class_type_id])
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model payment {
+  payment_id    Int            @id @default(autoincrement())
+  created_at    DateTime       @default(now()) @db.Timestamptz(6)
+  amount        Decimal        @db.Decimal(10, 2)
+  status        payment_status @default(pending)
+  method        payment_method
+  client_id     Int
+  membership_id Int?
+  is_deleted Boolean @default(false)
+  client        client         @relation(fields: [client_id], references: [client_id], onDelete: NoAction, onUpdate: NoAction)
+  membership    membership?    @relation(fields: [membership_id], references: [membership_id], onDelete: NoAction, onUpdate: NoAction)
+
+  @@index([client_id, status])
+  @@index([membership_id])
+}
+
+model qualification {
+  trainer_id    Int
+  class_type_id Int
+  class_type    class_type @relation(fields: [class_type_id], references: [class_type_id], onDelete: NoAction, onUpdate: NoAction)
+  trainer       trainer    @relation(fields: [trainer_id], references: [trainer_id], onDelete: NoAction, onUpdate: NoAction)
+  is_deleted Boolean @default(false)
+  
+  @@id([trainer_id, class_type_id])
+}
+
+/// This table contains check constraints and requires additional setup for migrations. Visit https://pris.ly/d/check-constraints for more info.
+model room {
+  room_id         Int               @id @default(autoincrement())
+  capacity        Int
+  gym_id          Int
+  gym             gym               @relation(fields: [gym_id], references: [gym_id], onDelete: Cascade, onUpdate: NoAction)
+  room_class_type room_class_type[]
+  is_deleted Boolean @default(false)
+
+  @@index([gym_id])
+
+}
+
+model room_class_type {
+  room_id       Int
+  class_type_id Int
+  class_session class_session[]
+  class_type    class_type      @relation(fields: [class_type_id], references: [class_type_id], onDelete: NoAction, onUpdate: NoAction)
+  room          room            @relation(fields: [room_id], references: [room_id], onDelete: NoAction, onUpdate: NoAction)
+  is_deleted Boolean @default(false)
+
+  @@id([room_id, class_type_id])
+}
+
+model trainer {
+  trainer_id        Int                 @id @default(autoincrement())
+  first_name        String              @db.VarChar(32)
+  last_name         String              @db.VarChar(32)
+  is_admin          Boolean
+  contact_data_id   Int
+  class_session     class_session[]
+  qualification     qualification[]
+  contact_data      contact_data        @relation(fields: [contact_data_id], references: [contact_data_id], onDelete: NoAction, onUpdate: NoAction)
+  trainer_placement trainer_placement[]
+  is_deleted Boolean @default(false)
+
+  @@index([contact_data_id])
+  @@index([first_name, last_name])
+}
+
+model trainer_placement {
+  trainer_id Int
+  gym_id     Int
+  gym        gym     @relation(fields: [gym_id], references: [gym_id], onDelete: Cascade, onUpdate: NoAction)
+  trainer    trainer @relation(fields: [trainer_id], references: [trainer_id], onDelete: NoAction, onUpdate: NoAction)
+  is_deleted Boolean @default(false)
+
+  @@id([trainer_id, gym_id])
+}
+
+enum attendance_status {
+  booked
+  attended
+  missed
+  cancelled
+}
+
+enum class_name {
+  workout
+  yoga
+  swimming_pool @map("swimming pool")
+}
+
+enum gender_name {
+  male
+  female
+}
+
+enum level_name {
+  beginner
+  intermediate
+  advanced
+}
+
+enum membership_status {
+  active
+  expired
+  frozen
+  cancelled
+}
+
+enum payment_method {
+  cash
+  card
+  online
+}
+
+enum payment_status {
+  pending
+  completed
+  failed
+  refunded
+}
