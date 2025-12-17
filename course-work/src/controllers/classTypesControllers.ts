@@ -12,7 +12,7 @@ export class ClassTypeController {
 
   createClassType = asyncHandler(async (req: ValidatedRequest, res: Response) => {
     const { name, description, level } = req.validated?.body || {};
-    const classType = await this.classTypeService.createClassType({ name, description, level });
+  const classType = await this.classTypeService.createClassType({ name, description, level });
     res.status(201).json(successResponse(classType, { message: "Class type created successfully" }));
   });
 
@@ -46,4 +46,29 @@ export class ClassTypeController {
     }
     res.json(successResponse(updated, { message: "Class type updated successfully" }));
   });
+
+  delete = asyncHandler(async (req: ValidatedRequest, res: Response) => {
+    const { id } = req.validated?.params || {};
+    const deleted = await this.classTypeService.DeleteClassType(Number(id));
+    if (!deleted) {
+      throw new AppError("Class type not found", 404);
+    }
+    res.json(successResponse(deleted, { message: "Class type soft-deleted successfully" }));
+  });
+
+  getMonthlyRevenueByClassType = asyncHandler(async (req: ValidatedRequest, res: Response) => {
+    const { minRevenue, minAttendance, months } = req.validated?.query || {};
+    const result = await this.classTypeService.getMonthlyRevenueByClassType({ minRevenue, minAttendance, months });
+    res.json(convertBigInt(result));
+  });
+}
+
+function convertBigInt(obj: any): any {
+  if (Array.isArray(obj)) return obj.map(convertBigInt);
+  if (obj && typeof obj === "object") {
+    return Object.fromEntries(
+      Object.entries(obj).map(([k, v]) => [k, typeof v === "bigint" ? Number(v) : convertBigInt(v)])
+    );
+  }
+  return obj;
 }

@@ -229,4 +229,24 @@ export class RoomRepository implements IRoomRepository {
       };
     });
   }
+
+  async getRoomRevenueAndAttendance() {
+    return await this.prisma.$queryRawUnsafe<any[]>(`
+      SELECT 
+        g.gym_id,
+        g.address AS gym_address,
+        r.room_id,
+        r.capacity AS room_capacity,
+        COUNT(a.session_id) AS attendance_count,
+        SUM(m.price) AS total_revenue
+      FROM gym g
+      JOIN room r ON r.gym_id = g.gym_id
+      JOIN class_session cs ON cs.room_id = r.room_id
+      JOIN attendance a ON a.session_id = cs.session_id
+      JOIN membership m ON m.client_id = a.client_id AND cs.class_type_id = m.class_type_id
+      WHERE a.status IN ('attended', 'booked')
+      GROUP BY g.gym_id, g.address, r.room_id, r.capacity
+      ORDER BY total_revenue DESC, attendance_count DESC;
+    `);
+  }
 }

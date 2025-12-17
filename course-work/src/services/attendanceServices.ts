@@ -79,6 +79,10 @@ export class AttendanceService {
       throw new AppError(`Status is already '${newStatus}'`, 400);
     }
 
-    return await this.attendanceRepository.updateStatus(sessionId, clientId, newStatus);
+    try {
+      return await this.attendanceRepository.updateStatus(sessionId, clientId, newStatus);
+    } catch (err: any) {
+      throw handlePrismaError(err);
+    }
   }
 }

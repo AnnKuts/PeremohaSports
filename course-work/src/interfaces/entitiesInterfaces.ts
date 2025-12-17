@@ -33,6 +33,7 @@ export interface IRoomRepository {
   createRoomClassType(roomId: number, classTypeId: number): Promise<any>;
   searchRooms(filters: any): Promise<{ rooms: any[], total: number }>;
   updateCapacity(roomId: number, newCapacity: number): Promise<any>;
+  getRoomRevenueAndAttendance(): Promise<any[]>;
 }
 
 export interface IClassTypeRepository {
@@ -42,4 +43,6 @@ export interface IClassTypeRepository {
   findTrainersByClassTypeId(classTypeId: number): Promise<any[]>;
   getTrainers(classTypeId: number): Promise<any[]>;
   update(classTypeId: number, updateData: Partial<{ name: string; description?: string; level?: string }>): Promise<any>;
+  delete(classTypeId: number): Promise<any>;
+  getMonthlyRevenueByClassType(options?: { minRevenue?: number; minAttendance?: number; months?: number }): Promise<any[]>;
 }

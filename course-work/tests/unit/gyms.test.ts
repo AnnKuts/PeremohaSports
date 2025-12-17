@@ -68,7 +68,7 @@ describe("GymService (unit)", () => {
 		});
 
 		it("updateGym: throws if address is not a string", async () => {
-			// @ts-expect-error
+			// @ts-expect-error address is intentionally wrong type for test
 			await expect(service.updateGym(1, { address: 123 })).rejects.toThrow(AppError);
 		});
 

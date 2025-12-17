@@ -50,10 +50,8 @@ export class RoomController {
   });
 
   createRoomClassType = asyncHandler(async (req: ValidatedRequest, res: Response) => {
-    const { id } = req.validated?.params || {};
-    const { class_type_id } = req.validated?.body || {};
-    
-    const result = await this.roomService.createRoomClassType(id, class_type_id);
+    const { room_id, class_type_id } = req.validated?.body || {};
+    const result = await this.roomService.createRoomClassType(room_id, class_type_id);
     res.status(201).json(successResponse(result, { message: "Class type associated with room successfully" }));
   });
 
@@ -70,5 +68,14 @@ export class RoomController {
 
     const result = await this.roomService.deleteRoom(id);
     res.json(successResponse(result, { message: "Room deleted successfully" }));
+  });
+
+  getRoomRevenueAndAttendance = asyncHandler(async (req: ValidatedRequest, res: Response) => {
+    const result = await this.roomService.getRoomRevenueAndAttendance();
+    const normalize = (obj: unknown): unknown => JSON.parse(JSON.stringify(obj, (k, v) =>
+      typeof v === "bigint" ? Number(v) :
+      (v && typeof v === "object" && "d" in v && "e" in v && "s" in v && typeof v.toString === "function") ? v.toString() : v
+    ));
+    res.json(normalize(result));
   });
 }

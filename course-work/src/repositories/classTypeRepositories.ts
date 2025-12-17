@@ -94,8 +94,6 @@ export class ClassTypeRepository implements IClassTypeRepository {
   
   async update(classTypeId: number, updateData: Partial<{ name: string; description?: string; level?: string }>) {
     const data: any = { ...updateData };
-    if (data.name === "swimming pool") data.name = "swimming_pool";
-    if (data.name && !["workout", "yoga", "swimming_pool"].includes(data.name)) delete data.name;
     if (data.level && !["beginner", "intermediate", "advanced"].includes(data.level)) delete data.level;
     const updated = await this.prisma.class_type.updateMany({
       where: { class_type_id: classTypeId, is_deleted: false },
@@ -115,4 +113,68 @@ export class ClassTypeRepository implements IClassTypeRepository {
       },
     });
   }
+
+  async delete(classTypeId: number) {
+    return await this.prisma.$transaction(async (tx) => {
+      const classType = await tx.class_type.update({
+        where: { class_type_id: classTypeId },
+        data: { is_deleted: true },
+      });
+
+      await tx.qualification.updateMany({
+        where: { class_type_id: classTypeId },
+        data: { is_deleted: true },
+      });
+
+      await tx.membership.updateMany({
+        where: { class_type_id: classTypeId },
+        data: { status: "frozen" },
+      });
+
+      await tx.room_class_type.updateMany({
+        where: { class_type_id: classTypeId },
+        data: { is_deleted: true },
+      });
+
+      const sessions = await tx.class_session.findMany({
+        where: { class_type_id: classTypeId },
+        select: { session_id: true },
+      });
+      const sessionIds = sessions.map(s => s.session_id);
+      if (sessionIds.length > 0) {
+        await tx.class_session.updateMany({
+          where: { session_id: { in: sessionIds } },
+          data: { is_deleted: true },
+        });
+        await tx.attendance.updateMany({
+          where: { session_id: { in: sessionIds } },
+          data: { is_deleted: true, status: "cancelled" },
+        });
+      }
+
+      return classType;
+    });
+  }
+
+  async getMonthlyRevenueByClassType(options: { minRevenue?: number; minAttendance?: number; months?: number } = {}) {
+    const { minRevenue = 500, minAttendance = 0, months = 12 } = options;
+    return await this.prisma.$queryRawUnsafe<any[]>(`
+      SELECT
+        ct.name AS class_category,
+        TO_CHAR(cs.date, 'YYYY-MM') AS month,
+        COUNT(a.session_id) AS attendance_count,
+        SUM(m.price) AS total_revenue
+      FROM class_session cs
+      JOIN room_class_type rct ON cs.room_id = rct.room_id AND cs.class_type_id = rct.class_type_id
+      JOIN class_type ct ON cs.class_type_id = ct.class_type_id
+      JOIN attendance a ON cs.session_id = a.session_id
+      JOIN membership m ON a.client_id = m.client_id AND cs.class_type_id = m.class_type_id
+        AND cs.date BETWEEN m.start_date AND m.end_date
+      WHERE a.status = 'attended'
+        AND cs.date >= (CURRENT_DATE - INTERVAL '${months} months')
+      GROUP BY ct.name, month
+      HAVING SUM(m.price) > $1 AND COUNT(a.session_id) >= $2
+      ORDER BY month DESC, total_revenue DESC;
+    `, minRevenue, minAttendance);
+  }  
 }

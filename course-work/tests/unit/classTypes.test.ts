@@ -12,6 +12,8 @@ describe("ClassTypeService (unit)", () => {
       findById: vi.fn(async (id) => (id === 1 ? { id, name: "Yoga" } : null)),
       getTrainers: vi.fn(async (id) => [{ id: 1, name: "Trainer" }]),
       update: vi.fn(async (id, data) => ({ id, ...data })),
+      delete: vi.fn(async (id) => ({ id, is_deleted: true })),
+      getMonthlyRevenueByClassType: vi.fn(),
     };
     service = new ClassTypeService(mockRepo);
   });
@@ -63,5 +65,37 @@ describe("ClassTypeService (unit)", () => {
     mockRepo.getTrainers.mockResolvedValueOnce([]);
     const result = await service.getClassTypeTrainers(1);
     expect(result).toEqual([]);
+  });
+  
+  it("DeleteClassType: soft/cascade deletes class type and related", async () => {
+    const result = await service.DeleteClassType(1);
+    expect(result).toEqual({ id: 1, is_deleted: true });
+    expect(mockRepo.delete).toHaveBeenCalledWith(1);
+  });
+
+  describe("getMonthlyRevenueByClassType", () => {
+    beforeEach(() => {
+      mockRepo.getMonthlyRevenueByClassType.mockReset();
+    });
+
+    it("should call repository with default params", async () => {
+      mockRepo.getMonthlyRevenueByClassType.mockResolvedValue([]);
+      await service.getMonthlyRevenueByClassType();
+      expect(mockRepo.getMonthlyRevenueByClassType).toHaveBeenCalledWith({});
+    });
+
+    it("should pass query params to repository", async () => {
+      mockRepo.getMonthlyRevenueByClassType.mockResolvedValue([]);
+      const params = { minRevenue: 100, minAttendance: 2, months: 3 };
+      await service.getMonthlyRevenueByClassType(params);
+      expect(mockRepo.getMonthlyRevenueByClassType).toHaveBeenCalledWith(params);
+    });
+
+    it("should return repository result", async () => {
+      const fakeResult = [{ class_category: "yoga", month: "2025-12", attendance_count: 5, total_revenue: "1000.00" }];
+      mockRepo.getMonthlyRevenueByClassType.mockResolvedValue(fakeResult);
+      const result = await service.getMonthlyRevenueByClassType();
+      expect(result).toBe(fakeResult);
+    });
   });
 });

@@ -1,10 +1,9 @@
-import type { CreateClassTypeData } from "../types/entities.js";
 import type { IClassTypeRepository } from "../interfaces/entitiesInterfaces.js";
 
 export class ClassTypeService {
   constructor(private classTypeRepository: IClassTypeRepository) {}
 
-  async createClassType(data: CreateClassTypeData) {
+  async createClassType(data: { name: string; description?: string; level: string }) {
     return await this.classTypeRepository.create(data);
   }
 
@@ -22,5 +21,13 @@ export class ClassTypeService {
 
   async updateClassType(classTypeId: number, updateData: Partial<{ name: string; description?: string; level?: string }>) {
     return await this.classTypeRepository.update(classTypeId, updateData);
+  }
+
+  async DeleteClassType(classTypeId: number) {
+    return await this.classTypeRepository.delete(classTypeId);
+  }  
+
+  async getMonthlyRevenueByClassType(options: { minRevenue?: number; minAttendance?: number; months?: number } = {}) {
+    return await this.classTypeRepository.getMonthlyRevenueByClassType(options);
   }
 }

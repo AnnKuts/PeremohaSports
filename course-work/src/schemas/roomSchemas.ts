@@ -37,11 +37,9 @@ export const getRoomSessionsSchema = z.object({
 });
 
 export const createRoomClassTypeSchema = z.object({
-  params: z.object({
-    id: positiveNumberString,
-  }),
   body: z.object({
-    class_type_id: positiveNumber,
+    room_id: z.number(),
+    class_type_id: z.number(),
   }),
 });
 
@@ -61,3 +59,4 @@ export const deleteRoomSchema = z.object({
 });
 
 export const getAllRoomsSchema = paginationWithStatsSchema;
+export const getRoomRevenueAndAttendanceSchema = z.object({})

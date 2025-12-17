@@ -13,6 +13,7 @@ import {
   getClassTypeByIdSchema,
   getClassTypeTrainersSchema,
   updateClassTypeSchema,
+  getMonthlyRevenueByClassTypeSchema,
 } from "../schemas/classTypeSchemas.js";
 
 const router = Router();
@@ -27,5 +28,6 @@ router.get("/:id", validate(getClassTypeByIdSchema), classTypeController.getClas
 
 router.put("/:id", authenticate, requireAdmin, validate(updateClassTypeSchema), classTypeController.updateClassType);
 router.get("/:id/trainers", validate(getClassTypeTrainersSchema), classTypeController.getClassTypeTrainers);
+router.delete("/:id", validate(getClassTypeByIdSchema), classTypeController.delete);
 
 export default router;

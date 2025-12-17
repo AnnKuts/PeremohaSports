@@ -17,6 +17,7 @@ import {
   updateRoomCapacitySchema,
   deleteRoomSchema,
   searchRoomsSchema,
+  getRoomRevenueAndAttendanceSchema,
 } from "../schemas/roomSchemas.js";
 
 const router = Router();

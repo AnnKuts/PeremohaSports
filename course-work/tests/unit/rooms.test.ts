@@ -102,4 +102,20 @@ describe("RoomService (unit)", () => {
     await expect(service.updateRoomCapacity(1, 5)).rejects.toThrow("Cannot reduce capacity");
     expect(mockRepo.updateCapacity).toHaveBeenCalledWith(1, 5);
   });
+
+  describe("getRoomRevenueAndAttendance", () => {
+    beforeEach(() => {
+      mockRepo.getRoomRevenueAndAttendance = vi.fn();
+    });
+
+    it("should call repository and return result", async () => {
+      const fakeResult = [
+        { gym_id: 1, gym_address: "вул. Шевченка 10", room_id: 2, room_capacity: 20, attendance_count: 5, total_revenue: "1000.00" },
+      ];
+      mockRepo.getRoomRevenueAndAttendance.mockResolvedValue(fakeResult);
+      const result = await service.getRoomRevenueAndAttendance();
+      expect(result).toBe(fakeResult);
+      expect(mockRepo.getRoomRevenueAndAttendance).toHaveBeenCalled();
+    });
+  });
 });
