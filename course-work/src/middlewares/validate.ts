@@ -1,5 +1,6 @@
 import { ZodError, ZodSchema } from "zod";
 import { Request, Response, NextFunction } from "express";
+import AppError from "../utils/AppError";
 
 export const validate =
   (schema: ZodSchema) =>
@@ -12,6 +13,9 @@ export const validate =
         });
         next();
       } catch (err) {
+        if (err instanceof ZodError) {
+          return next(new AppError("Validation failed", 400, err.errors));
+        }
         next(err);
       }
     };
