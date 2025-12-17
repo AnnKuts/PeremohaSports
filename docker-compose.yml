@@ -1,7 +1,47 @@
+#services:
+#  postgres:
+#    image: postgres:17
+#    container_name: postgres
+#    restart: always
+#    environment:
+#      POSTGRES_USER: ${POSTGRES_USER}
+#      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+#      POSTGRES_DB: ${POSTGRES_DB}
+#    ports:
+#      - "${POSTGRES_PORT}:5432"
+#    volumes:
+#      - postgres_data:/var/lib/postgresql/data
+#      - ./sql:/docker-entrypoint-initdb.d
+#    networks:
+#      - db-network
+#
+#  app:
+#    build:
+#      context: ./course-work
+#    container_name: app
+#    restart: always
+#    env_file:
+#      - ./course-work/.env
+#    ports:
+#      - "3000:3000"
+#      - "5555:5555"
+#    depends_on:
+#      - postgres
+#    networks:
+#      - db-network
+#
+#
+#volumes:
+#  postgres_data:
+#
+#networks:
+#  db-network:
+#    driver: bridge
+
 services:
   postgres:
     image: postgres:17
-    container_name: postgres
+    container_name: peremohasports_db
     restart: always
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -14,22 +54,6 @@ services:
       - ./sql:/docker-entrypoint-initdb.d
     networks:
       - db-network
-
-  app:
-    build:
-      context: ./course-work
-    container_name: app
-    restart: always
-    env_file:
-      - ./course-work/.env
-    ports:
-      - "3000:3000"
-      - "5555:5555"
-    depends_on:
-      - postgres
-    networks:
-      - db-network
-    
 
 volumes:
   postgres_data:

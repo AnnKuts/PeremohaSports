@@ -3,6 +3,7 @@ import prisma from "../lib/prisma";
 import { asyncHandler } from "../utils/async-handler";
 import { authService } from "../services/auth.service";
 import { emailService } from "../services/email.service";
+import { clientsService } from "../services/clients.service";
 import { AuthenticatedRequest } from "../middlewares/authenticate";
 
 function okOtpResponse(res: Response) {
@@ -40,7 +41,9 @@ export const AuthController = {
     const contact = await prisma.contact_data.findUnique({
       where: { email },
       include: {
-        client: true,
+        client: {
+          where: { is_deleted: false },
+        },
         trainer: true,
       },
     });
@@ -56,6 +59,7 @@ export const AuthController = {
         where: {
           client_id: client.client_id,
           status: "completed",
+          is_deleted: false,
         },
       });
 
@@ -90,8 +94,8 @@ export const AuthController = {
     const payload = emailService.verifyActivationCode(code);
 
     if (payload.actor === "client") {
-      const client = await prisma.client.findUnique({
-        where: { client_id: payload.actorId },
+      const client = await prisma.client.findFirst({
+        where: { client_id: payload.actorId, is_deleted: false },
         include: { contact_data: true },
       });
 
@@ -138,6 +142,7 @@ export const AuthController = {
         trainer.trainer_id,
         payload.email,
         "trainer",
+        trainer.is_admin
       );
 
       return res.status(200).json({
@@ -169,8 +174,8 @@ export const AuthController = {
     }
 
     if (req.user.actor === "client") {
-      const client = await prisma.client.findUnique({
-        where: { client_id: req.user.clientId },
+      const client = await prisma.client.findFirst({
+        where: { client_id: req.user.clientId, is_deleted: false },
         include: {
           contact_data: true,
           membership: {
@@ -253,6 +258,29 @@ export const AuthController = {
     return res.status(403).json({
       success: false,
       message: "Unsupported actor type",
+    });
+  }),
+
+  deleteMe: asyncHandler(async (req: AuthenticatedRequest, res: Response) => {
+    if (!req.user) {
+      return res.status(401).json({
+        success: false,
+        message: "User not authenticated",
+      });
+    }
+
+    if (req.user.actor !== "client") {
+      return res.status(403).json({
+        success: false,
+        message: "Only clients can delete their account",
+      });
+    }
+
+    await clientsService.deleteClient(req.user.clientId);
+
+    res.status(200).json({
+      success: true,
+      message: "Account deleted successfully",
     });
   }),
 };

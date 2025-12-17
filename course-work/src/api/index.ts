@@ -2,12 +2,12 @@ import express from "express";
 
 import type MessageResponse from "../interfaces/message-response.js";
 
-import attendanceRoutes from "../routes/attendanceRoutes.js";
-import classTypesRoutes from "../routes/classTypesRoutes.js";
+import attendanceRoutes from "../routes/attendance.routes";
+import classTypesRoutes from "../routes/classTypes.routes";
 import gymRoutes from "../routes/gymRoutes.js";
-import roomRoutes from "../routes/roomRoutes.js";
-import trainerRoutes from "../routes/trainerRoutes.js";
-import sessionRoutes from "../routes/sessionRoutes.js";
+import roomRoutes from "../routes/room.routes";
+import trainerRoutes from "../routes/trainer.routes";
+import sessionRoutes from "../routes/session.routes";
 import registerRoutes from "../routes/register.routes.js";
 import clientsRoutes from "../routes/clients.routes.js";
 import membershipsRoutes from "../routes/memberships.routes.js";

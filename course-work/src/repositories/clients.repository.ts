@@ -3,13 +3,15 @@ import { UpdateClientInput } from "../schemas/clients.schema.js";
 
 export const clientsRepository = {
   async findMany(active?: boolean) {
-    const where = active
+    const where: any = active
       ? {
         membership: {
           some: { status: "active" as const },
         },
       }
       : {};
+
+    where.is_deleted = false;
 
     return prisma.client.findMany({
       where,
@@ -33,7 +35,7 @@ export const clientsRepository = {
 
   async findById(id: number) {
     return prisma.client.findUnique({
-      where: { client_id: id },
+      where: { client_id: id, is_deleted: false },
       include: {
         contact_data: true,
         membership: { include: { class_type: true } },
@@ -49,7 +51,7 @@ export const clientsRepository = {
 
   async findByIdWithContactData(id: number) {
     return prisma.client.findUnique({
-      where: { client_id: id },
+      where: { client_id: id, is_deleted: false },
       include: { contact_data: true },
     });
   },
@@ -113,6 +115,21 @@ export const clientsRepository = {
           ...(data.gender && { gender: data.gender }),
         },
         include: { contact_data: true },
+      });
+    });
+  },
+  async softDelete(id: number) {
+    return prisma.$transaction(async (tx) => {
+      // Cancel active memberships
+      await tx.membership.updateMany({
+        where: { client_id: id, status: "active" },
+        data: { status: "cancelled" },
+      });
+
+      // Soft delete client
+      return tx.client.update({
+        where: { client_id: id },
+        data: { is_deleted: true },
       });
     });
   },

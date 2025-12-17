@@ -1,6 +1,7 @@
 import crypto from "crypto";
 import { authConfig } from "../config/auth.config";
 import { mailTransporter, nodemailerConfig } from "../config/mail.config";
+import AppError from "../utils/AppError";
 import {
   parseActivationEmailPayload,
   ActivationEmailPayload,
@@ -40,7 +41,7 @@ export const emailService = {
     const [data, signature] = decoded.split("|");
 
     if (!data || !signature) {
-      throw new Error("Invalid activation code format");
+      throw new AppError("Invalid activation code format", 400);
     }
 
     const expectedSignature = crypto
@@ -54,7 +55,7 @@ export const emailService = {
         Buffer.from(expectedSignature)
       )
     ) {
-      throw new Error("Invalid activation code signature");
+      throw new AppError("Invalid activation code signature", 400);
     }
 
     return parseActivationEmailPayload(JSON.parse(data));
@@ -65,6 +66,7 @@ export const emailService = {
 
     if (isDevelopment) {
       console.log(`Activation code for ${email}: ${code}`);
+      return;
     }
 
     await mailTransporter.sendMail({

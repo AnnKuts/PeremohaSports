@@ -1,5 +1,6 @@
 import { ZodError, ZodSchema } from "zod";
 import { Request, Response, NextFunction } from "express";
+import AppError from "../utils/AppError";
 
 export const validate =
   (schema: ZodSchema) =>
@@ -13,12 +14,8 @@ export const validate =
         next();
       } catch (err) {
         if (err instanceof ZodError) {
-          return res.status(400).json({
-            message: "Validation failed",
-            errors: err.issues,
-          });
+          return next(new AppError("Validation failed", 400, err.errors));
         }
-        console.error("Validation middleware error", err);
-        return res.status(500).json({ message: "Internal validation error" });
+        next(err);
       }
     };

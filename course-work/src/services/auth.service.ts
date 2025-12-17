@@ -16,11 +16,16 @@ type TrainerJwtPayload = {
 
 
 export const authService = {
-  generateAuthToken(actorId: number, email: string, actor: "client" | "trainer" = "client") {
+  generateAuthToken(
+    actorId: number,
+    email: string,
+    actor: "client" | "trainer" = "client",
+    isAdmin: boolean = false
+  ) {
     if (actor === "client") {
       return this.generateClientToken(actorId, email);
     } else {
-      return this.generateTrainerToken(actorId, email, false);
+      return this.generateTrainerToken(actorId, email, isAdmin);
     }
   },
 

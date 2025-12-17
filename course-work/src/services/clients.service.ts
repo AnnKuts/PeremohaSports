@@ -49,5 +49,13 @@ export const clientsService = {
 
     return clientsRepository.updateWithTransaction(id, data, client.contact_data_id);
   },
+
+  async deleteClient(id: number) {
+    const client = await clientsRepository.findById(id);
+
+    if (!client) throw new Error("Client not found");
+
+    return clientsRepository.softDelete(id);
+  },
 };
 
