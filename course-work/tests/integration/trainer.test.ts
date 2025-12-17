@@ -1,15 +1,15 @@
 import request from "supertest";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import app from "../../src/app";
-import { clearTestData } from "./clearTestData";
+import { clearTestData } from "./utils/clearTestData";
 import prisma from "../../src/lib/prisma";
-import { adminToken, createTrainerToken, clientToken } from "./testHelpers";
+import { adminToken, createTrainerToken, clientToken } from "./utils/testHelpers";
 
 let createdTrainerId: number;
 let trainerToken: string;
 
 describe("Trainers API Integration", () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
     await clearTestData();
 
     await prisma.gym.create({ data: { gym_id: 1, address: "Test Gym" } });
@@ -33,7 +33,7 @@ describe("Trainers API Integration", () => {
     trainerToken = createTrainerToken(createdTrainerId, "seeded.trainer@test.com");
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await clearTestData();
   });
 

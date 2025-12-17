@@ -2,10 +2,8 @@ import request from "supertest";
 import { describe, it, expect, beforeEach, afterAll, afterEach } from "vitest";
 import app from "../../src/app";
 import prisma from "../../src/lib/prisma";
-import { clearTestData } from "./clearTestData";
+import { clearTestData } from "./utils/clearTestData";
 import { main as seed } from "../../prisma/seed";
-
-/* Types */
 
 interface ApiResponse<T> {
   success: boolean;
@@ -18,8 +16,6 @@ interface Gym {
   address: string;
   is_deleted: boolean;
 }
-
-/* Setup */
 
 let gymId: number;
 const seededGymAddress = `Seeded Gym ${Date.now()}`;

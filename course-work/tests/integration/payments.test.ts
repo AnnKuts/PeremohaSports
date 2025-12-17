@@ -2,7 +2,7 @@ import request from "supertest";
 import { describe, it, expect, beforeEach, afterAll } from "vitest";
 import app from "../../src/app";
 import prisma from "../../src/lib/prisma";
-import { clearTestData } from "./clearTestData";
+import { clearTestData } from "./utils/clearTestData";
 import { main as seed } from "../../prisma/seed";
 
 describe("Payments API Integration", () => {

@@ -1,9 +1,9 @@
 import request from "supertest";
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import app from "../../src/app";
-import { clearTestData } from "./clearTestData";
+import { clearTestData } from "./utils/clearTestData";
 import prisma from "../../src/lib/prisma";
-import { adminToken, createTrainerToken, clientToken } from "./testHelpers";
+import { adminToken, createTrainerToken, clientToken } from "./utils/testHelpers";
 
 let trainerId: number;
 let trainerToken: string;
@@ -12,13 +12,9 @@ let classTypeId: number;
 let createdSessionId: number;
 
 describe("Sessions API Integration", () => {
-  beforeAll(async () => {
+  beforeEach(async () => {
     await clearTestData();
-
-
-
     const gym = await prisma.gym.create({ data: { address: "Session Gym" } });
-
 
     const classType = await prisma.class_type.create({
       data: { name: "workout", level: "advanced" }
@@ -60,17 +56,16 @@ describe("Sessions API Integration", () => {
     await prisma.qualification.create({
       data: { trainer_id: trainerId, class_type_id: classTypeId }
     });
-
     const result: any[] = await prisma.$queryRaw`
-      INSERT INTO "class_session" ("trainer_id", "room_id", "class_type_id", "date", "duration", "capacity", "is_deleted")
-      VALUES (${trainerId}, ${roomId}, ${classTypeId}, ${new Date()}, '1 hour'::interval, 10, false)
+      INSERT INTO "class_session" ("trainer_id", "room_id", "class_type_id", "date", "duration", "capacity")
+      VALUES (${trainerId}, ${roomId}, ${classTypeId}, ${new Date()}, '1 hour'::interval, 10)
       RETURNING "session_id"
     `;
     createdSessionId = result[0].session_id;
 
   });
 
-  afterAll(async () => {
+  afterEach(async () => {
     await clearTestData();
   });
 

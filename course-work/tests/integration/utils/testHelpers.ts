@@ -1,5 +1,5 @@
 import jwt from "jsonwebtoken";
-import { authConfig } from "../../src/config/auth.config";
+import { authConfig } from "../../../src/config/auth.config";
 export const generateTestToken = (payload: any) => {
   return jwt.sign(payload, authConfig.jwt.secret, { expiresIn: "1h" });
 };

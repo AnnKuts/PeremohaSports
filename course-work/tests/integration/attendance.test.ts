@@ -2,7 +2,7 @@ import request from "supertest";
 import { describe, it, expect, beforeAll, afterAll, afterEach, beforeEach } from "vitest";
 import app from "../../src/app";
 import prisma from "../../src/lib/prisma";
-import { clearTestData } from "./clearTestData";
+import { clearTestData } from "./utils/clearTestData";
 import { main } from "../../prisma/seed";
 
 let testSessionId: number | undefined;

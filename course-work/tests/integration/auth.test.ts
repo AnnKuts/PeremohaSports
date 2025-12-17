@@ -3,7 +3,7 @@ import supertest from "supertest";
 import crypto from "crypto";
 import app from "../../src/app";
 import prisma from "../../src/lib/prisma";
-import { clearTestData } from "./clearTestData";
+import { clearTestData } from "./utils/clearTestData";
 import { emailService } from "../../src/services/email.service";
 import { authConfig } from "../../src/config/auth.config";
 

@@ -2,7 +2,7 @@ import request from "supertest";
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import prisma from "../../src/lib/prisma";
 import app from "../../src/app";
-import { clearTestData } from "./clearTestData";
+import { clearTestData } from "./utils/clearTestData";
 import { main as seed } from "../../prisma/seed";
 
 describe("POST /register (integration, Prisma)", () => {
