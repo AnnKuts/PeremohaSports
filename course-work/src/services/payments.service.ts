@@ -5,6 +5,7 @@ import {
 } from "../schemas/payments.schema";
 import { emailService } from "./email.service";
 import { paymentsRepository } from "../repositories/payments.repository";
+import AppError from "../utils/AppError";
 
 export const paymentsService = {
   async getPayments(query?: GetPaymentsQuery) {
@@ -15,7 +16,7 @@ export const paymentsService = {
     const payment = await paymentsRepository.findById(id);
 
     if (!payment) {
-      throw new Error("Payment not found");
+      throw new AppError("Payment not found", 404);
     }
     return payment;
   },
@@ -28,7 +29,7 @@ export const paymentsService = {
     const existingPayment = await paymentsRepository.findById(id);
 
     if (!existingPayment) {
-      throw new Error("Payment not found");
+      throw new AppError("Payment not found", 404);
     }
 
     const updatedPayment = await paymentsRepository.update(id, data);
@@ -95,5 +96,15 @@ export const paymentsService = {
     }));
 
     return result;
+  },
+
+  async deletePayment(id: number) {
+    const payment = await paymentsRepository.findById(id);
+
+    if (!payment) {
+      throw new AppError("Payment not found", 404);
+    }
+
+    return paymentsRepository.softDelete(id);
   },
 };

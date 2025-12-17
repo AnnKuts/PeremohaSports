@@ -4,14 +4,17 @@ import { CreateTrainerInput, UpdateTrainerInput } from "../schemas/trainerSchema
 export const TrainersRepository = {
   async findAll() {
     return prisma.trainer.findMany({
+      where: { is_deleted: false },
       include: { contact_data: true },
       orderBy: { trainer_id: 'asc' }
     });
   },
 
   async findById(id: number) {
-    return prisma.trainer.findUnique({
-      where: { trainer_id: id },
+    return prisma.trainer.findFirst({
+      where: { trainer_id: id,
+        is_deleted: false
+       },
       include: {
         contact_data: true,
         trainer_placement: { include: { gym: true } },
@@ -66,7 +69,7 @@ export const TrainersRepository = {
   },
 
   async update(id: number, data: UpdateTrainerInput, currentContactId: number) {
-    const { first_name, last_name, email, phone, gym_ids, class_type_ids } = data;
+    const { first_name, last_name, email, phone, gym_ids, class_type_ids, is_deleted } = data;
 
     return prisma.$transaction(async (tx) => {
       if (email || phone) {
@@ -76,10 +79,14 @@ export const TrainersRepository = {
         });
       }
 
-      if (first_name || last_name) {
+      if (first_name || last_name || is_deleted !== undefined) {
         await tx.trainer.update({
           where: { trainer_id: id },
-          data: { first_name, last_name },
+          data: { 
+            first_name, 
+            last_name,
+            is_deleted 
+          },
         });
       }
 
@@ -104,10 +111,78 @@ export const TrainersRepository = {
     });
   },
 
+    async softDelete(id: number) {
+    return prisma.trainer.update({
+      where: { trainer_id: id },
+      data: { is_deleted: true },
+    });
+  },
+
   async getSessionsByTrainer(trainerId: number) {
     return prisma.class_session.findMany({
       where: { trainer_id: trainerId },
       orderBy: { date: 'desc' }
+    });
+  },
+
+  async getTopTrainerStats(oneMonthAgo: Date) {
+    return prisma.class_session.groupBy({
+      by: ["trainer_id"],
+      where: { 
+          date: { gte: oneMonthAgo },
+          is_deleted: false 
+      },
+      _count: { session_id: true },
+      orderBy: { _count: { session_id: "desc" } },
+      take: 1,
+    });
+  },
+
+   async getTrainersPopularity() {
+    return prisma.trainer.findMany({
+      where: { is_deleted: false },
+      select: {
+        trainer_id: true,
+        first_name: true,
+        last_name: true,
+        class_session: {
+          where: { is_deleted: false },
+          select: {
+            _count: {
+              select: { 
+                attendance: { 
+                  where: { status: 'attended' }
+                } 
+              }
+            }
+          }
+        }
+      },
+    });
+  },
+
+  async getTrainerWorkloadStats(trainerId: number) {
+    return prisma.class_session.groupBy({
+      by: ['class_type_id'],
+      where: {
+        trainer_id: trainerId,
+        is_deleted: false
+      },
+      _count: {
+        session_id: true
+      },
+      orderBy: {
+        _count: {
+          session_id: 'desc'
+        }
+      }
+    });
+  },
+
+  async getClassTypesByIds(ids: number[]) {
+    return prisma.class_type.findMany({
+      where: { class_type_id: { in: ids } },
+      select: { class_type_id: true, name: true }
     });
   }
 };

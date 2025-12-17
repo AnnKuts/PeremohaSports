@@ -16,10 +16,13 @@
     "build": "tsc",
     "lint": "eslint --fix src tests",
     "test": "vitest run",
-    "test:unit": "vitest run tests/unit",
-    "test:integration": "vitest run --config vitest.integration.ts",
+    "test:u": "vitest run tests/unit",
+    "test:i": "vitest run --config vitest.integration.ts",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "test:all": "npm run test:u && npm run test:i",
+    "pretest:i": "docker compose -f ../docker-compose.test.yaml up -d && echo 'good luck with testing b*tch' && sleep 10 && npx prisma generate && npx prisma migrate deploy && npx prisma db seed",
+    "posttest:i": "docker compose down",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -42,8 +45,7 @@
     "@types/express": "^5.0.5",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/morgan": "^1.9.10",
-    "@types/node": "^24.9.2",
-    "@types/nodemailer": "^6.4.17",
+    "@types/node": "^25.0.2",
     "@types/supertest": "^6.0.3",
     "eslint": "^9.38.0",
     "eslint-plugin-format": "^1.0.2",
@@ -51,7 +53,10 @@
     "supertest": "^7.1.4",
     "tsx": "^4.20.6",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.6"
+    "vite": "^7.3.0",
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^4.0.16",
+    "vitest-mock-extended": "^3.1.0"
   },
   "directories": {
     "test": "tests"
