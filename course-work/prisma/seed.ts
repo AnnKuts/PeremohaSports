@@ -4,6 +4,12 @@ import "dotenv/config";
 export async function main() {
   console.log("Starting database seeding...");
 
+  const existingContacts = await prisma.contact_data.count();
+  if (existingContacts > 0) {
+    console.log("Database already seeded, skipping...");
+    return;
+  }
+
   const contacts = await Promise.all([
     prisma.contact_data.create({ data: { phone: "380501112233", email: "ivan.petrenko@example.com" } }),
     prisma.contact_data.create({ data: { phone: "380671234567", email: "olena.ivanova@example.com" } }),
@@ -91,7 +97,7 @@ export async function main() {
         price: 700,
         status: "active",
         is_disposable: false,
-        client_id: clients[3].client_id, 
+        client_id: clients[3].client_id,
         class_type_id: classTypes[2].class_type_id,
       }
     }),
@@ -102,7 +108,7 @@ export async function main() {
         price: 100,
         status: "active",
         is_disposable: true,
-        client_id: clients[0].client_id, 
+        client_id: clients[0].client_id,
         class_type_id: classTypes[1].class_type_id,
       }
     }),
