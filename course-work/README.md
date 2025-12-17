@@ -1,8 +1,8 @@
-# **Peremoha Gym - Gym Management System**
+# **PeremohaSports - Gym Management System**
 
 ## **Project Overview:**
 
-**Peremoha Gym** is a **gym management system** that provides convenient tools for recording and managing data about the gym, rooms, class types, qualifications, memberships, attendance etc. The system is designed to facilitate administration and improve the*efficiency of gyms through comprehensive analysis and monitoring of their activities. It also provides convenience for customers, enabling them to effectively manage their gym experience and track their progress.
+**PeremohaSports** is a **gym management system** that provides convenient tools for recording and managing data about the gym, rooms, class types, qualifications, memberships, attendance etc. The system is designed to facilitate administration and improve the*efficiency of gyms through comprehensive analysis and monitoring of their activities. It also provides convenience for customers, enabling them to effectively manage their gym experience and track their progress.
 
 
 
@@ -33,17 +33,80 @@ For a detailed overview of each team member's contributions to the project, refe
 
 ## **Setup instructions**  
 
+1.  **Clone the repository:**
+    ```bash
+    git clone <repository_url>
+    cd course-work
+    ```
+
+2.  **Install dependencies:**
+    ```bash
+    npm install
+    ```
+
+3.  **Environment Configuration:**
+    - Copy `.env.example` to `.env`:
+      ```bash
+      cp .env.example .env
+      ```
+      [View .env.example](./.env.example)
+
+    - Copy `.env.test.example` to `.env.test` (for testing):
+      ```bash
+      cp .env.test.example .env.test
+      ```
+      [View .env.test.example](./.env.test.example)
+
+4.  **Database Setup:**
+    - Start the database using Docker Compose:
+      ```bash
+      docker compose -f ../docker-compose.yml --env-file .env up -d
+      ```
+    - Apply migrations:
+      ```bash
+      npx prisma migrate deploy
+      ```
+    - Seed the database (optional):
+      ```bash
+      npx prisma db seed
+      ```
+
 
 ## **Launching the application**  
 
+-   **Development mode:**
+    ```bash
+    npm run dev
+    ```
+
+-   **Development mode (full setup):**
+    For a fresh start with Docker, migrations, and seeds:
+    ```bash
+    npm run dev:full
+    ```
 
 ## **Running tests**  
 
+-   **Run all tests:**
+    ```bash
+    npm test
+    ```
 
-## **Project structure overview**  
+-   **Run integration tests:**
+    ```bash
+    npm run test:i
+    ```
+
+-   **Run unit tests:**
+    ```bash
+    npm run test:u
+    ```
+## **Project structure**
 
 ```
 course-work/
+├── .env                      # Environment variables for docker.compose.yml and application
+├── .env.test                 # Environment variables for docker.compose.test.yaml
 ├── docs/                     # Documentation
 │   ├── APIs.md               # API documentation
 │   ├── CONTRIBUTIONS.md      # Contribution guide
@@ -165,7 +228,6 @@ course-work/
 │
 ├── .gitignore                 # Files and directories to be ignored
 ├── Dockerfile                 # Docker container configuration
-├── .env                       # Environment variables
 ├── .eslint.config.mjs         # ESLint configuration
 ├── package-lock.json          # Lock file for dependencies
 ├── package.json               # Project dependencies

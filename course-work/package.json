@@ -24,6 +24,7 @@
     "test:i": "dotenv -e .env.test -- vitest run tests/integration --no-file-parallelism",
     "dev:full": "docker compose -f ../docker-compose.yml --env-file .env up -d && npx prisma generate && npx prisma migrate deploy && npx prisma db seed && npx tsx prisma/insert-admin.ts && npm run dev",
     "posttest:i": "dotenv -e .env.test -- docker compose -f ../docker-compose.test.yaml down",
+    "test:down": "docker compose -f ../docker-compose.test.yaml down -v",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

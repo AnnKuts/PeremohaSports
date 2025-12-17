@@ -10,6 +10,8 @@
    - [Clients](#clients--clients-)
    - [Memberships](#membershps--memberships-)
    - [Payments](#payments--payments-)
+   - [Trainers](#trainers--trainers-)
+   - [Session](#sessions--sessions-)
 
 ### Attendance ( `/attendance/` )
 
@@ -2087,3 +2089,347 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJhY3RvciI6InRyYWluZ
 }
 }
 ```
+
+### Trainers ( `/trainers/` )
+
+#### 1. **Get all trainers**
+   **Method:** `GET`  
+   **Endpoint:** `/`  
+   **Description:** Returns a list of all active trainers.  
+   
+   | **Role** | **Required to access** |  
+   |-----------------|--------------------------|  
+   | **Guest** | ✅ |  
+   | **Client** | ✅ |  
+   | **Trainer** | ✅ |  
+   | **Admin** | ✅ |  
+
+**Example Request:** 
+```http 
+GET /trainers
+```
+
+**Example Response:** 
+```json
+ [
+  {
+    "trainer_id": 1,
+    "first_name": "John",
+    "last_name": "Doe",
+    "is_admin": false,
+    "contact_data": {
+      "email": "john.doe@gym.com",
+      "phone": "+380501234567"
+    }
+  },
+  {
+    "trainer_id": 2,
+    "first_name": "Alice",
+    "last_name": "Smith",
+    "is_admin": false,
+    "contact_data": {
+      "email": "alice.smith@gym.com",
+      "phone": "+380671234567"
+    }
+  }
+]
+ ```
+
+#### 2. **Get trainer by ID**
+   **Method:** `GET`  
+   **Endpoint:** `/:id`  
+   **Description:** Returns detailed information about a specific trainer, including qualifications and contact info.  
+   
+   | **Role** | **Required to access** |  
+   |-----------------|--------------------------|  
+   | **Guest** | ✅ |  
+   | **Client** | ✅ |  
+   | **Trainer** | ✅ |  
+   | **Admin** | ✅ |  
+
+**Example Request:** 
+```http 
+GET /trainers/14
+```
+
+**Example Response:** 
+```json
+ {
+  "trainer_id": 14,
+  "first_name": "John",
+  "last_name": "Doe",
+  "is_admin": false,
+  "contact_data": {
+    "email": "john.doe@gym.com",
+    "phone": "+380501234567"
+  },
+  "trainer_placement": [
+    {
+      "gym_id": 1,
+      "gym": {
+        "address": "123 Main St, Kyiv"
+      }
+    }
+  ],
+  "qualification": [
+    {
+      "class_type_id": 2,
+      "class_type": {
+        "name": "yoga"
+      }
+    }
+  ]
+}
+ ```
+
+#### 3. **Create new trainer**
+   **Method:** `POST`  
+   **Endpoint:** `/admin/trainers`  
+   **Description:** Creates a new trainer profile with associated contact data, gym placements, and qualifications.  
+
+   | **Role** | **Required to access** |  
+   |-----------------|--------------------------|  
+   | **Guest** | ❌ |
+   | **Client** | ❌ |  
+   | **Trainer** | ❌ |  
+   | **Admin** | ✅ |  
+
+**Example Request:** 
+```http 
+POST /admin/trainers
+```
+
+**Body:**
+```json
+{
+  "first_name": "Mike",
+  "last_name": "Tyson",
+  "email": "mike.tyson@gym.com",
+  "phone": "+380939998877",
+  "gym_ids": [1, 3],
+  "class_type_ids": [2]
+}
+```
+
+**Example Response:** 
+```json
+{
+  "trainer_id": 15,
+  "first_name": "Mike",
+  "last_name": "Tyson",
+  "is_admin": false,
+  "contact_data_id": 20,
+  "is_deleted": false
+}
+ ```
+
+#### 4. **Update trainer**
+   **Method:** `PATCH`  
+   **Endpoint:** `/admin/trainers/:id`  
+   **Description:** Updates trainer details. Trainers can update their own profile; Admins can update any profile.  
+   
+   | **Role** | **Required to access** |  
+   |-----------------|--------------------------|     
+   | **Client** | ❌ |  
+   | **Trainer** | ✅ (Own profile only) |  
+   | **Admin** | ✅ |
+
+**Example Request:** 
+```http 
+PATCH /admin/trainers/15
+```
+
+**Body:**
+```json
+{
+  "phone": "+380931112233",
+  "gym_ids": [1]
+}
+```
+
+**Example Response:** 
+```json
+{
+  "trainer_id": 15,
+  "first_name": "Mike",
+  "last_name": "Tyson",
+  "is_admin": false,
+  "contact_data": {
+    "email": "mike.tyson@gym.com",
+    "phone": "+380931112233"
+  }
+}
+ ```
+
+#### 5. **Delete trainer**
+   **Method:** `DELETE`  
+   **Endpoint:** `/admin/trainers/:id`  
+   **Description:** Soft deletes a trainer account.  
+   
+   | **Role** | **Required to access** |  
+   |-----------------|--------------------------|     
+   | **Client** | ❌ |  
+   | **Trainer** | ❌ |  
+   | **Admin** | ✅ |
+
+**Example Request:** 
+```http 
+DELETE /admin/trainers/15
+```
+
+**Example Response:** 
+```json
+ {
+  "message": "Trainer deactivated (Soft Deleted)"
+}
+ ```
+
+---
+
+### Sessions ( `/sessions/` )
+
+#### 1. **Get all sessions**
+   **Method:** `GET`  
+   **Endpoint:** `/`  
+   **Description:** Returns a list of all active class sessions.  
+   
+   | **Role** | **Required to access** |  
+   |-----------------|--------------------------|  
+   | **Guest** | ❌ |
+   | **Client** | ✅ |  
+   | **Trainer** | ✅ |  
+   | **Admin** | ✅ |  
+
+**Example Request:** 
+```http 
+GET /sessions
+```
+
+**Example Response:** 
+```json
+[
+  {
+    "session_id": 205,
+    "date": "2024-12-25T10:00:00.000Z",
+    "duration": "1 hour",
+    "capacity": 20,
+    "trainer": {
+      "first_name": "John",
+      "last_name": "Doe"
+    },
+    "room_class_type": {
+      "room": {
+        "room_id": 5,
+        "capacity": 25
+      },
+      "class_type": {
+        "name": "yoga"
+      }
+    }
+  }
+]
+ ```
+
+#### 2. **Get session by ID**
+   **Method:** `GET`  
+   **Endpoint:** `/:id`  
+   **Description:** Returns detailed information about a specific session, including the room and trainer.  
+   
+   | **Role** | **Required to access** |  
+   |-----------------|--------------------------|  
+   | **Client** | ✅ |  
+   | **Trainer** | ✅ |  
+   | **Admin** | ✅ |  
+
+**Example Request:** 
+```http 
+GET /sessions/205
+```
+
+**Example Response:** 
+```json
+{
+  "session_id": 205,
+  "trainer_id": 14,
+  "room_id": 5,
+  "class_type_id": 2,
+  "date": "2024-12-25T10:00:00.000Z",
+  "duration": "1 hour",
+  "capacity": 20,
+  "trainer": {
+    "first_name": "John",
+    "last_name": "Doe"
+  },
+  "attendance": [
+    {
+      "client_id": 10,
+      "status": "booked"
+    }
+  ]
+}
+ ```
+
+#### 3. **Create new session**
+   **Method:** `POST`  
+   **Endpoint:** `/`  
+   **Description:** Creates a new training session. Trainers can only create sessions for themselves.  
+
+   | **Role** | **Required to access** |  
+   |-----------------|--------------------------|  
+   | **Client** | ❌ |  
+   | **Trainer** | ✅ (For self only) |  
+   | **Admin** | ✅ |  
+
+**Example Request:** 
+```http 
+POST /sessions
+```
+
+**Body:**
+```json
+{
+  "trainer_id": 14,
+  "room_id": 5,
+  "class_type_id": 2,
+  "date": "2024-12-25T10:00:00Z",
+  "duration": "1 hour",
+  "capacity": 20
+}
+```
+
+**Example Response:** 
+```json
+{
+  "session_id": 206,
+  "trainer_id": 14,
+  "room_id": 5,
+  "class_type_id": 2,
+  "date": "2024-12-25T10:00:00.000Z",
+  "duration": "1 hour",
+  "capacity": 20,
+  "is_deleted": false
+}
+ ```
+
+#### 4. **Delete session**
+   **Method:** `DELETE`  
+   **Endpoint:** `/admin/sessions/:id`  
+   **Description:** Soft deletes a session by ID.  
+   
+   | **Role** | **Required to access** |  
+   |-----------------|--------------------------|     
+   | **Client** | ❌ |  
+   | **Trainer** | ❌ |  
+   | **Admin** | ✅ |
+
+**Example Request:** 
+```http 
+DELETE /admin/sessions/205
+```
+
+**Example Response:** 
+```json
+{
+  "message": "Session deleted successfully"
+}
+ ```

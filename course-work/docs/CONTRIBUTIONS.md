@@ -28,7 +28,46 @@
 - Created reusable **utility modules**, including centralized custom error handling (AppError), Prisma error handling utilities, and asynchronous controller wrappers.
 
 - Partially completed project documentation, including the database schema description (`schema.md`, `README.md`, `APIs.md`).
+- 
+## Participant 2: Anna Kuts (aka AnnKuts)
+
+- Designed and implemented full functionality for the **Clients**, **Memberships**, **Payments** modules, including database schema, routing, controllers, services, and repositories.
+
+- Implemented complete **CRUD operations** for clients, memberships, and payments with proper input validation and consistent error handling.
+
+- Implemented `auth` and `email` services, as well as the registration and authentication logic: input validation, password hashing, token generation and verification, email confirmation, and password recovery.
+
+- Configure test environment
+
+...to be continued
+
 
 ## **Complex analytical queries overview**  
 
 For a detailed overview of the complex analytical queries, refer to [Queries Documentation](./docs/queris.md).
+
+## Participant 2: Vladyslav Mykhailov (aka taitami)
+
+**Implemented functionality:**
+
+- Designed and implemented full functionality for the **Trainers** and **Sessions** modules, including database schema adaptation, complex routing, controllers, services, and repositories.
+
+- Implemented a robust **Role-Based Access Control (RBAC)** middleware system (`requireAdmin`, `requireTrainerRole`, `requireTrainerOwnerOrAdmin`), ensuring secure resource access where users can only manage their own data unless they hold administrative privileges.
+
+- Implemented complete **CRUD operations** for trainers and class sessions with strict **Zod validation** schemas for request bodies and route parameters.
+
+- Developed a **transactional creation workflow for Trainers**, which simultaneously handles the creation of the trainer entity, their contact data, gym placements, and professional qualifications in a single atomic operation.
+
+- Implemented **deep logical validation for Session creation**, ensuring business rule compliance by verifying:
+  - if the selected room supports the specific class type,
+  - if the trainer possesses the required qualification for the class type,
+  - if the trainer is officially assigned to the gym where the room is located.
+
+- Implemented a **soft delete mechanism** for trainers and sessions, preserving historical data for future analytics and reporting.
+
+- Implemented multiple **analytical and statistical queries**, including:
+  - **Top Trainer analysis:** identifies the most productive trainer based on session count over the last month,
+  - **Trainer Popularity ranking:** calculates popularity based on the total number of client attendances across all sessions,
+  - **Workload Statistics:** provides a detailed breakdown of sessions conducted by a specific trainer, grouped by class type.
+
+- Integrated **JWT-based authentication** extraction into the controller layer to securely bind operations to the currently logged-in user (e.g., ensuring trainers can only create sessions for themselves).
