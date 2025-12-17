@@ -35,5 +35,6 @@ router.get("/:id/class-types", validate(getRoomClassTypesSchema), roomController
 router.post("/class-type", authenticate, requireAdmin, validate(createRoomClassTypeSchema), roomController.createRoomClassType);
 router.delete("/:id", authenticate, requireAdmin, validate(deleteRoomSchema), roomController.deleteRoom);
 router.put("/:id/capacity", authenticate, requireAdmin, validate(updateRoomCapacitySchema), roomController.updateRoomCapacity);
+router.get("/analytics/room-revenue", authenticate, requireAdmin, validate(getRoomRevenueAndAttendanceSchema), roomController.getRoomRevenueAndAttendance);
 
 export default router;

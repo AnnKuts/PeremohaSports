@@ -189,4 +189,68 @@ describe("Rooms API Integration", () => {
       expect(deleted?.is_deleted).toBe(true);
     });
   });
+  
+    describe("ANALYTICS", () => {
+      let roomId: number;
+      beforeEach(async () => {
+        const room = await prisma.room.create({
+          data: { gym_id: gymId, capacity: 10, is_deleted: false },
+        });
+        roomId = room.room_id;
+      });
+
+      it("GET /rooms/analytics/room-revenue - should return revenue and attendance for all rooms", async () => {
+        const res = await request(app)
+          .get("/rooms/analytics/room-revenue")
+          .query({});
+        expect(res.status).toBe(200);
+        expect(Array.isArray(res.body)).toBe(true);
+        if (res.body.length > 0) {
+          const item = res.body[0];
+          expect(item).toHaveProperty("room_id");
+          expect(item).toHaveProperty("gym_id");
+          expect(item).toHaveProperty("room_capacity");
+          expect(item).toHaveProperty("attendance_count");
+          expect(item).toHaveProperty("total_revenue");
+        }
+      });
+
+      it("GET /rooms/analytics/room-revenue - should filter by gym_id", async () => {
+        const res = await request(app)
+          .get("/rooms/analytics/room-revenue")
+          .query({ gym_id: gymId });
+        expect(res.status).toBe(200);
+        expect(Array.isArray(res.body)).toBe(true);
+        if (res.body.length > 0) {
+          const firstGymId = res.body[0].gym_id;
+          for (const item of res.body) {
+            expect(item.gym_id).toBe(firstGymId);
+          }
+        }
+      });
+
+      it("GET /rooms/analytics/room-revenue - should filter by room_id", async () => {
+        const res = await request(app)
+          .get("/rooms/analytics/room-revenue")
+          .query({ room_id: roomId });
+        expect(res.status).toBe(200);
+        expect(Array.isArray(res.body)).toBe(true);
+        if (res.body.length > 0) {
+          const firstRoomId = res.body[0].room_id;
+          for (const item of res.body) {
+            expect(item.room_id).toBe(firstRoomId);
+          }
+        }
+      });
+
+      it("GET /rooms/analytics/room-revenue - should return empty array for non-existent room", async () => {
+        const res = await request(app)
+          .get("/rooms/analytics/room-revenue")
+          .query({ room_id: 999999 });
+        expect(res.status).toBe(200);
+        expect(Array.isArray(res.body)).toBe(true);
+        expect(res.body.every((item: any) => item.room_id !== 999999)).toBe(true);
+      });
+    });
 });
+
