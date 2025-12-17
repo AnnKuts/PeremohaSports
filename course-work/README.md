@@ -44,6 +44,8 @@ For a detailed overview of each team member's contributions to the project, refe
 
 ```
 course-work/
+├── .env                      # Environment variables for docker.compose.yml and application
+├── .env.test                 # Environment variables for docker.compose.test.yaml
 ├── docs/                     # Documentation
 │   ├── APIs.md               # API documentation
 │   ├── CONTRIBUTIONS.md      # Contribution guide
@@ -165,7 +167,6 @@ course-work/
 │
 ├── .gitignore                 # Files and directories to be ignored
 ├── Dockerfile                 # Docker container configuration
-├── .env                       # Environment variables
 ├── .eslint.config.mjs         # ESLint configuration
 ├── package-lock.json          # Lock file for dependencies
 ├── package.json               # Project dependencies
