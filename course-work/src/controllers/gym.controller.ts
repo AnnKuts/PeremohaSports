@@ -1,7 +1,7 @@
 import type { Response } from "express";
 import { Prisma } from "@prisma/client";
 
-import type { GymService } from "../services/gymServices.js";
+import type { GymService } from "../services/gym.service";
 import type { ValidatedRequest } from "../types/requests.js";
 
 import { asyncHandler } from "../utils/async-handler.js";

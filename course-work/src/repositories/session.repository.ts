@@ -1,6 +1,6 @@
 import prisma from "../lib/prisma";
 import AppError from "../utils/AppError";
-import { CreateSessionInput } from "../schemas/sessionSchema";
+import { CreateSessionInput } from "../schemas/session.schema";
 
 export const SessionsRepository = {
   async findAll() {

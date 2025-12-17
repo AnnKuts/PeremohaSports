@@ -1,9 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 import { Router } from "express";
 
-import { AttendanceController } from "../controllers/attendanceControllers.js";
-import { AttendanceService } from "../services/attendanceServices.js";
-import { AttendanceRepository } from "../repositories/attendanceRepositories.js";
+import { AttendanceController } from "../controllers/attendance.controller";
+import { AttendanceService } from "../services/attendance.service";
+import { AttendanceRepository } from "../repositories/attendance.repository";
 import { validate } from "../middlewares/validate.js";
 import { authenticate } from "../middlewares/authenticate"; 
 import { requireTrainerRole, requireAdmin } from "../middlewares/authorize";
@@ -14,7 +14,7 @@ import {
   updateAttendanceStatusSchema,
   deleteAttendanceSchema,
   paginationSchema,
-} from "../schemas/attendanceSchemas.js";
+} from "../schemas/attendance.schema";
 
 const router = Router();
 const prisma = new PrismaClient();

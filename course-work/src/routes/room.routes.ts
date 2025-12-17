@@ -1,9 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 import { Router } from "express";
 
-import { RoomController } from "../controllers/roomControllers.js";
-import { RoomService } from "../services/roomServices.js";
-import { RoomRepository } from "../repositories/roomRepositories.js";
+import { RoomController } from "../controllers/room.controller";
+import { RoomService } from "../services/room.service";
+import { RoomRepository } from "../repositories/room.repository";
 import { validate } from "../middlewares/validate.js";
 import { authenticate } from "../middlewares/authenticate"; 
 import { requireAdmin } from "../middlewares/authorize";
@@ -18,7 +18,7 @@ import {
   deleteRoomSchema,
   searchRoomsSchema,
   getRoomRevenueAndAttendanceSchema,
-} from "../schemas/roomSchemas.js";
+} from "../schemas/room.schema";
 
 const router = Router();
 const prisma = new PrismaClient();

@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { TrainersService } from "../services/trainerService";
+import { TrainersService } from "../services/trainer.service";
 import { asyncHandler } from "../utils/async-handler";
 
 export const TrainersController = {

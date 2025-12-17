@@ -1,6 +1,6 @@
 import AppError from "../utils/AppError";
-import { SessionsRepository } from "../repositories/sessionRepository";
-import { CreateSessionInput } from "../schemas/sessionSchema";
+import { SessionsRepository } from "../repositories/session.repository";
+import { CreateSessionInput } from "../schemas/session.schema";
 import { TrainerJwtPayload } from "../middlewares/authenticate";
 
 export const SessionsService = {

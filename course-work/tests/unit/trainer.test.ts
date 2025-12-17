@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach, afterEach } from "vitest";
-import { TrainersService } from "../../src/services/trainerService";
-import { TrainersRepository } from "../../src/repositories/trainerRepository";
+import { TrainersService } from "../../src/services/trainer.service";
+import { TrainersRepository } from "../../src/repositories/trainer.repository";
 import AppError from "../../src/utils/AppError";
 
-vi.mock("../../src/repositories/trainerRepository");
+vi.mock("../../src/repositories/trainer.repository");
 
 describe("TrainersService (unit)", () => {
   beforeEach(() => {

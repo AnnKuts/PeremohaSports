@@ -1,5 +1,5 @@
 import prisma from "../lib/prisma";
-import { CreateTrainerInput, UpdateTrainerInput } from "../schemas/trainerSchema";
+import { CreateTrainerInput, UpdateTrainerInput } from "../schemas/trainer.schema";
 
 export const TrainersRepository = {
   async findAll() {

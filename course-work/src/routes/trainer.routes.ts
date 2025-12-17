@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { TrainersController } from "../controllers/trainerController";
+import { TrainersController } from "../controllers/trainer.controller";
 import { validate } from "../middlewares/validate";
 import { authenticate } from "../middlewares/authenticate";
 import { 
@@ -10,7 +10,7 @@ import {
   createTrainerSchema, 
   updateTrainerSchema, 
   trainerIdParamSchema 
-} from "../schemas/trainerSchema";
+} from "../schemas/trainer.schema";
 
 const router = Router();
 

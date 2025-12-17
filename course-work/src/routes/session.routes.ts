@@ -1,9 +1,9 @@
 import { Router } from "express";
-import { SessionsController } from "../controllers/sessionController";
+import { SessionsController } from "../controllers/session.controller";
 import { validate } from "../middlewares/validate";
 import { authenticate } from "../middlewares/authenticate"; 
 import { requireTrainerRole, requireAdmin } from "../middlewares/authorize";
-import { sessionIdParamSchema, createSessionSchema } from "../schemas/sessionSchema";
+import { sessionIdParamSchema, createSessionSchema } from "../schemas/session.schema";
 
 const router = Router();
 

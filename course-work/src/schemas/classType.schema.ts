@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { positiveNumberString, paginationWithStatsSchema } from "./common";
-import { CLASS_TYPE_LEVELS } from "../types/enum_types";
+import { CLASS_TYPE_LEVELS } from "../types/enum-types";
 export const getAllClassTypesSchema = paginationWithStatsSchema;
 export const createClassTypeSchema = z.object({
   body: z.object({

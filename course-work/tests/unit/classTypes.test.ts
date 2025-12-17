@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { ClassTypeService } from "../../src/services/classTypesServices";
+import { ClassTypeService } from "../../src/services/classTypes.service";
 
 describe("ClassTypeService (unit)", () => {
   let mockRepo: any;

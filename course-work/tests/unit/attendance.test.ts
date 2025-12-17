@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { AttendanceService } from "../../src/services/attendanceServices";
+import { AttendanceService } from "../../src/services/attendance.service";
 import AppError from "../../src/utils/AppError";
 
 describe("AttendanceService (unit)", () => {

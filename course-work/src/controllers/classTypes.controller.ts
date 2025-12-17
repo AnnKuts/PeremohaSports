@@ -1,6 +1,6 @@
 import type { Response } from "express";
 
-import type { ClassTypeService } from "../services/classTypesServices.js";
+import type { ClassTypeService } from "../services/classTypes.service";
 import type { ValidatedRequest } from "../types/requests.js";
 
 import { asyncHandler } from "../utils/async-handler.js";

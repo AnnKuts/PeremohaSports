@@ -142,6 +142,7 @@ export const AuthController = {
         trainer.trainer_id,
         payload.email,
         "trainer",
+        trainer.is_admin
       );
 
       return res.status(200).json({

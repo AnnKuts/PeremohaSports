@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { RoomService } from "../../src/services/roomServices";
+import { RoomService } from "../../src/services/room.service";
 import AppError from "../../src/utils/AppError";
 
 describe("RoomService (unit)", () => {

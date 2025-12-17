@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { SessionsService } from "../../src/services/sessionService";
-import { SessionsRepository } from "../../src/repositories/sessionRepository";
+import { SessionsService } from "../../src/services/session.service";
+import { SessionsRepository } from "../../src/repositories/session.repository";
 import AppError from "../../src/utils/AppError";
 
-vi.mock("../../src/repositories/sessionRepository");
+vi.mock("../../src/repositories/session.repository");
 
 describe("SessionsService (unit)", () => {
   beforeEach(() => {

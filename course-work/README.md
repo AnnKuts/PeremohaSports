@@ -70,75 +70,75 @@ course-work/
 │   │   └── index.ts          # Main API entry
 │   │
 │   ├── controllers/          # Controllers for business logic
-│   │   ├── attendanceControllers.ts  
+│   │   ├── attendance.controller.ts  
 │   │   ├── auth.controller.ts        
-│   │   ├── classTypesControllers.ts 
+│   │   ├── classTypes.controller.ts 
 │   │   ├── clients.controller.ts    
-│   │   ├── gymControllers.ts        
+│   │   ├── gym.controller.ts        
 │   │   ├── memberships.controller.ts 
 │   │   ├── payments.controller.ts   
 │   │   ├── register.controller.ts   
-│   │   ├── roomControllers.ts      
-│   │   ├── sessionController.ts     
-│   │   └── trainerController.ts     
+│   │   ├── room.controller.ts      
+│   │   ├── session.controller.ts     
+│   │   └── trainer.controller.ts     
 │   │
 │   ├── repositories/           # Repositories for data access
-│   │   ├── attendanceRepositories.ts
-│   │   ├── classTypeRepositories.ts
+│   │   ├── attendance.repository.ts
+│   │   ├── classType.repository.ts
 │   │   ├── clients.repository.ts
-│   │   ├── gymRepositories.ts
+│   │   ├── gym.repository.ts
 │   │   ├── memberships.repository.ts
 │   │   ├── payments.repository.ts
 │   │   ├── register.repository.ts
-│   │   ├── roomRepositories.ts
-│   │   ├── sessionRepository.ts
-│   │   ├── trainerRepository.ts
-│   │   └── sharedRepositoryFunc.ts
+│   │   ├── room.repository.ts
+│   │   ├── session.repository.ts
+│   │   ├── trainer.repository.ts
+│   │   └── shared.repository.ts
 │   │
 │   ├── routes/                 # API routes definitions
-│   │   ├── attendanceRoutes.ts
+│   │   ├── attendance.routes.ts
 │   │   ├── auth.routes.ts
-│   │   ├── classTypesRoutes.ts
+│   │   ├── classTypes.routes.ts
 │   │   ├── clients.routes.ts
 │   │   ├── gymRoutes.ts
 │   │   ├── memberships.routes.ts
 │   │   ├── payments.routes.ts
 │   │   ├── register.routes.ts
-│   │   ├── roomRoutes.ts
-│   │   ├── sessionRoutes.ts
-│   │   └── trainerRoutes.ts
+│   │   ├── room.routes.ts
+│   │   ├── session.routes.ts
+│   │   └── trainer.routes.ts
 │   │
 │   ├── schemas/                # Validation schemas
-│   │   ├── attendanceSchemas.ts
+│   │   ├── attendance.schema.ts
 │   │   ├── auth.schema.ts
-│   │   ├── classTypeSchemas.ts
+│   │   ├── classType.schema.ts
 │   │   ├── clients.schema.ts
 │   │   ├── common.ts
 │   │   ├── email.schema.ts
-│   │   ├── gymSchemas.ts
+│   │   ├── gym.schema.ts
 │   │   ├── memberships.schema.ts
 │   │   ├── payments.schema.ts
-│   │   ├── roomSchemas.ts
-│   │   ├── sessionSchema.ts
-│   │   └── trainerSchema.ts
+│   │   ├── room.schema.ts
+│   │   ├── session.schema.ts
+│   │   └── trainer.schema.ts
 │   │
 │   ├── services/               # Business logic services
-│   │   ├── attendanceServices.ts
+│   │   ├── attendance.service.ts
 │   │   ├── auth.service.ts
-│   │   ├── classTypesServices.ts
+│   │   ├── classTypes.service.ts
 │   │   ├── clients.service.ts
 │   │   ├── email.service.ts
-│   │   ├── gymServices.ts
+│   │   ├── gym.service.ts
 │   │   ├── memberships.service.ts
 │   │   ├── payments.service.ts
 │   │   ├── register.service.ts
-│   │   ├── roomServices.ts
-│   │   ├── sessionService.ts
-│   │   ├── trainerService.ts
+│   │   ├── room.service.ts
+│   │   ├── session.service.ts
+│   │   ├── trainer.service.ts
 │   │   └── ...
 │   │
 │   ├── types/                  # Types for the project
-│   │   ├── enum_types.ts
+│   │   ├── enum-types.ts
 │   │   └──  requests.ts
 │   │
 │   ├── utils/                  # Utility files

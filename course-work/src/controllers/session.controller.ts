@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { SessionsService } from "../services/sessionService";
+import { SessionsService } from "../services/session.service";
 import { asyncHandler } from "../utils/async-handler";
 import { AuthenticatedRequest, TrainerJwtPayload } from "../middlewares/authenticate";
 

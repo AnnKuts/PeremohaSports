@@ -1,9 +1,9 @@
 import { PrismaClient } from "@prisma/client";
 import { Router } from "express";
 
-import { ClassTypeController } from "../controllers/classTypesControllers.js";
-import { ClassTypeService } from "../services/classTypesServices.js";
-import { ClassTypeRepository } from "../repositories/classTypeRepositories.js";
+import { ClassTypeController } from "../controllers/classTypes.controller";
+import { ClassTypeService } from "../services/classTypes.service";
+import { ClassTypeRepository } from "../repositories/classType.repository";
 import { validate } from "../middlewares/validate.js";
 import { authenticate } from "../middlewares/authenticate";
 import { requireAdmin } from "../middlewares/authorize";
@@ -14,7 +14,7 @@ import {
   getClassTypeTrainersSchema,
   updateClassTypeSchema,
   getMonthlyRevenueByClassTypeSchema,
-} from "../schemas/classTypeSchemas.js";
+} from "../schemas/classType.schema";
 
 const router = Router();
 const prisma = new PrismaClient();

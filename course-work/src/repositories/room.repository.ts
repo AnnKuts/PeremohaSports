@@ -1,6 +1,6 @@
 import type { PrismaClient, Prisma } from "@prisma/client";
 import type { IRoomRepository } from "../interfaces/entitiesInterfaces";
-import { softDeleteRoom } from "./sharedRepositoryFunc";
+import { softDeleteRoom } from "./shared.repository";
 import AppError from "../utils/AppError";
 
 export class RoomRepository implements IRoomRepository {

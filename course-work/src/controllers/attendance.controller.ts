@@ -1,6 +1,6 @@
 import type { Response } from "express";
 
-import type { AttendanceService } from "../services/attendanceServices.js";
+import type { AttendanceService } from "../services/attendance.service";
 import type { ValidatedRequest } from "../types/requests.js";
 
 import { asyncHandler } from "../utils/async-handler.js";

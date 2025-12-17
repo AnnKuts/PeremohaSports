@@ -1,6 +1,6 @@
 import AppError from "../utils/AppError";
-import { TrainersRepository } from "../repositories/trainerRepository";
-import { CreateTrainerInput, UpdateTrainerInput } from "../schemas/trainerSchema";
+import { TrainersRepository } from "../repositories/trainer.repository";
+import { CreateTrainerInput, UpdateTrainerInput } from "../schemas/trainer.schema";
 
 export const TrainersService = {
   async getAllTrainers() {

@@ -1,6 +1,6 @@
 import type { Response } from "express";
 
-import type { RoomService } from "../services/roomServices.js";
+import type { RoomService } from "../services/room.service";
 import type { ValidatedRequest } from "../types/requests.js";
 
 import { asyncHandler } from "../utils/async-handler.js";
