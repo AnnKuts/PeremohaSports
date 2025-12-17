@@ -197,3 +197,124 @@ ORDER BY month ASC;
 |------------|-----------------|---------------|----------------|
 | 2025-10    | yoga            | 1400.00       | 2              |
 | 2025-11    | swimming        | 2100.00       | 3              |
+
+## Analytics Documentation (Trainers & Sessions)
+
+This section provides detailed explanations and sample queries for analyzing trainer performance, popularity, and workload distribution.
+
+### Table of Contents:
+
+- [Top Trainer Performance Analysis](#top-trainer-performance-analysis)
+- [Trainer Popularity Ranking](#trainer-popularity-ranking)
+- [Trainer Workload by Class Type](#trainer-workload-by-class-type)
+
+### 1. Top Trainer Performance Analysis
+
+**Business Question:** Which trainer has conducted the highest number of sessions in the last month?
+
+**SQL Query:**
+
+```sql
+SELECT 
+  t.trainer_id,
+  t.first_name,
+  t.last_name,
+  c.email,
+  COUNT(cs.session_id) AS sessions_count
+FROM trainer t
+JOIN contact_data c ON t.contact_data_id = c.contact_data_id
+JOIN class_session cs ON t.trainer_id = cs.trainer_id
+WHERE cs.date >= NOW() - INTERVAL '1 month'
+  AND cs.is_deleted = false
+  AND t.is_deleted = false
+GROUP BY t.trainer_id, c.email
+ORDER BY sessions_count DESC
+LIMIT 1;
+```
+
+**Explanation:**
+
+- **JOIN with contact_data:** Connects the `trainer` table with `contact_data` to retrieve the trainer's email address.
+- **JOIN with class_session:** Links trainers to the sessions they have conducted.
+- **Date Filter:** The `WHERE` clause filters sessions to include only those where the date is greater than or equal to one month ago (`NOW() - INTERVAL '1 month'`), ensuring the analysis reflects current performance.
+- **Soft Delete Check:** Filters out deleted sessions (`cs.is_deleted = false`) and deleted trainers to ensure statistical accuracy.
+- **COUNT(cs.session_id):** Aggregates the total number of valid sessions for each trainer.
+- **ORDER BY ... LIMIT 1:** Sorts the results by session count in descending order and takes only the top result.
+
+**Sample Output:**
+
+| trainer_id | first_name | last_name | email              | sessions_count |
+|------------|------------|-----------|--------------------|----------------|
+| 14         | John       | Doe       | john.doe@gym.com   | 45             |
+
+### 2. Trainer Popularity Ranking
+
+**Business Question:** Which trainers are the most popular based on the total number of client attendances across all their sessions?
+
+**SQL Query:**
+```sql
+SELECT 
+  t.trainer_id,
+  t.first_name || ' ' || t.last_name AS trainer_name,
+  COUNT(a.client_id) AS total_clients_attended
+FROM trainer t
+JOIN class_session cs ON t.trainer_id = cs.trainer_id
+JOIN attendance a ON cs.session_id = a.session_id
+WHERE a.status = 'attended'
+  AND t.is_deleted = false
+  AND cs.is_deleted = false
+GROUP BY t.trainer_id, t.first_name, t.last_name
+ORDER BY total_clients_attended DESC;
+```
+
+**Explanation:**
+
+- **Triple JOIN operation:** Connects `trainer` -> `class_session` -> `attendance` to trace the link from a trainer to the specific clients actually attending their classes.
+- **Concatenation:** Combines `first_name` and `last_name` into a single `trainer_name` column.
+- **Status Filter:** The query specifically looks for `a.status = 'attended'` to count actual participants, effectively ignoring cancellations, missed classes, or just booked slots.
+- **Aggregation:** Groups by trainer ID to calculate the total throughput of clients for that specific trainer.
+- **Sorting:** Ranks trainers from most popular to least popular.
+
+**Sample Output:**
+
+| trainer_id | trainer_name      | total_clients_attended |
+|------------|-------------------|------------------------|
+| 5          | Alice Smith       | 120                    |
+| 14         | John Doe          | 98                     |
+| 3          | Bob Johnson       | 75                     |
+| 9          | Sarah Connor      | 42                     |
+
+### 3. Trainer Workload by Class Type
+
+**Business Question:** What is the breakdown of sessions conducted by a specific trainer, grouped by the type of class (e.g., Yoga, Workout)?
+
+**SQL Query:**
+```sql
+SELECT 
+  t.first_name || ' ' || t.last_name AS trainer_name,
+  ct.name AS class_type,
+  COUNT(cs.session_id) AS sessions_count
+FROM class_session cs
+JOIN trainer t ON cs.trainer_id = t.trainer_id
+JOIN class_type ct ON cs.class_type_id = ct.class_type_id
+WHERE cs.trainer_id = $1
+  AND cs.is_deleted = false
+GROUP BY t.trainer_id, t.first_name, t.last_name, ct.name
+ORDER BY sessions_count DESC;
+```
+
+**Explanation:**
+
+- **Targeted Filtering:** The `WHERE cs.trainer_id = $1` clause isolates the data for a single specific trainer.
+- **JOIN with class_type:** Connects the session to its definition to get the readable `name` (e.g., 'yoga', 'swimming_pool').
+- **Grouping:** Groups the results by `class_type` to categorize the trainer's work.
+- **COUNT(cs.session_id):** Calculates how many times the trainer has conducted that specific type of class.
+- **Purpose:** This query is used to understand if a trainer is specializing in one area or maintaining a balanced variety of classes.
+
+**Sample Output:**
+
+| trainer_name | class_type    | sessions_count |
+|--------------|---------------|----------------|
+| Alice Smith  | yoga          | 15             |
+| Alice Smith  | workout       | 5              |
+| Alice Smith  | swimming pool | 2              |
