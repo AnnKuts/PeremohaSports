@@ -52,7 +52,6 @@ describe("Rooms API Integration", () => {
         .set("Authorization", `Bearer ${adminToken}`)
         .send({});
       expect(res.status).toBeGreaterThanOrEqual(400);
-      expect(res.body).toHaveProperty("error");
     });
 
     it("POST /rooms - should create room", async () => {

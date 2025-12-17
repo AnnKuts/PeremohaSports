@@ -17,7 +17,7 @@ vi.mock("../../src/config/auth.config", () => ({
     },
 }));
 
-describe("AuthService (unit)", () => {
+describe("Auth", () => {
     describe("generateClientToken", () => {
         it("should generate valid JWT token for client", () => {
             const clientId = 123;

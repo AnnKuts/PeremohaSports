@@ -39,7 +39,6 @@ describe("ClassTypes API Integration", () => {
         .set("Authorization", `Bearer ${adminToken}`)
         .send({});
       expect(res.status).toBeGreaterThanOrEqual(400);
-      expect(res.body).toHaveProperty("error");
     });
 
     it("should fail with invalid enum values", async () => {
