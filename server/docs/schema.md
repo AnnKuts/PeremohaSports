@@ -1,5 +1,34 @@
 # Database schema documentation
 
+## Table of Contents
+
+- [Database schema documentation](#database-schema-documentation)
+    - [Entity-Relationship Diagram (ERD)](#entity-relationship-diagram-erd)
+    - [Description of tables](#description-of-tables)
+        - [Table: ContactData](#table-contactdata)
+        - [Table: Client](#table-client)
+        - [Table: Payment](#table-payment)
+        - [Table: Membership](#table-membership)
+        - [Table: ClassType](#table-classtype)
+        - [Table: ClassSession](#table-classsession)
+        - [Table: Trainer](#table-trainer)
+        - [Table: Gym](#table-gym)
+        - [Table: Room](#table-room)
+        - [Table: Attendance](#table-attendance)
+        - [Table: Qualification](#table-qualification)
+        - [Table: TrainerPlacement](#table-trainerplacement)
+        - [Table: RoomClassType](#table-roomclasstype)
+    - [Enumerations](#enumerations)
+    - [Design decisions](#design-decisions)
+        - [Why we chose this schema structure](#why-we-chose-this-schema-structure)
+        - [Normalization level achieved](#normalization-level-achieved)
+        - [Compromises made](#compromises-made)
+        - [Indexing strategy](#indexing-strategy)
+            - [Primary Key Indexes](#primary-key-indexes)
+            - [Foreign Key Indexes](#foreign-key-indexes)
+            - [Composite indexes](#composite-indexes)
+            - [Conditional Indexes](#conditional-indexes)
+
 ## Entity-Relationship Diagram (ERD):
 
 <img width="1556" height="851" alt="image" src="https://github.com/user-attachments/assets/899e4868-b63d-4f90-a1ff-8d8806fb5de6" />
