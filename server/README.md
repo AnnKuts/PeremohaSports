@@ -1,4 +1,16 @@
 # **PeremohaSports - Gym Management System**
+## Table of Contents
+- [Project Overview](#project-overview)
+- [Team Members](#team-members)
+- [Contribution of Each Team Member](#contribution-of-each-team-member)
+- [Technology stack](#technology-stack)
+- [Setup instructions](#setup-instructions)
+- [Launching the application](#launching-the-application)
+- [Running tests](#running-tests)
+- [Project structure](#project-structure)
+- [Database structure overview](#database-structure-overview)
+- [API usage examples](#apiusage-examples)
+- [Complex analytical queries overview](#complex-analytical-queries-overview)
 
 ## **Project Overview:**
 
@@ -16,7 +28,7 @@
 
 For a detailed overview of each team member's contributions to the project, refer to [Contribution of Each Team Member](./docs/CONTRIBUTIONS.md).
 
-## **Technology stack:**
+### **Technology stack:**
 
 - **Programming language:** TypeScript 5.9.3 / Node.js 25.1.0
 - **Framework:** Express 5.1.0
@@ -27,7 +39,7 @@ For a detailed overview of each team member's contributions to the project, refe
 - **Testing:** Vitest 4.0.6 + Supertest 7.1.4
 - **Containerization:** Docker + Docker Compose
 
-## **Setup instructions**
+### **Setup instructions**
 
 1.  **Clone the repository:**
 
@@ -71,7 +83,7 @@ For a detailed overview of each team member's contributions to the project, refe
       npx prisma db seed
       ```
 
-## **Launching the application**
+### **Launching the application**
 
 - **Development mode:**
 
@@ -85,7 +97,7 @@ For a detailed overview of each team member's contributions to the project, refe
   npm run dev:full
   ```
 
-## **Running tests**
+### **Running tests**
 
 - **Run all tests:**
 
@@ -104,7 +116,7 @@ For a detailed overview of each team member's contributions to the project, refe
   npm run test:u
   ```
 
-## **Project structure**
+### **Project structure**
 
 ```
 server/
@@ -241,10 +253,14 @@ server/
 └── vitest.integration.ts      # Integration tests configuration for Vitest
 ```
 
-## **Database structure overview**
+### **Database structure overview**
 
 For a detailed overview of the database schema, refer to [Database Schema Documentation](./docs/schema.md).
 
-## **API/usage examples**
+### **API/usage examples**
 
 For a detailed overview of each API endpoint and its usage, refer to [API Endpoints Documentation](./docs/APIs.md).
+
+### **Complex analytical queries overview**
+
+For a detailed overview of the complex analytical queries, refer to [Queries Documentation](./docs/queries.md).

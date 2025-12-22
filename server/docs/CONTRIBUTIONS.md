@@ -1,6 +1,16 @@
 # Team Contributions
+This document outlines the specific contributions made by each team member in the development of the project.
 
-## Participant 1: Mariia Khorunzha (aka Impelle)
+## Table of Contents
+
+- [Team Contributions](#team-contributions)
+    - [Mariia Khorunzha](#mariia-khorunzha-aka-impelle)
+    - [Anna Kuts](#anna-kuts-aka-annkuts)
+    - [Vladyslav Mykhailov](#vladyslav-mykhailov-aka-taitami)
+- [License](#license)
+
+
+## Mariia Khorunzha (aka Impelle)
 
 **Implemented functionality:**
 
@@ -53,7 +63,5 @@
     - **Workload Statistics:** provides a detailed breakdown of sessions conducted by a specific trainer, grouped by class type.
 - Integrated **JWT-based authentication** extraction into the controller layer to securely bind operations to the currently logged-in user (e.g., ensuring trainers can only create sessions for themselves).
 
-
-## **Complex analytical queries overview**
-
-For a detailed overview of the complex analytical queries, refer to [Queries Documentation](./docs/queris.md).
+## License
+This project is licensed under the MIT License. See the [LICENSE](../LICENSE)

@@ -58,7 +58,7 @@ It includes:
 - [olap.md](/docs/olap.md) - describes the Online Analytical Processing (OLAP) aspects: complex queries for data analysis, reporting, and decision-making. Example queries and result screenshots included.
 - [migration-notes.md](/docs/migration-notes.md) - details the database migration process using Prisma Migrate, including steps taken, challenges faced, and solutions implemented.
 - [interfaces.ts](/docs/interfaces.ts.md) - documents the TypeScript interfaces used in the backend application, detailing their structure and purpose.
-> For server-specific details, see the documentation inside the `server/` folder.
+> For server-specific details, see [documentation](./server/README.md) inside the `server/` folder.
 
 ### Contact
 For questions or help open an issue or contact the maintainers listed in the repository. Feel free to send pull requests for contribution!

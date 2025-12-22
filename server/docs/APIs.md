@@ -1,6 +1,7 @@
-## **API/usage examples**
+# API usage examples
+This document provides detailed examples of how to use the various API endpoints available in the PeremohaSports backend application. Each section includes the HTTP method, endpoint URL, required parameters, request body (if applicable), and example responses. Additionally, access control information is provided to indicate which user roles can access each endpoint. We recommend using tools like Postman to test these endpoints in a real environment.
 
-**Table of Contents**
+## Table of Contents
 
 - [Attendance](#attendance--attendance-)
 - [ClassTypes](#classtypes--class-types-)
