@@ -285,4 +285,4 @@ vite.config.ts.timestamp-*
 .idea
 
 #files
-/course-work/prisma/insert-admin.ts
+/server/prisma/insert-admin.ts

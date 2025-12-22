@@ -4,7 +4,7 @@
 ## Table of Contents
 - [Features](#features)
 - [Technology stack](#technology-stack)
-- [Documentation](#-documentation-)
+- [Documentation](#documentation-)
 - [Contact](#contact)
 
 ### Features
@@ -15,7 +15,11 @@
 - Attendance tracking and session capacity enforcement
 - Storing and linking trainer qualifications
 - Relational database normalized to 3NF for data integrity
+- Data validation powered by Zod for robust runtime guarantees
+- Fully containerized with Docker for simplified setup and deployment
+- Separate environments for development and testing
 - Business processes and relationships are documented; PlantUML diagrams available in the repo
+
 
 ### Technology stack
 <a href="https://www.typescriptlang.org/" target="_blank">
@@ -24,17 +28,28 @@
 <a href="https://nodejs.org/" target="_blank">
   <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" width="45" height="45" alt="Node.js" />
 </a>
+<a href="https://expressjs.com/" target="_blank">
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg" width="45" height="45" alt="Express.js" />
+</a>
 <a href="https://www.postgresql.org/" target="_blank">
   <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" width="45" height="45" alt="PostgreSQL" />
 </a>
 <a href="https://www.prisma.io/" target="_blank">
   <img src="https://avatars.githubusercontent.com/u/17219288?s=200&v=4" width="45" height="45" alt="Prisma ORM" />
 </a>
+<a href="https://zod.dev/" target="_blank">
+  <img src="https://raw.githubusercontent.com/colinhacks/zod/master/logo.svg" width="45" height="45" alt="Zod" />
+</a>
+<a href="https://vitest.dev/" target="_blank">
+  <img src="https://vitest.dev/logo.svg" width="45" height="45" alt="Vitest" />
+</a>
+<a href="https://www.docker.com/" target="_blank">
+  <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" width="45" height="45" alt="Docker" />
+</a>
 
-
-
-### 📄 Documentation 
+### Documentation 
 The documentation for the project can be found in the `docs` directory. This documentation covers all aspects of data modeling, business processes, and the theoretical and practical foundations of the backend.  **Note:** This documentation applies to the modeling and planning. The `server/` directory contains separate documentation and may differ from the primary project structure.
+
 
 It includes:
 - [requirements.md](/docs/requirements.md) - functional and data requirements of the system, business rules, description of entities, attributes, relationships.
