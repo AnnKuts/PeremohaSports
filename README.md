@@ -1,10 +1,11 @@
 # 🏋🏻‍♂️ PeremohaSports
-**PeremohaSports** is a backend application written in TypeScript for managing the data and business logic of a sports club. It provides structured RESTful API endpoints that allow tracking clients, memberships, payments, gym locations, trainers, rooms, scheduling, and attendance. The relational database is fully normalized up to the third normal form (3NF), ensuring data consistency and eliminating redundancy. All business processes are thoroughly described in the documentation, which also includes entity-relationship, usecase, sequence, activity, bpmn and component diagrams.
+**PeremohaSports** is a backend application written in TypeScript for managing the data and business logic of a sports club. It provides structured RESTful API endpoints that allow tracking clients, memberships, payments, gym locations, trainers, rooms, scheduling, and attendance. The relational database is fully normalized up to the third normal form (3NF), ensuring data consistency and eliminating redundancy. All business processes are thoroughly described in the documentation, which also includes diagrams.
 
 ## Table of Contents
 - [Features](#features)
 - [Technology stack](#technology-stack)
-- [Documentation](#documentation-)
+- [Documentation](#documentation)
+- [Diagrams](#diagrams)
 - [Contact](#contact)
 
 ### Features
@@ -48,8 +49,7 @@
 </a>
 
 ### Documentation 
-The documentation for the project can be found in the `docs` directory. This documentation covers all aspects of data modeling, business processes, and the theoretical and practical foundations of the backend.  **Note:** This documentation applies to the modeling and planning. The `server/` directory contains separate documentation and may differ from the primary project structure.
-
+The documentation for the project can be found in the [`docs`](./docs) directory. This documentation covers all aspects of data modeling, business processes, and the theoretical and practical foundations of the backend.  **Note:** This documentation applies to the modeling and planning. The [`server/`](./server) directory contains separate documentation and may differ from the primary project structure.
 
 It includes:
 - [requirements.md](/docs/requirements.md) - functional and data requirements of the system, business rules, description of entities, attributes, relationships.
@@ -60,5 +60,26 @@ It includes:
 - [interfaces.ts](/docs/interfaces.ts.md) - documents the TypeScript interfaces used in the backend application, detailing their structure and purpose.
 > For server-specific details, see [documentation](./server/README.md) inside the `server/` folder.
 
+### Diagrams
+
+The project includes a comprehensive set of diagrams that describe the database structure, system behavior, and business processes. All diagrams were created using Draw.io and PlantUML and are stored in the `diagrams/` directory.
+
+
+- [ERD (Chen notation)](./diagrams/erd/chen)
+- [ERD (Crow’s Foot notation)](./diagrams/erd/crows-foot)
+- [ERD (PlantUML)](./diagrams/erd/plantuml)
+- [Use Case Diagram (Draw.io)](./diagrams/usecase/diagram)
+- [Use Case Diagram (PlantUML)](./diagrams/usecase/plantuml)
+- [Use Case Traceability Matrix](./diagrams/usecase/docs)
+- [Sequence Diagram (Draw.io)](./diagrams/sequence/diagram)
+- [Sequence Diagram (PlantUML)](./diagrams/sequence/plantuml)
+- [Activity Diagram (Draw.io)](./diagrams/activity/diagram)
+- [Activity Diagram (PlantUML)](./diagrams/activity/plantuml)
+- [BPMN Diagram (Draw.io)](./diagrams/bpmn/diagram)
+- [Component Diagram (Draw.io)](./diagrams/component/diagram)
+- [Component Diagram (PlantUML)](./diagrams/component/plantuml)
+
+
 ### Contact
-For questions or help open an issue or contact the maintainers listed in the repository. Feel free to send pull requests for contribution!
+For questions or help open an issue or contact the maintainers listed in the repository. Feel free to send pull requests for contribution! We welcome implementation of frontend or enhancements to the backend :)
+

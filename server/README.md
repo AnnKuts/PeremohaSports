@@ -257,7 +257,7 @@ server/
 
 For a detailed overview of the database schema, refer to [Database Schema Documentation](./docs/schema.md).
 
-### **API/usage examples**
+### **API usage examples**
 
 For a detailed overview of each API endpoint and its usage, refer to [API Endpoints Documentation](./docs/APIs.md).
 
