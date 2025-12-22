@@ -2,25 +2,11 @@
 **PeremohaSports** is a backend application written in TypeScript for managing the data and business logic of a sports club. It provides structured RESTful API endpoints that allow tracking clients, memberships, payments, gym locations, trainers, rooms, scheduling, and attendance. The relational database is fully normalized up to the third normal form (3NF), ensuring data consistency and eliminating redundancy. All business processes are thoroughly described in the documentation, which also includes diagrams.
 
 ## Table of Contents
-- [Features](#features)
 - [Technology stack](#technology-stack)
+- [Features](#features)
 - [Documentation](#documentation)
 - [Diagrams](#diagrams)
 - [Contact](#contact)
-
-### Features
-- Secure user authentication with OTP and role-based access control
-- Full CRUD for clients, trainers, memberships, and sessions
-- Payment processing and integration
-- Management of gyms, rooms, trainers, and class scheduling
-- Attendance tracking and session capacity enforcement
-- Storing and linking trainer qualifications
-- Relational database normalized to 3NF for data integrity
-- Data validation powered by Zod for robust runtime guarantees
-- Fully containerized with Docker for simplified setup and deployment
-- Separate environments for development and testing
-- Business processes and relationships are documented; PlantUML diagrams available in the repo
-
 
 ### Technology stack
 <a href="https://www.typescriptlang.org/" target="_blank">
@@ -47,6 +33,19 @@
 <a href="https://www.docker.com/" target="_blank">
   <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/docker/docker-original.svg" width="45" height="45" alt="Docker" />
 </a>
+
+### Features
+- Secure user authentication with OTP and role-based access control
+- Full CRUD for clients, trainers, memberships, and sessions
+- Payment processing and integration
+- Management of gyms, rooms, trainers, and class scheduling
+- Attendance tracking and session capacity enforcement
+- Storing and linking trainer qualifications
+- Relational database normalized to 3NF for data integrity
+- Data validation powered by Zod for robust runtime guarantees
+- Fully containerized with Docker for simplified setup and deployment
+- Separate environments for development and testing
+- Business processes and relationships are documented; PlantUML diagrams available in the repo
 
 ### Documentation 
 The documentation for the project can be found in the [`docs`](./docs) directory. This documentation covers all aspects of data modeling, business processes, and the theoretical and practical foundations of the backend.  **Note:** This documentation applies to the modeling and planning. The [`server/`](./server) directory contains separate documentation and may differ from the primary project structure.
