@@ -4,9 +4,13 @@ This document provides detailed explanations and sample queries for analyzing gy
 
 ## Table of Contents:
 
-- [Room Revenue and Attendance Analysis](#room-revenue-and-attendance-analysis)
-- [Monthly Revenue by Class Type](#monthly-revenue-by-class-type)
-- [Gyms and Room Utilization Data](#gyms-and-room-utilization-data)
+- [Room Revenue and Attendance Analysis](#1-room-revenue-and-attendance-analysis)
+- [Monthly Revenue by Class Type](#2-monthly-revenue-by-class-type)
+- [Gyms and Room Utilization Data](#3-gyms-and-room-utilization-data)
+- [Payment-based Revenue Analytics](#4-payment-based-revenue-analytics)
+- [Top Trainer Performance Analysis](#5-top-trainer-performance-analysis)
+- [Trainer Popularity Ranking](#6-trainer-popularity-ranking)
+- [Trainer Workload by Class Type](#7-trainer-workload-by-class-type)
 
 ## 1. Room Revenue and Attendance Analysis
 
@@ -181,11 +185,8 @@ ORDER BY month ASC;
 **Explanation:**
 
 - **Source Table:** Uses the `payment` table as the source of truth for financial data, rather than estimating based on attendance
-- .
 - **JOINs:** Joins with `membership` and `class_type` to categorize revenue by the specific type of class/service purchased.
-
 - **Filters:** Includes only `completed` payments that are not soft-deleted. Can be filtered by date range (year/month).
-
 - **Aggregations:**
   - `SUM(p.amount)`: Calculates total actual revenue.
   - `COUNT(p.payment_id)`: Counts the number of successful transactions.
@@ -198,17 +199,7 @@ ORDER BY month ASC;
 | 2025-10 | yoga            | 1400.00       | 2              |
 | 2025-11 | swimming        | 2100.00       | 3              |
 
-## Analytics Documentation (Trainers & Sessions)
-
-This section provides detailed explanations and sample queries for analyzing trainer performance, popularity, and workload distribution.
-
-### Table of Contents:
-
-- [Top Trainer Performance Analysis](#top-trainer-performance-analysis)
-- [Trainer Popularity Ranking](#trainer-popularity-ranking)
-- [Trainer Workload by Class Type](#trainer-workload-by-class-type)
-
-### 1. Top Trainer Performance Analysis
+### 5. Top Trainer Performance Analysis
 
 **Business Question:** Which trainer has conducted the highest number of sessions in the last month?
 
@@ -247,7 +238,7 @@ LIMIT 1;
 | ---------- | ---------- | --------- | ---------------- | -------------- |
 | 14         | John       | Doe       | john.doe@gym.com | 45             |
 
-### 2. Trainer Popularity Ranking
+### 6. Trainer Popularity Ranking
 
 **Business Question:** Which trainers are the most popular based on the total number of client attendances across all their sessions?
 
@@ -285,7 +276,7 @@ ORDER BY total_clients_attended DESC;
 | 3          | Bob Johnson  | 75                     |
 | 9          | Sarah Connor | 42                     |
 
-### 3. Trainer Workload by Class Type
+### 7. Trainer Workload by Class Type
 
 **Business Question:** What is the breakdown of sessions conducted by a specific trainer, grouped by the type of class (e.g., Yoga, Workout)?
 

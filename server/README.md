@@ -2,7 +2,7 @@
 
 ## **Project Overview:**
 
-**PeremohaSports** is a **gym management system** that provides convenient tools for recording and managing data about the gym, rooms, class types, qualifications, memberships, attendance etc. The system is designed to facilitate administration and improve the\*efficiency of gyms through comprehensive analysis and monitoring of their activities. It also provides convenience for customers, enabling them to effectively manage their gym experience and track their progress.
+**PeremohaSports** is a **gym management system** that provides convenient tools for recording and managing data about the gym, rooms, class types, qualifications, memberships, attendance etc.
 
 ### **Team Members:**
 
@@ -107,7 +107,7 @@ For a detailed overview of each team member's contributions to the project, refe
 ## **Project structure**
 
 ```
-course-work/
+server/
 ├── .env                      # Environment variables for docker.compose.yml and application
 ├── .env.test                 # Environment variables for docker.compose.test.yaml
 ├── docs/                     # Documentation
