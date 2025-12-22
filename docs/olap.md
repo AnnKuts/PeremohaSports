@@ -1,7 +1,19 @@
 # OLAP
 This section describes the OLAP (Online Analytical Processing) aspects of the database schema, focusing on the entities and relationships that support complex data analysis and reporting.
 
----
+## Table of contents
+- [Trainers whose max class capacity is at least 20](#1-trainers-whose-max-class-capacity-is-at-least-20)
+- [Clients with completed payments totaling over 200, including total and largest payment](#2-clients-with-completed-payments-totaling-over-200-including-total-and-largest-payment)
+- [Class type with the highest total attendance across all sessions](#3-class-type-with-the-highest-total-attendance-across-all-sessions)
+- [Clients' highest membership price](#4-clients-highest-membership-price)
+- [Number of classes conducted by each trainer](#5-number-of-classes-conducted-by-each-trainer) 
+- [Clients' earliest payment](#6-clients-earliest-payment)
+- [Last attendance session for each client](#7-last-attendance-session-for-each-client)
+- [Clients with active membership](#8-clients-with-active-membership)
+- [Total payments made by each client](#9-total-payments-made-by-each-client)
+- [Average membership price by class level](#10-average-membership-price-by-class-level)
+- [Number of class types supported by each room](#11-number-of-class-types-supported-by-each-room)
+- [Number of attendances per client](#12-number-of-attendances-per-client)
 
 ## 1. Trainers whose max class capacity is at least 20
 

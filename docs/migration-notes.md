@@ -1,6 +1,19 @@
 # Migration notes with Prisma 
 This section describes the database migration process, explaining how schema changes are versioned and applied to keep the database structure consistent with application models. Migrations support controlled schema evolution and ensure reliability across development environments
 
+## Table of contents
+- [Prisma initialization](#prisma-initialization)
+- [Migrations](#migrations)
+   - [1. Init](#1-init)
+   - [2. Add feedback table](#2-add-feedback-table)
+   - [3. Rename disposable field](#3-rename-disposable-field)
+   - [4. Delete comment field](#4-delete-comment-field)
+   - [5. Drop feedback table](#5-drop-feedback-table)
+   - [6. Seed data](#6-seed-data)
+   - [7. Run seed.ts](#7-run-seedts)
+   - [8. Check prisma studio](#8-check-prisma-studio)
+   - [9. Update schema](#9-update-schema)
+
 ## Prisma initialization
 
 ```bash

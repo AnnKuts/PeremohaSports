@@ -1,4 +1,13 @@
-# Lab 5: Database normalization
+#  Database normalization
+This document describes the process of analyzing and normalizing the database schema for a gym management system. The goal is to ensure that the database structure adheres to the principles of normalization, specifically up to the Third Normal Form (3NF).
+
+## Table of contents
+
+- [Functional Dependency Analysis](#1-functional-dependency-analysis-fd)
+- [Checking normal forms](#2-checking-normal-forms)
+- [Identifying Redundancy and Anomalies](#3-identifying-redundancy-and-anomalies)
+- [Apply Normalization](#4-apply-normalization-fix)
+
 ## 1. Functional Dependency Analysis (FD)
 
 To confirm the correctness of the database structure, functional dependencies were defined for the main entities. Notation: $X \rightarrow Y$ (X uniquely determines Y).  
