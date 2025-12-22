@@ -22,9 +22,7 @@ export function globalErrorHandler(err: any, req: Request, res: Response, next: 
     });
   }
 
-  // Handle Prisma Errors
   if (err.code) {
-    // P2002: Unique constraint failed
     if (err.code === 'P2002') {
       return res.status(409).json({
         success: false,
@@ -34,7 +32,6 @@ export function globalErrorHandler(err: any, req: Request, res: Response, next: 
         ...(process.env.NODE_ENV !== 'production' && { stack: err.stack })
       });
     }
-    // P2003: Foreign key constraint failed
     if (err.code === 'P2003') {
       return res.status(400).json({
         success: false,
@@ -44,7 +41,6 @@ export function globalErrorHandler(err: any, req: Request, res: Response, next: 
         ...(process.env.NODE_ENV !== 'production' && { stack: err.stack })
       });
     }
-    // P2025: Record not found
     if (err.code === 'P2025') {
       return res.status(404).json({
         success: false,

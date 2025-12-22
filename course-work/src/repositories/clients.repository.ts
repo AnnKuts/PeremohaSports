@@ -85,7 +85,6 @@ export const clientsRepository = {
     return prisma.$transaction(async (tx) => {
       if (data.contact_data?.email || data.contact_data?.phone) {
         const whereConditions = [];
-
         if (data.contact_data.email) whereConditions.push({ email: data.contact_data.email });
         if (data.contact_data.phone) whereConditions.push({ phone: data.contact_data.phone });
 
@@ -120,13 +119,11 @@ export const clientsRepository = {
   },
   async softDelete(id: number) {
     return prisma.$transaction(async (tx) => {
-      // Cancel active memberships
       await tx.membership.updateMany({
         where: { client_id: id, status: "active" },
         data: { status: "cancelled" },
       });
 
-      // Soft delete client
       return tx.client.update({
         where: { client_id: id },
         data: { is_deleted: true },
@@ -134,4 +131,3 @@ export const clientsRepository = {
     });
   },
 };
-
