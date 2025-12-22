@@ -58,16 +58,16 @@ It includes:
 - [olap.md](/docs/olap.md) - describes the Online Analytical Processing (OLAP) aspects: complex queries for data analysis, reporting, and decision-making. Example queries and result screenshots included.
 - [migration-notes.md](/docs/migration-notes.md) - details the database migration process using Prisma Migrate, including steps taken, challenges faced, and solutions implemented.
 - [interfaces.ts](/docs/interfaces.ts.md) - documents the TypeScript interfaces used in the backend application, detailing their structure and purpose.
-> For server-specific details, see [documentation](./server/README.md) inside the `server/` folder.
+> For server-specific details, see [documentation](./server/README.md) inside the [`server/`](./server) folder.
 
 ### Diagrams
 
-The project includes a comprehensive set of diagrams that describe the database structure, system behavior, and business processes. All diagrams were created using Draw.io and PlantUML and are stored in the `diagrams/` directory.
+The project includes a comprehensive set of diagrams that describe the database structure, system behavior, and business processes. All diagrams were created using Draw.io and PlantUML and are stored in the [`diagrams/`](./diagrams) directory.
 
 
-- [ERD (Chen notation)](./diagrams/erd/chen)
-- [ERD (Crow’s Foot notation)](./diagrams/erd/crows-foot)
-- [ERD (PlantUML)](./diagrams/erd/plantuml)
+- [ERD (Chen notation)](./diagrams/er/chen)
+- [ERD (Crow’s Foot notation)](./diagrams/er/crows-foot)
+- [ERD (PlantUML)](./diagrams/er/plantuml)
 - [Use Case Diagram (Draw.io)](./diagrams/usecase/diagram)
 - [Use Case Diagram (PlantUML)](./diagrams/usecase/plantuml)
 - [Use Case Traceability Matrix](./diagrams/usecase/docs)

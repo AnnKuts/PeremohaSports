@@ -1,6 +1,6 @@
 # Complex SQL Queries Documentation
 
-This document provides detailed explanations and sample queries for analyzing gym utilization, revenue, and attendance data.\*\*
+This document provides detailed explanations and sample queries for analyzing gym utilization, revenue, and attendance data.
 
 ## Table of Contents:
 
